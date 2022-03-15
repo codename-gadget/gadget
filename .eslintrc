@@ -1,3 +1,8 @@
 {
     "extends": "@johh",
+    "ignorePatterns": [
+        "**/node_modules",
+        "**/dist",
+        "_coverage"
+    ]
 }

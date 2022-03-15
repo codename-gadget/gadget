@@ -4,6 +4,7 @@
   "scripts": {
     "prepare": "husky install && git config gitflow.path.hooks .husky",
     "build": "lerna run build",
+    "lint": "eslint . --max-warnings 0",
     "test": "karma start --singleRun"
   },
   "devDependencies": {
@@ -47,7 +48,7 @@
     "webpack": "^5.70.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js}": "eslint --max-warnings 1"
+    "*.{ts,tsx,js}": "eslint --max-warnings 0"
   },
   "dependencies": {
     "@gdgt/webgl": "file:packages/webgl"
