@@ -1,0 +1,37 @@
+name: Lint and test PR
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          cache: yarn
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        # some browsers may need a display to work properly
+        # create a virtual one and route its output to /dev/null
+        run: |
+          export DISPLAY=':99.0'
+          /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          yarn test

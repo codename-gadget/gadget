@@ -11,5 +11,5 @@
         "packages/*/*.config.ts",
         "*.json",
         "packages/*/*.json",
-    ]
+    ],
 }

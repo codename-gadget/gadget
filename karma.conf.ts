@@ -20,6 +20,8 @@ export default ( config: Config ): void => {
 
 		concurrency: 1,
 
+		failOnEmptyTestSuite: false,
+
 		// base path that will be used to resolve all patterns (eg. files, exclude)
 		basePath: __dirname,
 
