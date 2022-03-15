@@ -442,10 +442,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@johh/eslint-config@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@johh/eslint-config/-/eslint-config-0.0.4.tgz#aeb4f95b93bc35a1d07ca23d52136734f73a3782"
-  integrity sha512-DGSiZ/3LzGrIkoNJeygvV1ilEQBWNrwFG9age2Yy91FUF4OQ7EFOGZc4Pv8AKvjZ2fXKfj9CEx4lwvjOrdq4Sw==
+"@johh/eslint-config@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@johh/eslint-config/-/eslint-config-0.0.5.tgz#2980cb1efaa6f1f977bbfb01263fafa0fcb252ca"
+  integrity sha512-IwWHFFOyvsF+Bl0wbsxMpvMpp/1/PA7sz3o1MwuQlsfuocHh6oezVl7LUw7OoE5ZnTfpFHPjJYeklFH+UmrycA==
 
 "@jridgewell/resolve-uri@^3.0.3":
   version "3.0.5"
