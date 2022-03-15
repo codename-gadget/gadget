@@ -50,7 +50,5 @@
   "lint-staged": {
     "*.{ts,tsx,js}": "eslint --max-warnings 0"
   },
-  "dependencies": {
-    "@gdgt/webgl": "file:packages/webgl"
-  }
+  "dependencies": {}
 }
