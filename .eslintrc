@@ -1,0 +1,49 @@
+{
+    "extends": "@johh",
+    "rules": {
+        "padding-line-between-statements": 0,
+        "@typescript-eslint/padding-line-between-statements": [
+            "error",
+            {
+                "blankLine": "always",
+                "prev": "*",
+                "next": [
+                    "export",
+                    "return",
+                    "function",
+                    "class",
+                    "default",
+                    "interface",
+                    "type",
+                    "const",
+                    "let",
+                ],
+            },
+            {
+                "blankLine": "always",
+                "prev": [
+                    "const",
+                    "let",
+                    "export",
+                ],
+                "next": "*"
+            },
+            {
+                "blankLine": "any",
+                "prev": "export",
+                "next": "export"
+            },
+            {
+                "blankLine": "any",
+                "prev": [
+                    "const",
+                    "let"
+                ],
+                "next": [
+                    "const",
+                    "let"
+                ]
+            },
+        ],
+    }
+}

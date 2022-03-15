@@ -1,0 +1,4 @@
+# JS/TS files are formatted by eslint
+*.js
+*.ts
+*.tsx
