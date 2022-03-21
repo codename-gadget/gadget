@@ -79,6 +79,8 @@ export interface SamplerProps extends WithContext {
  */
 export default class Sampler extends ContextConsumer {
 	private sampler: WebGLSampler;
+
+
 	public constructor( {
 		context,
 		minFilter = TextureMinFilter.linear,
