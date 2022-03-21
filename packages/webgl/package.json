@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "start": "rollup -c -w --configPlugin typescript",
+    "start": "npx rollup -c -w --configPlugin typescript",
     "build": "rollup --config rollup.config.ts --configPlugin typescript"
   }
 }
