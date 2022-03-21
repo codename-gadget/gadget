@@ -4,5 +4,15 @@
         "**/node_modules",
         "**/dist",
         "_coverage"
-    ]
+    ],
+    "rules": {
+        "jsdoc/check-tag-names": [
+            "warn",
+            {
+                "definedTags": [
+                    "internal"
+                ]
+            }
+        ]
+    }
 }

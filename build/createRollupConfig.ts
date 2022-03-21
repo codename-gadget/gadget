@@ -3,6 +3,7 @@ import type { RollupOptions } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
+import copy from 'rollup-plugin-copy';
 import minifyPrivatesTransformer from 'ts-transformer-minify-privates';
 import path from 'path';
 import lernaInfo from '../lerna.json';
@@ -20,7 +21,7 @@ export default function createRollupConfig(
 	withDevBuild = false,
 ): RollupOptions[] {
 	const config = ( isDevVersion: boolean ): RollupOptions => {
-		const outDir = isDevVersion ? './dist/dev' : './dist';
+		const outDir = isDevVersion ? './dev/dist' : './dist';
 
 		return {
 			input: `./src/${name}.ts`,
@@ -35,7 +36,8 @@ export default function createRollupConfig(
 			cache: false,
 			plugins: [
 				typescript( {
-					sourceMap: isDevVersion,
+					sourceMap: false,
+					inlineSourceMap: isDevVersion,
 					outDir,
 					declarationDir: outDir,
 					rootDir: path.join( __dirname, 'src' ),
@@ -62,19 +64,27 @@ export default function createRollupConfig(
 						__VERSION__: JSON.stringify( lernaInfo.version ),
 					},
 				} ),
-				terser( {
-					format: {
-						comments: isDevVersion ? 'some' : false,
-					},
-					mangle: {
-						properties: {
-							regex: /^_private_\w+/,
+				...( isDevVersion ? [
+					copy( {
+						targets: [
+							{ src: './package.json', dest: './dev' },
+						],
+					} ),
+				] : [
+					terser( {
+						format: {
+							comments: isDevVersion ? 'some' : false,
 						},
-					},
+						mangle: {
+							properties: {
+								regex: /^_private_\w+/,
+							},
+						},
 					// compress: {
 					// drop_console: !isDevVersion,
 					// },
-				} ),
+					} ),
+				]),
 			],
 		};
 	};

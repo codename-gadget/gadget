@@ -1,0 +1,24 @@
+{
+  "name": "@gdgt/webgl",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "johh <code@johh.net>",
+  "homepage": "",
+  "license": "MIT",
+  "main": "dist/gadget-webgl.js",
+  "module": "dist/gadget-webgl.js",
+  "directories": {
+    "lib": "dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "start": "npx rollup -c -w --configPlugin typescript",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript"
+  }
+}
