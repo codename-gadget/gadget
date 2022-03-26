@@ -17,7 +17,7 @@ if ( __DEV_BUILD__ ) {
 export { default as Context, defaultContext } from './lib/Context';
 
 
-export { default as Buffer } from './lib/buffer/Buffer';
+export { default as Buffer, BufferProps } from './lib/buffer/Buffer';
 export { default as SyncableBuffer } from './lib/buffer/SyncableBuffer';
 export {
 	BufferDataType,
@@ -26,11 +26,12 @@ export {
 } from './lib/buffer/bufferEnums';
 
 
-export { default as Geometry } from './lib/geometry/Geometry';
+export { default as Geometry, GeometryProps } from './lib/geometry/Geometry';
+export { GeometryDrawMode } from './lib/geometry/geometryEnums';
 
 
-export { default as Sampler } from './lib/texture/Sampler';
-export { default as Texture } from './lib/texture/Texture';
+export { default as Sampler, SamplerProps } from './lib/texture/Sampler';
+export { default as Texture, TextureProps } from './lib/texture/Texture';
 export {
 	TextureMagFilter,
 	TextureMinFilter,
@@ -43,5 +44,5 @@ export {
 } from './lib/texture/textureEnums';
 
 
-export { default as Program } from './lib/program/Program';
+export { default as Program, ProgramProps } from './lib/program/Program';
 export { UniformType } from './lib/program/programEnums';
