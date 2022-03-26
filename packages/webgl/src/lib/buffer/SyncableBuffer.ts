@@ -13,7 +13,7 @@ interface SyncableBufferProps<T = BufferSrcData> extends Omit<BufferProps, 'size
 	 * If true, the entire buffer will be treated as valid initially and
 	 * ranges for up/downloading need to be marked with `invalidate()` manually.
 	 *
-	 * @default false
+	 * @defaultValue false
 	 */
 	initializeAsValid?: boolean;
 }
@@ -21,6 +21,8 @@ interface SyncableBufferProps<T = BufferSrcData> extends Omit<BufferProps, 'size
 
 /**
  * GPU data store with CPU-side data representation, enabling easy up/downloading.
+ *
+ * @public
  */
 export default class SyncableBuffer<T extends BufferSrcData = BufferSrcData> extends Buffer {
 	/** CPU-side representation of the data. */
@@ -59,8 +61,8 @@ export default class SyncableBuffer<T extends BufferSrcData = BufferSrcData> ext
 	 * If parts of the buffer have already been invalidated,
 	 * the range containing all parts will be invalidated.
 	 *
-	 * @param start First byte to invalidate. @default 0
-	 * @param end Last byte to invalidate. @default Infinity
+	 * @param start - First byte to invalidate. @defaultValue `0`
+	 * @param end - Last byte to invalidate. @defaultValue `Infinity`
 	 */
 	public invalidate( start = 0, end = Infinity ): void {
 		this.invalidStart = Math.max( 0, Math.min( start, this.invalidStart ) );

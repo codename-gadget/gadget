@@ -9,6 +9,9 @@ import {
 } from './textureEnums';
 
 
+/**
+ * @public
+ */
 export interface TextureProps extends WithContext {
 	/** The textures width in pixels. */
 	width: number
@@ -20,14 +23,14 @@ export interface TextureProps extends WithContext {
 	 * The amount of mipmap levels.
 	 * Level 0 represents the original texture.
 	 *
-	 * @default 1
+	 * @defaultValue 1
 	 */
 	levels?: number
 
 	/**
 	 * How the data is stored in GPU memory.
 	 *
-	 * @default TextureStorageFormat.rgba8
+	 * @defaultValue TextureStorageFormat.rgba8
 	 */
 	storageFormat?: TextureStorageFormat,
 }
@@ -35,6 +38,8 @@ export interface TextureProps extends WithContext {
 
 /**
  * Generic GPU texture store, wrapping `WebGLTexture`.
+ *
+ * @public
  */
 export default class Texture extends ContextConsumer {
 	private texture: WebGLTexture;
@@ -87,9 +92,9 @@ export default class Texture extends ContextConsumer {
 	/**
 	 * Uploads an array of pixels to the GPU.
 	 *
-	 * @param pixels The pixel data.
-	 * @param type The formate the pixel data is in.
-	 * @param level The mipmap level to upload to. @default 0
+	 * @param pixels - The pixel data.
+	 * @param type - The formate the pixel data is in.
+	 * @param level - The mipmap level to upload to. @defaultValue `0`
 	 */
 	public async uploadPixels(
 		pixels: ArrayBufferView,

@@ -2,15 +2,17 @@
 
 /**
  * Enum specifying how a geometry is drawn.
+ *
+ * @public
  */
 export enum GeometryDrawMode {
 	/** Draws a triangle for every three vertices. */
 	triangles = 4,
 
-	/** Draws a [triangle strip](https://en.wikipedia.org/wiki/Triangle_strip). */
+	/** Draws a {@link https://en.wikipedia.org/wiki/Triangle_strip | triangle strip}. */
 	triangleStrip = 5,
 
-	/** Draws a [triangle fan](https://en.wikipedia.org/wiki/Triangle_fan). */
+	/** Draws a {@link https://en.wikipedia.org/wiki/Triangle_fan | triangle fan}. */
 	triangleFan = 6,
 
 	/** Draws a 1px line connecting every two veritces. */

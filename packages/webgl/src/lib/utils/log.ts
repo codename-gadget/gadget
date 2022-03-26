@@ -8,7 +8,7 @@ interface DevLogProps {
 	/**
 	 * Whether to log a warning, error or info.
 	 *
-	 * @default 'warn'
+	 * @defaultValue 'warn'
 	 */
 	level?: 'info' | 'warn' | 'error';
 
@@ -18,14 +18,14 @@ interface DevLogProps {
 	/**
 	 * The group's label. Only relevant if groupContent is set.
 	 *
-	 * @default 'more info'
+	 * @defaultValue 'more info'
 	 */
 	groupLabel?: string;
 
 	/**
 	 * Whether to log the group in an expanded state.
 	 *
-	 * @default false
+	 * @defaultValue false
 	 */
 	expanded?: boolean;
 }
@@ -34,7 +34,7 @@ interface DevLogProps {
 /**
  * Logs a verbose error or warning to console, which will be omitted from prod builds.
  *
- * @param {DevLogProps} props DevLogProps
+ * @param props - DevLogProps
  */
 export function devLog( {
 	msg,
@@ -83,7 +83,7 @@ export function devLog( {
 /**
  * Logs a short, generic error to console, along with a reference to the dev build.
  *
- * @param subject Optional subject of the error.
+ * @param subject - Optional subject of the error.
  */
 export function prodLog( subject = '' ): void {
 	console.error( `[gadget] ${subject} error. \n(Use dev build for more info)` );

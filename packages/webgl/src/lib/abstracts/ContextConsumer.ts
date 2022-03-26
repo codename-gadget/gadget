@@ -5,7 +5,7 @@ export interface WithContext {
 	/**
 	 * Context override
 	 *
-	 * @default defaultContext
+	 * @defaultValue defaultContext
 	 */
 	context?: Context
 }

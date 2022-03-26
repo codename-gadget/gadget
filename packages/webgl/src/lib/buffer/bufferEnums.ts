@@ -1,5 +1,7 @@
 /**
  * Enum specifying the type of data provided to the buffer.
+ *
+ * @public
  */
 export enum BufferDataType {
 	/**
@@ -63,8 +65,9 @@ export enum BufferDataType {
 /**
  * Infers the byte length of a single item in a buffer of the given type.
  *
- * @param type The buffers data type.
+ * @param type - The buffers data type.
  * @returns The amount of bytes consituting a member.
+ * @internal
  */
 export function byteLengthPerMember( type: BufferDataType ): number {
 	switch ( type ) {
@@ -90,7 +93,10 @@ export function byteLengthPerMember( type: BufferDataType ): number {
 
 /**
  * Enum specifying a buffer binding point.
- * Descriptions pulled from [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindBuffer)
+ *
+ * @remarks
+ * Descriptions pulled from {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bindBuffer | MDN}.
+ * @public
  */
 export enum BufferBindingPoint {
 	/**
@@ -138,7 +144,10 @@ export enum BufferBindingPoint {
 
 /**
  * A enum specifying the intended usage pattern of the data store for optimization purposes.
- * Descriptions pulled from [MDN](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData).
+ *
+ * @remarks
+ * Descriptions pulled from {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/bufferData | MDN}.
+ * @public
  */
 export enum BufferUsage {
 	/**

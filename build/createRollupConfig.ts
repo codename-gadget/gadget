@@ -12,8 +12,9 @@ import lernaInfo from '../lerna.json';
 /**
  * Creates a rollup config for compiling both a prod and dev versions.
  *
- * @param name Entry file name without extension
- * @param withDevBuild Whether to build a second version at ./dist/dev with __DEV_BUILD__ enabled
+ * @param name - Entry file name without extension
+ * @param withDevBuild - Whether to build a second version at
+ * `./dist/dev` with `__DEV_BUILD__` enabled
  * @returns The rollup config
  */
 export default function createRollupConfig(
