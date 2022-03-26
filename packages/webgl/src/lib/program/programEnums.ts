@@ -1,6 +1,8 @@
 
 /**
  * Enum specifying a uniform values type.
+ *
+ * @public
  */
 export enum UniformType {
 	float = 5126,
@@ -15,7 +17,7 @@ export enum UniformType {
  * Returns the number of components in a given type.
  *
  * @internal
- * @param type The `UniformType` to check.
+ * @param type - The `UniformType` to check.
  * @returns The number of components.
  */
 export function componentInUniformType( type: UniformType ): number {
@@ -45,7 +47,7 @@ export function componentInUniformType( type: UniformType ): number {
  * Returns the byte length of a given type.
  *
  * @internal
- * @param type The `UniformType` to check.
+ * @param type - The `UniformType` to check.
  * @returns The number of bytes in `type`.
  */
 export function byteLengthOfUniformType( type: UniformType ): number {

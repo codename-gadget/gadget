@@ -12,6 +12,8 @@ export enum SamplerType {
 
 /**
  * Texture magnification filter.
+ *
+ * @public
  */
 export enum TextureMagFilter {
 	linear = 9729,
@@ -25,6 +27,8 @@ export enum TextureMagFilter {
  * Note that `*Mipmap*` options need mipmaps to be present on the sampled texture.
  * Either define them manually or generate them automatically
  * by calling `generateMipmaps()` on your texture.
+ *
+ * @public
  */
 export enum TextureMinFilter {
 	linear = 9729,
@@ -39,6 +43,8 @@ export enum TextureMinFilter {
 /**
  * Comparison operator used when the texture comparison mode
  * is set to `TextureCompareMode.compareRefToTexture`
+ *
+ * @public
  */
 export enum TextureCompareFunc {
 	never = 512,
@@ -54,6 +60,8 @@ export enum TextureCompareFunc {
 
 /**
  * Texture comparison mode for currently bound depth textures.
+ *
+ * @public
  */
 export enum TextureCompareMode {
 	none = 0,
@@ -68,6 +76,8 @@ export enum TextureCompareMode {
 
 /**
  * Texture wrapping mode
+ *
+ * @public
  */
 export enum TextureWrap {
 	repeat = 10497,
@@ -78,6 +88,8 @@ export enum TextureWrap {
 
 /**
  * Special data types for texture uploading.
+ *
+ * @public
  */
 export enum TextureDataType {
 	unsignedShort565 = 33635,
@@ -93,6 +105,8 @@ export enum TextureDataType {
 
 /**
  * Texture format – which channels are present.
+ *
+ * @public
  */
 export enum TextureFormat {
 	alpha = 6406,
@@ -111,6 +125,8 @@ export enum TextureFormat {
 
 /**
  * Texture storage format – how the data is stored in GPU memory.
+ *
+ * @public
  */
 export enum TextureStorageFormat {
 	alpha = 6406,
@@ -172,7 +188,7 @@ export enum TextureStorageFormat {
  * Returns the matching texture format for a given storage format.
  *
  * @internal
- * @param storage The texture storage format.
+ * @param storage - The texture storage format.
  * @returns The matching texture format.
  */
 export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): TextureFormat {

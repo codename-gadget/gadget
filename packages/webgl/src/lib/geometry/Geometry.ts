@@ -25,14 +25,14 @@ type SharedAttributeInfo = {
 	 * If `0`, no padding between vertices is assumed, i.e.
 	 * `stride` will be equal to the byte length of `type` multiplied by `size`.
 	 *
-	 * @default 0
+	 * @defaultValue 0
 	 */
 	stride?: number;
 
 	/**
 	 * Start-offset in bytes of the first vertex. Must be a multiple of `type`s byte length.
 	 *
-	 * @default 0
+	 * @defaultValue 0
 	 */
 	offset?: number;
 };
@@ -49,7 +49,7 @@ SharedAttributeInfo & DiscriminatingOr<{
 	/**
 	 * Whether the attribute data will be updated in the future.
 	 *
-	 * @default false
+	 * @defaultValue false
 	 */
 	dynamic?: boolean;
 }>;
@@ -61,6 +61,9 @@ type InternalAttributeInfo = Required<SharedAttributeInfo> & {
 };
 
 
+/**
+ * @public
+ */
 export interface GeometryProps extends WithContext {
 	/** Object of vertex attribute declarations, the `key` being the attribute index. */
 	attributes: Record<number, AttributeDeclaration>;
@@ -68,7 +71,7 @@ export interface GeometryProps extends WithContext {
 	/**
 	 * How the geometry should be drawn.
 	 *
-	 * @default GeometryDrawMode.triangles
+	 * @defaultValue GeometryDrawMode.triangles
 	 */
 	mode?: GeometryDrawMode;
 }
@@ -76,6 +79,8 @@ export interface GeometryProps extends WithContext {
 
 /**
  * Drawable geometry with multiple vertex attributes.
+ *
+ * @public
  */
 export default class Geometry<T extends GeometryProps = GeometryProps> extends ContextConsumer {
 	private vao: WebGLVertexArrayObject;

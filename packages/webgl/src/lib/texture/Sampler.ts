@@ -8,67 +8,70 @@ import {
 } from './textureEnums';
 
 
+/**
+ * @public
+ */
 export interface SamplerProps extends WithContext {
 	/**
 	 * The texture minification filter.
 	 *
-	 * @default TextureMinFilter.linear
+	 * @defaultValue TextureMinFilter.linear
 	 */
 	minFilter?: TextureMinFilter,
 
 	/**
 	 * The texture magnification filter.
 	 *
-	 * @default TextureMagFilter.linear
+	 * @defaultValue TextureMagFilter.linear
 	 */
 	magFilter?: TextureMagFilter,
 
 	/**
 	 * Texture wrapping mode for the `s`/`x` coordinate.
 	 *
-	 * @default TextureWrap.clampToEdge
+	 * @defaultValue TextureWrap.clampToEdge
 	 */
 	wrapS?: TextureWrap,
 
 	/**
 	 * Texture wrapping mode for the `t`/`y` coordinate.
 	 *
-	 * @default TextureWrap.clampToEdge
+	 * @defaultValue TextureWrap.clampToEdge
 	 */
 	wrapT?: TextureWrap,
 
 	/**
 	 * Texture wrapping mode for the `r`/`z` coordinate.
 	 *
-	 * @default TextureWrap.clampToEdge
+	 * @defaultValue TextureWrap.clampToEdge
 	 */
 	wrapR?: TextureWrap,
 
 	/**
 	 * The minimum level-of-detail.
 	 *
-	 * @default -1000
+	 * @defaultValue -1000
 	 */
 	minLod?: number,
 
 	/**
 	 * The maximum level-of-detail.
 	 *
-	 * @default 1000
+	 * @defaultValue 1000
 	 */
 	maxLod?: number,
 
 	/**
 	 * The texture comparison mode.
 	 *
-	 * @default TextureCompareMode.none
+	 * @defaultValue TextureCompareMode.none
 	 */
 	compareMode?: TextureCompareMode,
 
 	/**
 	 * The texture comparison function.
 	 *
-	 * @default TextureCompareFunc.lessOrEqual
+	 * @defaultValue TextureCompareFunc.lessOrEqual
 	 */
 	compareFunc?: TextureCompareFunc,
 }
@@ -76,6 +79,8 @@ export interface SamplerProps extends WithContext {
 
 /**
  * A Sampler storing sampling parameters for texture access.
+ *
+ * @public
  */
 export default class Sampler extends ContextConsumer {
 	private sampler: WebGLSampler;

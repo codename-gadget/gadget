@@ -8,21 +8,21 @@ export interface TextureSlotProps extends WithContext {
 	/**
 	 * Sampler used for sampling `texture`.
 	 *
-	 * @default undefined
+	 * @defaultValue undefined
 	 */
 	texture?: Texture,
 
 	/**
 	 * Sampler used for sampling `texture`.
 	 *
-	 * @default undefined
+	 * @defaultValue undefined
 	 */
 	sampler?: Sampler
 
 	/**
 	 * Texture unit index the texture and sampler should be bound to.
 	 *
-	 * @default undefined
+	 * @defaultValue undefined
 	 */
 	unit?: number;
 }
@@ -54,7 +54,7 @@ export default class TextureSlot extends ContextConsumer {
 	/**
 	 * Assigns a given texture to the texture slot.
 	 *
-	 * @param texture The texture to assign to the texture slot.
+	 * @param texture - The texture to assign to the texture slot.
 	 */
 	public async setTexture( texture: Texture ): Promise<void> {
 		this.textureReady = false;
@@ -68,7 +68,7 @@ export default class TextureSlot extends ContextConsumer {
 	/**
 	 * Assigns a given sampler to the texture slot.
 	 *
-	 * @param sampler The sampler to assign to the texture slot.
+	 * @param sampler - The sampler to assign to the texture slot.
 	 */
 	public async setSampler( sampler: Sampler ): Promise<void> {
 		this.sampler = null;
@@ -80,7 +80,7 @@ export default class TextureSlot extends ContextConsumer {
 	 * Binds texture and sampler to the texture unit specified at instantiation.
 	 *
 	 * @internal
-	 * @param debugName Optional identifier used for debugging.
+	 * @param debugName - Optional identifier used for debugging.
 	 * @returns Index of the bound texture unit if successful, `-1` otherwise.
 	 */
 	public bind( debugName?: string ): number {
@@ -107,8 +107,8 @@ export default class TextureSlot extends ContextConsumer {
 	 * Binds texture and sampler to the given texture unit.
 	 *
 	 * @internal
-	 * @param unit Index of the texture unit to bind to.
-	 * @param debugName Optional identifier used for debugging.
+	 * @param unit - Index of the texture unit to bind to.
+	 * @param debugName - Optional identifier used for debugging.
 	 * @returns `true` if binding was successful, `false` otherwise.
 	 */
 	public bindTo( unit: number, debugName?: string ): boolean {

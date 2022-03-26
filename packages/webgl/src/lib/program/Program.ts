@@ -62,7 +62,10 @@ function viewOrListFromIntro(
 }
 
 
-interface ProgramProps<R, O> extends WithContext {
+/**
+ * @public
+ */
+export interface ProgramProps<R, O> extends WithContext {
 	/** Vertex shader source code. */
 	vertexShader: string;
 
@@ -81,6 +84,8 @@ interface ProgramProps<R, O> extends WithContext {
 
 /**
  * Representation of a `WebGLProgram` and its UBOs and textures.
+ *
+ * @public
  */
 export default class Program<
 	R extends Reflection,

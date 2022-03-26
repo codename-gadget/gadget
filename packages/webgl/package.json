@@ -7,6 +7,7 @@
   "license": "MIT",
   "main": "dist/gadget-webgl.js",
   "module": "dist/gadget-webgl.js",
+  "typings": "dist/gadget-webgl.d.ts",
   "directories": {
     "lib": "dist"
   },
