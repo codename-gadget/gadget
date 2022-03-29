@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "exports": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "type": "string",
+            "description": "Name of the HLSL function to use as the entry point."
+          },
+          "stage": {
+            "type": "string",
+            "description": "Shader model and -stage to compile to.\n\nUsually `\"vs_6_7\"` for vertex- and `\"ps_6_7\"` for pixel shaders."
+          }
+        },
+        "required": [
+          "entry",
+          "stage"
+        ],
+        "additionalProperties": false,
+        "description": "Object specifying an export, the key being the exports name."
+      },
+      "description": "A list of exports per HLSL file.\n\nNon-existent entry points will be ignored."
+    },
+    "mangle": {
+      "type": "boolean",
+      "description": "Whether to shorten internal variable names."
+    },
+    "logGlsl": {
+      "type": "boolean",
+      "description": "Whether to log the compiled GLSL code to the console.\n\nMay be useful during development. This is automatically disabled for production builds."
+    },
+    "generateDeclarations": {
+      "type": "boolean",
+      "description": "Whether to emit .d.ts files containing declarations for imported HLSL files.\n\nThis is automatically disabled for production builds."
+    }
+  },
+  "additionalProperties": false
+}
