@@ -15,12 +15,14 @@ import * as lernaInfo from '../lerna.json';
  *
  * @param name - Entry file name without extension
  * @param withDevBuild - Whether to build a second version at
+ * @param cjs - Whether to build as CommonJS
  * `./dist/dev` with `__DEV_BUILD__` enabled
  * @returns The rollup config
  */
 export default function createRollupConfig(
 	name: string,
 	withDevBuild = false,
+	cjs = false,
 ): RollupOptions[] {
 	const config = ( isDevVersion: boolean ): RollupOptions => {
 		const outDir = isDevVersion ? './dev/dist' : './dist';
@@ -29,11 +31,21 @@ export default function createRollupConfig(
 			input: `./src/${name}.ts`,
 			output: {
 				dir: outDir,
-				format: 'esm',
+				format: cjs ? 'commonjs' : 'esm',
 				sourcemap: isDevVersion,
+				exports: 'auto',
 			},
 			external: [
+				// browser externals
 				'gl-matrix',
+
+				// node.js internals
+				'util',
+				'fs',
+				'fs/promises',
+				'path',
+				'child_process',
+				'crypto',
 			],
 			cache: false,
 			plugins: [
