@@ -56,5 +56,8 @@
   },
   "dependencies": {
     "@gdgt/webgl": "file:packages/webgl"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
