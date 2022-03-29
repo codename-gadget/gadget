@@ -3,10 +3,11 @@ import type { RollupOptions } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
+import json from '@rollup/plugin-json';
 import copy from 'rollup-plugin-copy';
 import minifyPrivatesTransformer from 'ts-transformer-minify-privates';
 import path from 'path';
-import lernaInfo from '../lerna.json';
+import * as lernaInfo from '../lerna.json';
 
 
 /**
@@ -36,6 +37,7 @@ export default function createRollupConfig(
 			],
 			cache: false,
 			plugins: [
+				json(),
 				typescript( {
 					sourceMap: false,
 					inlineSourceMap: isDevVersion,
