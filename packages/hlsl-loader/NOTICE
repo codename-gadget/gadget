@@ -1,0 +1,20 @@
+This project incorporates components from the projects listed below.
+
+---
+
+The following files are binaries of
+The DirectX Shader Compiler, distributed under NCSA
+Copyright 2022 Microsoft
+https://github.com/Microsoft/DirectXShaderCompiler
+
+bin/darwin/bin/dxc
+bin/darwin/lib/libdxcompiler.3.7.dylib
+
+---
+
+The following files are binaries of
+SPIRV-Cross, distributed under Apache 2.0
+Copyright 2022 Khronos Group
+https://github.com/KhronosGroup/SPIRV-Cross
+
+bin/darwin/bin/spirv-cross
