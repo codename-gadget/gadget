@@ -5,7 +5,7 @@ const isWindows = process.platform === 'win32';
 const binaryPaths = new Map([
 	['darwin', 'darwin/bin'],
 	// ['win32', 'win32/bin'],
-	// ['linux', 'linux/bin'],
+	['linux', 'linux/bin'],
 ]);
 
 

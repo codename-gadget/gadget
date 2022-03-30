@@ -9,6 +9,8 @@ https://github.com/Microsoft/DirectXShaderCompiler
 
 bin/darwin/bin/dxc
 bin/darwin/lib/libdxcompiler.3.7.dylib
+bin/linux/bin/dxc
+bin/linux/lib/libdxcompiler.so
 
 ---
 
@@ -18,3 +20,4 @@ Copyright 2022 Khronos Group
 https://github.com/KhronosGroup/SPIRV-Cross
 
 bin/darwin/bin/spirv-cross
+bin/linux/bin/spirv-cross
