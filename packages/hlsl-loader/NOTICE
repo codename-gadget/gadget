@@ -11,6 +11,10 @@ bin/darwin/bin/dxc
 bin/darwin/lib/libdxcompiler.3.7.dylib
 bin/linux/bin/dxc
 bin/linux/lib/libdxcompiler.so
+bin/win32/bin/dxc.exe
+bin/win32/bin/dxcompiler.dll
+bin/win32/lib/dxclib.lib
+bin/win32/lib/dxcompiler.lib
 
 ---
 
@@ -21,3 +25,5 @@ https://github.com/KhronosGroup/SPIRV-Cross
 
 bin/darwin/bin/spirv-cross
 bin/linux/bin/spirv-cross
+bin/win32/bin/spirv-cross.exe
+bin/win32/bin/spirv-cross-c-shared.dll

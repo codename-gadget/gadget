@@ -194,7 +194,6 @@ If you want to keep your main functions named the same across stages, you can al
 
 # Todos
 
-- SPIRV-Cross binaries from Linux and Windows
 - End to end tests
 - Support for matrix types other than `float4x4`
 
