@@ -4,13 +4,13 @@ import Buffer from '../buffer/Buffer';
 import { BufferBindingPoint, BufferUsage } from '../buffer/bufferEnums';
 import SyncableBuffer from '../buffer/SyncableBuffer';
 import {
-	Reflection,
-	TexturesFromReflection,
+	Introspection,
+	TexturesFromIntrospection,
 	UboData,
 	UboMember,
-	UbosFromReflection,
+	UbosFromIntrospection,
 	UnwrappedUbo,
-} from './reflection';
+} from './introspection';
 import { byteLengthOfUniformType } from './programEnums';
 import UniformView from './UniformView';
 import TextureSlot from './TextureSlot';
@@ -65,30 +65,46 @@ function viewOrListFromIntro(
 /**
  * @public
  */
-export interface ProgramProps<R, O> extends WithContext {
-	/** Vertex shader source code. */
+export interface ProgramProps<I, O> extends WithContext {
+	/**
+	 * Vertex shader source code.
+	 *
+	 * @remarks The shader is expected to be GLES 3.0 compatible.
+	 */
 	vertexShader: string;
 
-	/** Fragment shader source code. */
+	/**
+	 * Fragment shader source code.
+	 *
+	 * @remarks The shader is expected to be GLES 3.0 compatible.
+	 */
 	fragmentShader: string;
 
-	/** Static program reflection, hopefully not written by hand. */
-	reflection: R;
+	/**
+	 * Static program introspection object, detailing UBO layouts and texture usage.
+	 *
+	 * @remarks This is automatically exported by `@gdgt/hlsl-loader`.
+	 */
+	introspection: I;
 
 	/**
-	 * Buffers to use as UBOs instead of new creating program specific ones.
+	 * Existing buffers to be (re)used as UBOs.
+	 * Every UBO defined in the introspection and not present in this list
+	 * is considered program specific and will be automatically created.
+	 *
+	 * @remarks Members will not be accessible via the programs `ubo` property.
 	 */
 	ubos?: O
 }
 
 
 /**
- * Representation of a `WebGLProgram` and its UBOs and textures.
+ * Representation of a `WebGLProgram`, its UBOs and textures.
  *
  * @public
  */
 export default class Program<
-	R extends Reflection,
+	R extends Introspection,
 	O extends { [key in keyof R['ubos']]?: Buffer },
 > extends ContextConsumer {
 	private program: WebGLProgram;
@@ -98,15 +114,15 @@ export default class Program<
 	private fragmentSrc: string;
 
 	/** Individual member views of UBOs specific to this program. */
-	public ubos: UbosFromReflection<R, O>;
+	public ubos: UbosFromIntrospection<R, O>;
 
 	/** Texture slots used by this program. */
-	public textures: TexturesFromReflection<R>;
+	public textures: TexturesFromIntrospection<R>;
 
 
 	public constructor( {
 		context,
-		reflection,
+		introspection,
 		ubos: uboOverrides,
 		vertexShader,
 		fragmentShader,
@@ -125,8 +141,8 @@ export default class Program<
 			} );
 		}
 
-		if ( reflection.ubos ) {
-			Object.entries( reflection.ubos ).forEach( (
+		if ( introspection.ubos ) {
+			Object.entries( introspection.ubos ).forEach( (
 				[name, { '@blockSize': size, ...members }],
 			) => {
 				if ( ubos[name] !== undefined ) return;
@@ -154,8 +170,8 @@ export default class Program<
 
 		const textures: Record<string, TextureSlot> = {};
 
-		if ( reflection.textures ) {
-			Object.entries( reflection.textures ).forEach( ([key, { binding }]) => {
+		if ( introspection.textures ) {
+			Object.entries( introspection.textures ).forEach( ([key, { binding }]) => {
 				textures[key] = new TextureSlot( {
 					context, unit: binding,
 				} );
