@@ -4,12 +4,12 @@
 
 ## Program class
 
-Representation of a `WebGLProgram` and its UBOs and textures.
+Representation of a `WebGLProgram`<!-- -->, its UBOs and textures.
 
 <b>Signature:</b>
 
 ```typescript
-export default class Program<R extends Reflection, O extends {
+export default class Program<R extends Introspection, O extends {
     [key in keyof R['ubos']]?: Buffer;
 }> extends ContextConsumer 
 ```
@@ -19,14 +19,14 @@ export default class Program<R extends Reflection, O extends {
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)({ context, reflection, ubos: uboOverrides, vertexShader, fragmentShader, })](./webgl.program._constructor_.md) |  | Constructs a new instance of the <code>Program</code> class |
+|  [(constructor)({ context, introspection, ubos: uboOverrides, vertexShader, fragmentShader, })](./webgl.program._constructor_.md) |  | Constructs a new instance of the <code>Program</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [textures](./webgl.program.textures.md) |  | TexturesFromReflection&lt;R&gt; | Texture slots used by this program. |
-|  [ubos](./webgl.program.ubos.md) |  | UbosFromReflection&lt;R, O&gt; | Individual member views of UBOs specific to this program. |
+|  [textures](./webgl.program.textures.md) |  | TexturesFromIntrospection&lt;R&gt; | Texture slots used by this program. |
+|  [ubos](./webgl.program.ubos.md) |  | UbosFromIntrospection&lt;R, O&gt; | Individual member views of UBOs specific to this program. |
 
 ## Methods
 

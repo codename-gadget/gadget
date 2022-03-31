@@ -9,5 +9,5 @@ Texture slots used by this program.
 <b>Signature:</b>
 
 ```typescript
-textures: TexturesFromReflection<R>;
+textures: TexturesFromIntrospection<R>;
 ```

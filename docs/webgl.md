@@ -11,7 +11,7 @@
 |  [Buffer](./webgl.buffer.md) | Generic GPU data store wrapping WebGLBuffer. |
 |  [Context](./webgl.context.md) | The rendering context, tied to a canvas element. |
 |  [Geometry](./webgl.geometry.md) | Drawable geometry with multiple vertex attributes. |
-|  [Program](./webgl.program.md) | Representation of a <code>WebGLProgram</code> and its UBOs and textures. |
+|  [Program](./webgl.program.md) | Representation of a <code>WebGLProgram</code>, its UBOs and textures. |
 |  [Sampler](./webgl.sampler.md) | A Sampler storing sampling parameters for texture access. |
 |  [SyncableBuffer](./webgl.syncablebuffer.md) | GPU data store with CPU-side data representation, enabling easy up/downloading. |
 |  [Texture](./webgl.texture.md) | Generic GPU texture store, wrapping <code>WebGLTexture</code>. |
