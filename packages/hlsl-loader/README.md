@@ -104,16 +104,28 @@ import {
   // info about UBOs, attributes and textures being used
   introspection,
 } from "./shader.hlsl";
+
+// With 'introspection' looking like this:
+{
+    ubos: {},
+    textures: {},
+    attributes: {
+        _a0: {
+            type: 35665, // numeric value of gl.FLOAT_VEC3
+            location: 0
+        },
+    },
+}
 ```
 
 # Loader options
 
-| Option                 | Default   | Description                                                                                                                  |
-| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `exports`              | See above | A list of exports and entry points to check per HLSL file. See "Multiple entrypoints" below for more detail.                 |
-| `mangle`               | `true`    | Whether to shorten internal variable names.                                                                                  |
-| `logGlsl`              | `false`   | Whether to log the compiled GLSL code to the console.<br />May be useful during development, disabled for production builds. |
-| `generateDeclarations` | `true`    | Whether to emit `.d.ts` files containing declarations for imported HLSL files.<br />Disabled for production builds.          |
+| Option                 | Default             | Description                                                                                                                   |
+| ---------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `exports`              | See [Usage](#usage) | A list of exports and entry points to check per HLSL file. See [Multiple entrypoints](#multiple-entrypoints) for more detail. |
+| `mangle`               | `true`              | Whether to shorten internal variable names.                                                                                   |
+| `logGlsl`              | `false`             | Whether to log the compiled GLSL code to the console.<br />May be useful during development, disabled for production builds.  |
+| `generateDeclarations` | `true`              | Whether to emit `.d.ts` files containing declarations for imported HLSL files.<br />Disabled for production builds.           |
 
 # How it works
 
@@ -123,7 +135,7 @@ The inital HLSL file is run through the [DirectX Shader Compiler (dxc)](https://
 
 - Only UBOs are supported at the moment. Plain uniform arrays will be ignored, with the only exception being sampler objects. As long as you stick to `cbuffer`s in HLSL, you should never encounter this limitation.
 - Currently, uniforms and attributes are limited to the following types: `float`, `int` and `bool`, including their vector types, and `float4x4` matrices. This list is likely to be expanded in the future.
-- Textures and sampler states need to be specifically marked to not produce weird output. See "Textures and SamplerState" below.
+- Textures and sampler states need to be specifically marked to not produce weird output. See [Textures and SamplerState](#textures-and-samplerstate).
 - Sampler state is not represented in the introspection object and needs to be carried across manually.
 - Certain symbol names can lead to unexpected behaviour. It's best to avoid any names starting with `gl_` or `_` in general.
 - UBOs are forced to `std140` layout.
