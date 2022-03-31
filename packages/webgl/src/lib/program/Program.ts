@@ -4,13 +4,13 @@ import Buffer from '../buffer/Buffer';
 import { BufferBindingPoint, BufferUsage } from '../buffer/bufferEnums';
 import SyncableBuffer from '../buffer/SyncableBuffer';
 import {
-	Reflection,
-	TexturesFromReflection,
+	Introspection,
+	TexturesFromIntrospection,
 	UboData,
 	UboMember,
-	UbosFromReflection,
+	UbosFromIntrospection,
 	UnwrappedUbo,
-} from './reflection';
+} from './introspection';
 import { byteLengthOfUniformType } from './programEnums';
 import UniformView from './UniformView';
 import TextureSlot from './TextureSlot';
@@ -65,15 +65,17 @@ function viewOrListFromIntro(
 /**
  * @public
  */
-export interface ProgramProps<R, O> extends WithContext {
-	/** Vertex shader source code. */
+export interface ProgramProps<I, O> extends WithContext {
+	/**
+	 * Vertex shader source code.
+	 */
 	vertexShader: string;
 
 	/** Fragment shader source code. */
 	fragmentShader: string;
 
 	/** Static program reflection, hopefully not written by hand. */
-	reflection: R;
+	introspection: I;
 
 	/**
 	 * Buffers to use as UBOs instead of new creating program specific ones.
@@ -88,7 +90,7 @@ export interface ProgramProps<R, O> extends WithContext {
  * @public
  */
 export default class Program<
-	R extends Reflection,
+	R extends Introspection,
 	O extends { [key in keyof R['ubos']]?: Buffer },
 > extends ContextConsumer {
 	private program: WebGLProgram;
@@ -98,15 +100,15 @@ export default class Program<
 	private fragmentSrc: string;
 
 	/** Individual member views of UBOs specific to this program. */
-	public ubos: UbosFromReflection<R, O>;
+	public ubos: UbosFromIntrospection<R, O>;
 
 	/** Texture slots used by this program. */
-	public textures: TexturesFromReflection<R>;
+	public textures: TexturesFromIntrospection<R>;
 
 
 	public constructor( {
 		context,
-		reflection,
+		introspection,
 		ubos: uboOverrides,
 		vertexShader,
 		fragmentShader,
@@ -125,8 +127,8 @@ export default class Program<
 			} );
 		}
 
-		if ( reflection.ubos ) {
-			Object.entries( reflection.ubos ).forEach( (
+		if ( introspection.ubos ) {
+			Object.entries( introspection.ubos ).forEach( (
 				[name, { '@blockSize': size, ...members }],
 			) => {
 				if ( ubos[name] !== undefined ) return;
@@ -154,8 +156,8 @@ export default class Program<
 
 		const textures: Record<string, TextureSlot> = {};
 
-		if ( reflection.textures ) {
-			Object.entries( reflection.textures ).forEach( ([key, { binding }]) => {
+		if ( introspection.textures ) {
+			Object.entries( introspection.textures ).forEach( ([key, { binding }]) => {
 				textures[key] = new TextureSlot( {
 					context, unit: binding,
 				} );
