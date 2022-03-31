@@ -9,5 +9,5 @@ Individual member views of UBOs specific to this program.
 <b>Signature:</b>
 
 ```typescript
-ubos: UbosFromReflection<R, O>;
+ubos: UbosFromIntrospection<R, O>;
 ```

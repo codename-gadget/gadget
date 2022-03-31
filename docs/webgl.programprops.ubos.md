@@ -4,10 +4,15 @@
 
 ## ProgramProps.ubos property
 
-Buffers to use as UBOs instead of new creating program specific ones.
+Existing buffers to be (re)used as UBOs. Every UBO defined in the introspection and not present in this list is considered program specific and will be automatically created.
 
 <b>Signature:</b>
 
 ```typescript
 ubos?: O;
 ```
+
+## Remarks
+
+Members will not be accessible via the programs `ubo` property.
+
