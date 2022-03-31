@@ -35,7 +35,7 @@ export default ( config: Config ): void => {
 		],
 
 		exclude: [
-			'packages/hlsl-loader',
+			'packages/hlsl-loader/**',
 		],
 
 		// preprocess matching files before serving them to the browser
