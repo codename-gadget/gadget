@@ -9,12 +9,12 @@ Constructs a new instance of the `Program` class
 <b>Signature:</b>
 
 ```typescript
-constructor({ context, reflection, ubos: uboOverrides, vertexShader, fragmentShader, }: ProgramProps<R, O>);
+constructor({ context, introspection, ubos: uboOverrides, vertexShader, fragmentShader, }: ProgramProps<R, O>);
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  { context, reflection, ubos: uboOverrides, vertexShader, fragmentShader, } | [ProgramProps](./webgl.programprops.md)<!-- -->&lt;R, O&gt; |  |
+|  { context, introspection, ubos: uboOverrides, vertexShader, fragmentShader, } | [ProgramProps](./webgl.programprops.md)<!-- -->&lt;R, O&gt; |  |
 

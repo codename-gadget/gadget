@@ -11,3 +11,8 @@ Fragment shader source code.
 ```typescript
 fragmentShader: string;
 ```
+
+## Remarks
+
+The shader is expected to be GLES 3.0 compatible.
+

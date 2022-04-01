@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export interface ProgramProps<R, O> extends WithContext 
+export interface ProgramProps<I, O> extends WithContext 
 ```
 <b>Extends:</b> WithContext
 
@@ -17,7 +17,7 @@ export interface ProgramProps<R, O> extends WithContext
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [fragmentShader](./webgl.programprops.fragmentshader.md) | string | Fragment shader source code. |
-|  [reflection](./webgl.programprops.reflection.md) | R | Static program reflection, hopefully not written by hand. |
-|  [ubos?](./webgl.programprops.ubos.md) | O | <i>(Optional)</i> Buffers to use as UBOs instead of new creating program specific ones. |
+|  [introspection](./webgl.programprops.introspection.md) | I | Static program introspection object, detailing UBO layouts and texture usage. |
+|  [ubos?](./webgl.programprops.ubos.md) | O | <i>(Optional)</i> Existing buffers to be (re)used as UBOs. Every UBO defined in the introspection and not present in this list is considered program specific and will be automatically created. |
 |  [vertexShader](./webgl.programprops.vertexshader.md) | string | Vertex shader source code. |
 
