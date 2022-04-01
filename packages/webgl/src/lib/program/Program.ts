@@ -108,7 +108,7 @@ export default class Program<
 	O extends { [key in keyof R['ubos']]?: Buffer },
 > extends ContextConsumer {
 	private program: WebGLProgram;
-	private blockBuffers: { name: string, buffer: Buffer }[] = [];
+	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
 	private textureBindings: { location: WebGLUniformLocation, slot: TextureSlot }[] = [];
 	private vertexSrc: string;
 	private fragmentSrc: string;
@@ -128,7 +128,7 @@ export default class Program<
 		fragmentShader,
 	}: ProgramProps<R, O> ) {
 		const ubos: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
-		const blockBuffers: Program<R, O>['blockBuffers'] = [];
+		const uniformBuffers: Program<R, O>['uniformBuffers'] = [];
 		const bufferPromises: Promise<WebGLBuffer>[] = [];
 
 		// TODO: clean up and document code
@@ -136,7 +136,7 @@ export default class Program<
 		if ( uboOverrides ) {
 			Object.entries( uboOverrides ).forEach( ([name, buffer]) => {
 				ubos[name] = null;
-				blockBuffers.push( { name, buffer } );
+				uniformBuffers.push( { name, buffer } );
 				bufferPromises.push( buffer.getBuffer() );
 			} );
 		}
@@ -162,7 +162,7 @@ export default class Program<
 					buffer,
 				);
 
-				blockBuffers.push( { name, buffer } );
+				uniformBuffers.push( { name, buffer } );
 				bufferPromises.push( buffer.getBuffer() );
 			} );
 		}
@@ -184,7 +184,7 @@ export default class Program<
 		}, context );
 
 		this.ubos = ubos as Program<R, O>['ubos'];
-		this.blockBuffers = blockBuffers;
+		this.uniformBuffers = uniformBuffers;
 
 		this.textures = textures as Program<R, O>['textures'];
 
@@ -239,7 +239,13 @@ export default class Program<
 		await this.ready;
 
 		const {
-			gl, program: existingProgram, vertexSrc, fragmentSrc, blockBuffers, textureBindings, textures,
+			gl,
+			program: existingProgram,
+			vertexSrc,
+			fragmentSrc,
+			uniformBuffers,
+			textureBindings,
+			textures,
 		} = this;
 
 		if ( existingProgram ) return;
@@ -290,7 +296,7 @@ export default class Program<
 
 		// TODO: cache program
 
-		blockBuffers.forEach( ( { name }, i ) => {
+		uniformBuffers.forEach( ( { name }, i ) => {
 			gl.uniformBlockBinding(
 				this.program,
 				gl.getUniformBlockIndex( this.program, name ),
@@ -316,7 +322,7 @@ export default class Program<
 	 */
 	public use(): boolean {
 		const {
-			program, gl, blockBuffers, textureBindings,
+			program, gl, uniformBuffers, textureBindings,
 		} = this;
 
 		if ( !program ) {
@@ -332,7 +338,7 @@ export default class Program<
 
 		gl.useProgram( program );
 
-		blockBuffers.forEach( ( { buffer }, i ) => {
+		uniformBuffers.forEach( ( { buffer }, i ) => {
 			gl.bindBufferBase(
 				gl.UNIFORM_BUFFER,
 				i,
