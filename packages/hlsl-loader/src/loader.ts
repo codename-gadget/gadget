@@ -347,13 +347,22 @@ export default async function load(): Promise<string> {
 	};`;
 
 	srcExports.push( introspectionExport );
-	exportDeclarations.push( introspectionExport );
+	exportDeclarations.push(
+		'/**',
+		' * Object containing static introspection data,',
+		' * including UBO buffer layouts, vertex attributes and textures.',
+		' */',
+		introspectionExport,
+	);
 
 
 	// GLSL programs are exported as strings...
 	sources.forEach( ( src, exportName ) => {
 		srcExports.push( `export const ${exportName} = \`${src}\`;` );
-		exportDeclarations.push( `export const ${exportName}: string;` );
+		exportDeclarations.push(
+			`\n/** GLES 3.0 source of \`${options.exports[exportName].entry}\` */`,
+			`export const ${exportName}: string;`,
+		);
 
 		// output glsl source to console if desired
 		if ( options.logGlsl && webpackMode !== 'production' ) {
