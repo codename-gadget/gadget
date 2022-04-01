@@ -93,25 +93,34 @@ export interface GeometryProps extends WithContext {
  * @public
  * @example
  * ```typescript
-const geometry = new Geometry( {
-	attributes: {
-		0: {
-			data: new Float32Array([-1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0]),
-			type: BufferDataType.float,
-			size: 3,
-		},
-		2: {
-			data: new Float32Array([0, 0, 0, 1, 1, 1, 1, 0]),
-			type: BufferDataType.float,
-			size: 2,
-		},
-	},
-	indices: {
-		data: new Uint16Array([1, 0, 2, 2, 0, 3]),
-		type: BufferDataType.unsignedShort,
-	},
-} );
-```
+ * import { Geometry } from '@gdgt/webgl';
+ *
+ * const geometry = new Geometry( {
+ *     attributes: {
+ *        0: {
+ *            data: new Float32Array([-1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0]),
+ *            type: BufferDataType.float,
+ *            size: 3,
+ *        },
+ *        2: {
+ *            data: new Float32Array([0, 0, 0, 1, 1, 1, 1, 0]),
+ *            type: BufferDataType.float,
+ *            size: 2,
+ *        },
+ *     },
+ *     indices: {
+ *         data: new Uint16Array([1, 0, 2, 2, 0, 3]),
+ *         type: BufferDataType.unsignedShort,
+ *     },
+ * } );
+ *
+ * // you can now upload all geometry buffers...
+ * await geometry.upload();
+ *
+ * // ...and draw the geometry afterwards.
+ * someProgram.use();
+ * geometry.draw();
+ * ```
  */
 export default class Geometry<T extends GeometryProps = GeometryProps> extends ContextConsumer {
 	private vao: WebGLVertexArrayObject;
