@@ -37,9 +37,7 @@ type SharedAttributeInfo = {
 	offset?: number;
 };
 
-
-type AttributeDeclaration =
-SharedAttributeInfo & DiscriminatingOr<{
+type AttributeDataInfo = DiscriminatingOr<{
 	/** Buffer containing the vertex attribute data. */
 	buffer: Buffer;
 }, {
@@ -54,11 +52,20 @@ SharedAttributeInfo & DiscriminatingOr<{
 	dynamic?: boolean;
 }>;
 
+type AttributeDeclaration =
+SharedAttributeInfo & AttributeDataInfo;
+
 
 type InternalAttributeInfo = Required<SharedAttributeInfo> & {
 	index: number;
 	buffer: Buffer;
 };
+
+
+type IndicesDeclaration = {
+	/** Enum specifying the type of buffer/data provided. */
+	type: BufferDataType.unsignedByte | BufferDataType.unsignedShort | BufferDataType.unsignedInt;
+} & AttributeDataInfo;
 
 
 /**
@@ -67,6 +74,9 @@ type InternalAttributeInfo = Required<SharedAttributeInfo> & {
 export interface GeometryProps extends WithContext {
 	/** Object of vertex attribute declarations, the `key` being the attribute index. */
 	attributes: Record<number, AttributeDeclaration>;
+
+	/** Object declaring the vertex indices to use. */
+	indices?: IndicesDeclaration,
 
 	/**
 	 * How the geometry should be drawn.
@@ -85,6 +95,7 @@ export interface GeometryProps extends WithContext {
 export default class Geometry<T extends GeometryProps = GeometryProps> extends ContextConsumer {
 	private vao: WebGLVertexArrayObject;
 	private attributeInfo: InternalAttributeInfo[];
+	private indicesInfo: { buffer: Buffer, type: IndicesDeclaration['type'] };
 	private primitiveCount: number;
 	private mode: GeometryDrawMode;
 
@@ -98,15 +109,54 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			: Buffer
 	};
 
+	/**
+	 * The underlying index buffer.
+	 *
+	 * Only present if indices were declared on initialization.
+	 */
+	public readonly indices: T['indices'] extends { buffer: SyncableBuffer } | { data: ArrayBufferView }
+	// indices declared with a syncable buffer, or one was created
+		? SyncableBuffer
+		: T['indices'] extends { buffer: Buffer }
+		// indices declared with a buffer as data source
+			? Buffer
+		// no indices declared
+			: undefined;
+
 
 	public constructor( {
 		attributes,
+		indices,
 		mode = GeometryDrawMode.triangles,
 		context,
 	}: T ) {
 		const attrs: Record<number, Buffer> = {};
 		const attributeInfo: Geometry['attributeInfo'] = [];
 		let primitiveCount: number;
+		let indicesInfo: Geometry['indicesInfo'];
+
+		if ( indices ) {
+			const indexSize = byteLengthPerMember( indices.type );
+			let indicesBuffer: Buffer;
+
+			if ( 'data' in indices ) {
+				primitiveCount = indices.data.byteLength / indexSize;
+				indicesBuffer = new SyncableBuffer( {
+					context,
+					target: BufferBindingPoint.elementArrayBuffer,
+					usage: indices.dynamic ? BufferUsage.dynamicDraw : BufferUsage.staticDraw,
+					data: indices.data.buffer,
+				} );
+			} else {
+				primitiveCount = indices.buffer.size / indexSize;
+				indicesBuffer = indices.buffer;
+			}
+
+			indicesInfo = {
+				buffer: indicesBuffer,
+				type: indices.type,
+			};
+		}
 
 		Object.entries( attributes ).forEach( ([_index, declaration]) => {
 			const index = parseInt( _index, 10 );
@@ -159,6 +209,8 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			await this.buildVao( attributeInfo );
 		}, context );
 
+		this.indicesInfo = indicesInfo;
+
 		this.attributes = attrs as Record<keyof T['attributes'], SyncableBuffer>;
 		this.attributeInfo = attributeInfo;
 
@@ -168,10 +220,16 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 
 
 	/**
-	 * Calls `upload()` on all attribute buffers.
+	 * Calls `upload()` on all attribute buffers and the index buffer.
 	 */
 	public async upload(): Promise<void> {
-		await Promise.all( this.attributeInfo.map( ( attr ) => {
+		const { attributeInfo, indicesInfo } = this;
+
+		if ( indicesInfo && indicesInfo.buffer instanceof SyncableBuffer ) {
+			await indicesInfo.buffer.upload();
+		}
+
+		await Promise.all( attributeInfo.map( ( attr ) => {
 			if ( attr.buffer instanceof SyncableBuffer ) {
 				return attr.buffer.upload();
 			}
@@ -184,13 +242,23 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	// this should only be run in the constructor, otherwise this.ready
 	// will trigger before the VAO is actually built.
 	private async buildVao( attributeInfo: Geometry['attributeInfo']): Promise<void> {
-		const { gl, vao } = this;
+		const { gl, vao, indicesInfo } = this;
 		// we need sync access to all buffers
 		const buffers = await Promise.all(
 			attributeInfo.map( ( { buffer } ) => buffer.getBuffer() ),
 		);
 
+		let indicesBuffer;
+
+		if ( indicesInfo ) {
+			indicesBuffer = await indicesInfo.buffer.getBuffer();
+		}
+
 		gl.bindVertexArray( vao );
+
+		if ( indicesBuffer ) {
+			gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, indicesBuffer );
+		}
 
 		attributeInfo.forEach( ( attribute, i ) => {
 			const {
@@ -243,7 +311,7 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	 */
 	public draw(): boolean {
 		const {
-			gl, vao, mode, primitiveCount,
+			gl, vao, mode, primitiveCount, indicesInfo,
 		} = this;
 
 		if ( !vao ) {
@@ -259,7 +327,13 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 		}
 
 		gl.bindVertexArray( vao );
-		gl.drawArrays( mode, 0, primitiveCount );
+
+		if ( indicesInfo ) {
+			gl.drawElements( mode, primitiveCount, indicesInfo.type, 0 );
+		} else {
+			gl.drawArrays( mode, 0, primitiveCount );
+		}
+
 		gl.bindVertexArray( null );
 
 		return true;
