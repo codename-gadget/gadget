@@ -102,6 +102,21 @@ export interface ProgramProps<I, O> extends WithContext {
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
  * @public
+ * @example
+ * Using `@gdgt/hlsl-loader` you can create a program like this:
+ * ```typescript
+ * import { Program } from '@gdgt/webgl';
+ * import * as myShader from './myShader.hlsl';
+ *
+ * const program = new Program( myShader );
+ *
+ * // you can now compile the program...
+ * await program.compile();
+ *
+ * // ... and use it afterwards
+ * program.use();
+ * someGeometry.draw();
+```
  */
 export default class Program<
 	R extends Introspection,
