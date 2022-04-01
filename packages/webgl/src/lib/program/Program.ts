@@ -206,6 +206,22 @@ export default class Program<
 
 
 	/**
+	 * Calls `upload()` on all uniform buffers.
+	 */
+	public async uploadUbos(): Promise<void> {
+		const { uniformBuffers } = this;
+
+		await Promise.all( uniformBuffers.map( ( { buffer } ) => {
+			if ( buffer instanceof SyncableBuffer ) {
+				return buffer.upload();
+			}
+
+			return Promise.resolve();
+		} ) );
+	}
+
+
+	/**
 	 * Returns the underlying `WebGLProgram`, once ready.
 	 *
 	 * If the program was not compiled before calling `getProgram()`,
