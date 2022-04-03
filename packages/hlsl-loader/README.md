@@ -124,6 +124,7 @@ import {
 | ---------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `exports`              | See [Usage](#usage) | A list of exports and entry points to check per HLSL file. See [Multiple entrypoints](#multiple-entrypoints) for more detail. |
 | `mangle`               | `true`              | Whether to shorten internal variable names.                                                                                   |
+| `includeDirectories`   | `[]`                | Directories to search for `#include`d files in addition to the directory containing the imported file.                        |
 | `logGlsl`              | `false`             | Whether to log the compiled GLSL code to the console.<br />May be useful during development, disabled for production builds.  |
 | `generateDeclarations` | `true`              | Whether to emit `.d.ts` files containing declarations for imported HLSL files.<br />Disabled for production builds.           |
 

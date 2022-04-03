@@ -56,6 +56,7 @@ export default async function load(): Promise<string> {
 				stage: 'ps_6_7',
 			},
 		},
+		includeDirectories: [],
 		logGlsl: false,
 		mangle: true,
 		generateDeclarations: true,
@@ -79,7 +80,10 @@ export default async function load(): Promise<string> {
 		if ( err.code !== 'EEXIST' ) throw err;
 	} );
 
+	// pass on additional include directories
+	const includeDirArgs = options.includeDirectories.map( ( dir ) => `-I ${dir}` );
 
+	// map SPIR-V binaries to export name
 	const spirvs = new Map<string, Buffer>();
 
 
@@ -94,6 +98,7 @@ export default async function load(): Promise<string> {
 					dxc,
 					resourcePath,
 					...dxcArgs,
+					...includeDirArgs,
 					`-E ${entry}`,
 					`-T ${stage}`,
 					`-Fo ${tmpFile}`,

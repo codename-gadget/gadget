@@ -25,6 +25,13 @@
       },
       "description": "A list of exports per HLSL file.\n\nNon-existent entry points will be ignored."
     },
+    "includeDirectories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional directories to search for `#include`d files. By default, only the directory containing the imported file is considered."
+    },
     "mangle": {
       "type": "boolean",
       "description": "Whether to shorten internal variable names."
