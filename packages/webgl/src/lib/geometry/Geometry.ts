@@ -109,7 +109,7 @@ export interface GeometryProps extends WithContext {
  *        },
  *     },
  *     indices: {
- *         data: new Uint16Array([1, 0, 2, 2, 0, 3]),
+ *         data: new Uint16Array([0, 1, 2, 2, 3, 0]),
  *         type: BufferDataType.unsignedShort,
  *     },
  * } );
