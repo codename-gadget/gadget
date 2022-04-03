@@ -31,4 +31,14 @@ describe( 'resolutionForLevel', () => {
 		expect( resolutionForLevel( 43, 4 ) ).toEqual( 2 );
 		expect( resolutionForLevel( 43, 5 ) ).toEqual( 1 );
 	} );
+
+	it( 'should return 0 for out of bounds levels', () => {
+		expect( resolutionForLevel( 128, 10 ) ).toEqual( 0 );
+		expect( resolutionForLevel( 128, Infinity ) ).toEqual( 0 );
+	} );
+
+	it( 'should return original resolution for negative levels', () => {
+		expect( resolutionForLevel( 128, -1 ) ).toEqual( 128 );
+		expect( resolutionForLevel( 128, -Infinity ) ).toEqual( 128 );
+	} );
 } );
