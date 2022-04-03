@@ -1,6 +1,7 @@
 import { BufferDataType } from '../buffer/bufferEnums';
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import { devLog } from '../utils/log';
+import resolutionForLevel from './resolutionForLevel';
 import {
 	inferFormatFromStorageFormat,
 	TextureFormat,
@@ -106,9 +107,8 @@ export default class Texture extends ContextConsumer {
 		const {
 			gl, texture, format, width, height,
 		} = this;
-		const scalar = 1 / Math.max( 2 * level, 1 );
-		const levelWidth = Math.round( width * scalar );
-		const levelHeight = Math.round( height * scalar );
+		const levelWidth = resolutionForLevel( width, level );
+		const levelHeight = resolutionForLevel( height, level );
 
 		// TODO: sanity checks
 
