@@ -39,6 +39,14 @@ export interface HlslLoaderOptions {
 	};
 
 	/**
+	 * Additional directories to search for `#include`d files.
+	 * By default, only the directory containing the imported file is considered.
+	 *
+	 * @defaultValue []
+	 */
+	includeDirectories?: string[],
+
+	/**
 	 * Whether to shorten internal variable names.
 	 *
 	 * @defaultValue true

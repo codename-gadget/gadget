@@ -11,6 +11,86 @@ export enum SamplerType {
 
 
 /**
+ * Enum representation of available texture binding points.
+ *
+ * @internal
+ */
+export enum TextureBindingPoint {
+	texture2D = 3553,
+	texture3D = 32879,
+	textureCube = 34067,
+}
+
+
+/**
+ * Enum representation of all six cubemap face directions.
+ *
+ * @internal
+ */
+export enum TextureCubeFace {
+	/** Side facing the `+x` direction */
+	px = 34069,
+
+	/** Side facing the `-x` direction */
+	nx = 34070,
+
+	/** Side facing the `+y` direction */
+	py = 34071,
+
+	/** Side facing the `-y` direction */
+	ny = 34072,
+
+	/** Side facing the `+z` direction */
+	pz = 34073,
+
+	/** Side facing the `-z` direction */
+	nz = 34074,
+}
+
+export type CubeOf<T> = {
+	px: T;
+	nx: T;
+	py: T;
+	ny: T;
+	pz: T;
+	nz: T;
+};
+
+
+/**
+ * Returns the matching enum for a given cube face id.
+ *
+ * @param id - Cube face id string.
+ * @returns The matching enum representation.
+ * @internal
+ */
+export function inferFace( id: string ): TextureCubeFace {
+	switch ( id ) {
+		case 'nx':
+			return TextureCubeFace.nx;
+
+		case 'px':
+			return TextureCubeFace.px;
+
+		case 'ny':
+			return TextureCubeFace.ny;
+
+		case 'py':
+			return TextureCubeFace.py;
+
+		case 'nz':
+			return TextureCubeFace.nz;
+
+		case 'pz':
+			return TextureCubeFace.pz;
+
+		default:
+			return undefined;
+	}
+}
+
+
+/**
  * Texture magnification filter.
  *
  * @public

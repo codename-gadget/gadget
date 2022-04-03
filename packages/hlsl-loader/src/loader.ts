@@ -1,7 +1,7 @@
 import type { LoaderContext } from 'webpack';
 import { randomUUID } from 'crypto';
 import {
-	mkdir, readFile, rm, writeFile,
+	mkdir, readFile, rm, writeFile, access,
 } from 'fs/promises';
 import { exec as cbExec } from 'child_process';
 import { promisify } from 'util';
@@ -34,8 +34,9 @@ export default async function load(): Promise<string> {
 		getOptions,
 		getLogger,
 		context,
-		utils: { contextify },
+		utils: { contextify, absolutify },
 		mode: webpackMode,
+		addDependency,
 	} = ( this as LoaderContext<HlslLoaderOptions> );
 
 	const logger = getLogger();
@@ -56,6 +57,7 @@ export default async function load(): Promise<string> {
 				stage: 'ps_6_7',
 			},
 		},
+		includeDirectories: [],
 		logGlsl: false,
 		mangle: true,
 		generateDeclarations: true,
@@ -71,6 +73,58 @@ export default async function load(): Promise<string> {
 		return '';
 	}
 
+
+	// changes in included files should trigger a webpack rebuild,
+	// we therefore need to traverse all includes and flag them as dependencies
+
+	const flaggedDependencies = new Set<string>();
+
+	const recursivelyFlagDependencies = async ( file: string ): Promise<void> => {
+		if ( flaggedDependencies.has( file ) ) return;
+
+		addDependency( file );
+		flaggedDependencies.add( file );
+
+		// after flagging the current file,
+		// we'll search its content for further includes
+
+		const src = await readFile( file, { encoding: 'utf-8' } );
+		const includes = src.matchAll( /^#include\s+"(.+)"/gmi );
+
+		await Promise.all(
+			Array.from( includes ).map( async ( match ) => {
+				const includePath = match[1];
+				// includePath could be relative to the current file,
+				// or in one of the user specified include directories
+				const potentialContexts = [path.dirname( file ), ...options.includeDirectories];
+
+				// eslint-disable-next-line no-restricted-syntax
+				for ( const ctx of potentialContexts ) {
+					const dependencyPath = absolutify( ctx, includePath );
+
+					// check whether the included file exists
+					// within the potential context ...
+					// eslint-disable-next-line no-await-in-loop
+					const err = await access( dependencyPath ).catch( ( e ) => e );
+
+					if ( !err ) {
+						// ... and if it does, flag its dependencies and end the search
+						// eslint-disable-next-line no-await-in-loop
+						await recursivelyFlagDependencies( dependencyPath );
+
+						return;
+					}
+				}
+			} ),
+		);
+	};
+
+	// recursively flag all dependencies -
+	// This is a potentially lengthy operation and does not influence the loader result.
+	// We can kick it off here and only wait for it after all other work is done.
+	const dependencyFlaggingDone = recursivelyFlagDependencies( resourcePath );
+
+
 	// random UUID used for temp files
 	const runId = randomUUID();
 
@@ -79,7 +133,10 @@ export default async function load(): Promise<string> {
 		if ( err.code !== 'EEXIST' ) throw err;
 	} );
 
+	// pass on additional include directories
+	const includeDirArgs = options.includeDirectories.map( ( dir ) => `-I ${dir}` );
 
+	// map SPIR-V binaries to export name
 	const spirvs = new Map<string, Buffer>();
 
 
@@ -94,6 +151,7 @@ export default async function load(): Promise<string> {
 					dxc,
 					resourcePath,
 					...dxcArgs,
+					...includeDirArgs,
 					`-E ${entry}`,
 					`-T ${stage}`,
 					`-Fo ${tmpFile}`,
@@ -347,13 +405,22 @@ export default async function load(): Promise<string> {
 	};`;
 
 	srcExports.push( introspectionExport );
-	exportDeclarations.push( introspectionExport );
+	exportDeclarations.push(
+		'/**',
+		' * Object containing static introspection data,',
+		' * including UBO buffer layouts, vertex attributes and textures.',
+		' */',
+		introspectionExport,
+	);
 
 
 	// GLSL programs are exported as strings...
 	sources.forEach( ( src, exportName ) => {
 		srcExports.push( `export const ${exportName} = \`${src}\`;` );
-		exportDeclarations.push( `export const ${exportName}: string;` );
+		exportDeclarations.push(
+			`\n/** GLES 3.0 source of \`${options.exports[exportName].entry}\` */`,
+			`export const ${exportName}: string;`,
+		);
 
 		// output glsl source to console if desired
 		if ( options.logGlsl && webpackMode !== 'production' ) {
@@ -379,6 +446,9 @@ export default async function load(): Promise<string> {
 			exportDeclarations.join( '\n' ),
 		);
 	}
+
+	// wait until all dependencies have been flagged, for completeness sake
+	await dependencyFlaggingDone;
 
 
 	return srcExports.join( '\n' );

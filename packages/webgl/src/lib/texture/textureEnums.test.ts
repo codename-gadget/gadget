@@ -8,6 +8,10 @@ import {
 	TextureMinFilter,
 	TextureDataType,
 	TextureWrap,
+	SamplerType,
+	TextureBindingPoint,
+	TextureCubeFace,
+	inferFace,
 } from './textureEnums';
 
 
@@ -23,6 +27,22 @@ function compare( set: Map<number, number> ): void {
 
 
 describe( 'Texture Enums', () => {
+	it( 'SamplerType should match GL constants', () => {
+		compare( new Map([
+			[SamplerType.sampler2D, gl.SAMPLER_2D],
+			[SamplerType.sampler3D, gl.SAMPLER_3D],
+			[SamplerType.samplerCube, gl.SAMPLER_CUBE],
+		]) );
+	} );
+
+	it( 'TextureBindingPoint should match GL constants', () => {
+		compare( new Map([
+			[TextureBindingPoint.texture2D, gl.TEXTURE_2D],
+			[TextureBindingPoint.texture3D, gl.TEXTURE_3D],
+			[TextureBindingPoint.textureCube, gl.TEXTURE_CUBE_MAP],
+		]) );
+	} );
+
 	it( 'TextureMagFilter should match GL constants', () => {
 		compare( new Map([
 			[TextureMagFilter.linear, gl.LINEAR],
@@ -188,5 +208,51 @@ describe( 'Texture Enums', () => {
 		} );
 
 		// it( 'should infer the correct formats' );
+	} );
+
+	describe( 'TextureCubeFace', () => {
+		it( 'should be exhaustive and match GL constants', () => {
+			['x', 'y', 'z'].forEach( ( direction ) => {
+				['p', 'n'].forEach( ( sign ) => {
+					const enumKey = `${sign}${direction}` as never;
+					const glKey = `TEXTURE_CUBE_MAP_${
+						sign === 'p' ? 'POSITIVE' : 'NEGATIVE'
+					}_${direction.toUpperCase()}`;
+
+					expect(
+						TextureCubeFace[enumKey],
+					).toBeDefined();
+
+					expect(
+						TextureCubeFace[enumKey],
+					).toEqual(
+						( gl as never )[glKey],
+					);
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'inferFace', () => {
+		it( 'should infer correct GL constants', () => {
+			['x', 'y', 'z'].forEach( ( direction ) => {
+				['p', 'n'].forEach( ( sign ) => {
+					const enumKey = `${sign}${direction}` as never;
+					const glKey = `TEXTURE_CUBE_MAP_${
+						sign === 'p' ? 'POSITIVE' : 'NEGATIVE'
+					}_${direction.toUpperCase()}`;
+
+					expect(
+						inferFace( enumKey ),
+					).toBeDefined();
+
+					expect(
+						inferFace( enumKey ),
+					).toEqual(
+						( gl as never )[glKey],
+					);
+				} );
+			} );
+		} );
 	} );
 } );

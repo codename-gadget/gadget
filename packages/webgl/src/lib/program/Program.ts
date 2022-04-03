@@ -102,13 +102,28 @@ export interface ProgramProps<I, O> extends WithContext {
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
  * @public
+ * @example
+ * Using `@gdgt/hlsl-loader` you can create a program like this:
+ * ```typescript
+ * import { Program } from '@gdgt/webgl';
+ * import * as myShader from './myShader.hlsl';
+ *
+ * const program = new Program( myShader );
+ *
+ * // you can now compile the program...
+ * await program.compile();
+ *
+ * // ... and use it afterwards
+ * program.use();
+ * someGeometry.draw();
+```
  */
 export default class Program<
 	R extends Introspection,
 	O extends { [key in keyof R['ubos']]?: Buffer },
 > extends ContextConsumer {
 	private program: WebGLProgram;
-	private blockBuffers: { name: string, buffer: Buffer }[] = [];
+	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
 	private textureBindings: { location: WebGLUniformLocation, slot: TextureSlot }[] = [];
 	private vertexSrc: string;
 	private fragmentSrc: string;
@@ -128,7 +143,7 @@ export default class Program<
 		fragmentShader,
 	}: ProgramProps<R, O> ) {
 		const ubos: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
-		const blockBuffers: Program<R, O>['blockBuffers'] = [];
+		const uniformBuffers: Program<R, O>['uniformBuffers'] = [];
 		const bufferPromises: Promise<WebGLBuffer>[] = [];
 
 		// TODO: clean up and document code
@@ -136,7 +151,7 @@ export default class Program<
 		if ( uboOverrides ) {
 			Object.entries( uboOverrides ).forEach( ([name, buffer]) => {
 				ubos[name] = null;
-				blockBuffers.push( { name, buffer } );
+				uniformBuffers.push( { name, buffer } );
 				bufferPromises.push( buffer.getBuffer() );
 			} );
 		}
@@ -162,7 +177,7 @@ export default class Program<
 					buffer,
 				);
 
-				blockBuffers.push( { name, buffer } );
+				uniformBuffers.push( { name, buffer } );
 				bufferPromises.push( buffer.getBuffer() );
 			} );
 		}
@@ -184,7 +199,7 @@ export default class Program<
 		}, context );
 
 		this.ubos = ubos as Program<R, O>['ubos'];
-		this.blockBuffers = blockBuffers;
+		this.uniformBuffers = uniformBuffers;
 
 		this.textures = textures as Program<R, O>['textures'];
 
@@ -202,6 +217,22 @@ export default class Program<
 				}
 			} );
 		}
+	}
+
+
+	/**
+	 * Calls `upload()` on all uniform buffers.
+	 */
+	public async uploadUbos(): Promise<void> {
+		const { uniformBuffers } = this;
+
+		await Promise.all( uniformBuffers.map( ( { buffer } ) => {
+			if ( buffer instanceof SyncableBuffer ) {
+				return buffer.upload();
+			}
+
+			return Promise.resolve();
+		} ) );
 	}
 
 
@@ -239,7 +270,13 @@ export default class Program<
 		await this.ready;
 
 		const {
-			gl, program: existingProgram, vertexSrc, fragmentSrc, blockBuffers, textureBindings, textures,
+			gl,
+			program: existingProgram,
+			vertexSrc,
+			fragmentSrc,
+			uniformBuffers,
+			textureBindings,
+			textures,
 		} = this;
 
 		if ( existingProgram ) return;
@@ -290,7 +327,7 @@ export default class Program<
 
 		// TODO: cache program
 
-		blockBuffers.forEach( ( { name }, i ) => {
+		uniformBuffers.forEach( ( { name }, i ) => {
 			gl.uniformBlockBinding(
 				this.program,
 				gl.getUniformBlockIndex( this.program, name ),
@@ -316,7 +353,7 @@ export default class Program<
 	 */
 	public use(): boolean {
 		const {
-			program, gl, blockBuffers, textureBindings,
+			program, gl, uniformBuffers, textureBindings,
 		} = this;
 
 		if ( !program ) {
@@ -332,7 +369,7 @@ export default class Program<
 
 		gl.useProgram( program );
 
-		blockBuffers.forEach( ( { buffer }, i ) => {
+		uniformBuffers.forEach( ( { buffer }, i ) => {
 			gl.bindBufferBase(
 				gl.UNIFORM_BUFFER,
 				i,

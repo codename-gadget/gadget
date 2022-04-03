@@ -29,6 +29,8 @@ export default class Context {
 		if ( this.resolveContext ) {
 			const ctx = canvas.getContext( 'webgl2' );
 
+			ctx.getExtension( 'OES_texture_float_linear' );
+
 			this.resolveContext( ctx );
 			this.resolveContext = null;
 		} else if ( __DEV_BUILD__ ) {
