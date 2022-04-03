@@ -8,6 +8,8 @@ import {
 	TextureMinFilter,
 	TextureDataType,
 	TextureWrap,
+	SamplerType,
+	TextureBindingPoint,
 } from './textureEnums';
 
 
@@ -23,6 +25,22 @@ function compare( set: Map<number, number> ): void {
 
 
 describe( 'Texture Enums', () => {
+	it( 'SamplerType should match GL constants', () => {
+		compare( new Map([
+			[SamplerType.sampler2D, gl.SAMPLER_2D],
+			[SamplerType.sampler3D, gl.SAMPLER_3D],
+			[SamplerType.samplerCube, gl.SAMPLER_CUBE],
+		]) );
+	} );
+
+	it( 'TextureBindingPoint should match GL constants', () => {
+		compare( new Map([
+			[TextureBindingPoint.texture2D, gl.TEXTURE_2D],
+			[TextureBindingPoint.texture3D, gl.TEXTURE_3D],
+			[TextureBindingPoint.textureCube, gl.TEXTURE_CUBE_MAP],
+		]) );
+	} );
+
 	it( 'TextureMagFilter should match GL constants', () => {
 		compare( new Map([
 			[TextureMagFilter.linear, gl.LINEAR],

@@ -11,6 +11,18 @@ export enum SamplerType {
 
 
 /**
+ * Enum representation of available texture binding points.
+ *
+ * @internal
+ */
+export enum TextureBindingPoint {
+	texture2D = 3553,
+	texture3D = 32879,
+	textureCube = 34067,
+}
+
+
+/**
  * Texture magnification filter.
  *
  * @public
