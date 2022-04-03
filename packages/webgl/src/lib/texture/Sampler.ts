@@ -130,4 +130,16 @@ export default class Sampler extends ContextConsumer {
 
 		return this.sampler;
 	}
+
+
+	/**
+	 * Flags the underlying sampler for deletion.
+	 */
+	public async delete(): Promise<void> {
+		await this.ready;
+
+		const { gl, sampler } = this;
+
+		gl.deleteSampler( sampler );
+	}
 }
