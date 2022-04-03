@@ -4,7 +4,7 @@
 
 ## Geometry.upload() method
 
-Calls `upload()` on all attribute buffers.
+Calls `upload()` on all attribute buffers and the index buffer.
 
 <b>Signature:</b>
 

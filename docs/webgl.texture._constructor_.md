@@ -9,12 +9,12 @@ Constructs a new instance of the `Texture` class
 <b>Signature:</b>
 
 ```typescript
-constructor({ width, height, levels, storageFormat, context, }: TextureProps);
+constructor(props: Texture2DProps);
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  { width, height, levels, storageFormat, context, } | [TextureProps](./webgl.textureprops.md) |  |
+|  props | [Texture2DProps](./webgl.texture2dprops.md) |  |
 

@@ -17,5 +17,6 @@ export interface GeometryProps extends WithContext
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [attributes](./webgl.geometryprops.attributes.md) | Record&lt;number, AttributeDeclaration&gt; | Object of vertex attribute declarations, the <code>key</code> being the attribute index. |
+|  [indices?](./webgl.geometryprops.indices.md) | IndicesDeclaration | <i>(Optional)</i> Object declaring the vertex indices to use. |
 |  [mode?](./webgl.geometryprops.mode.md) | [GeometryDrawMode](./webgl.geometrydrawmode.md) | <i>(Optional)</i> How the geometry should be drawn. |
 

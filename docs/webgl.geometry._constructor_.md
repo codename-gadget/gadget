@@ -9,12 +9,12 @@ Constructs a new instance of the `Geometry` class
 <b>Signature:</b>
 
 ```typescript
-constructor({ attributes, mode, context, }: T);
+constructor({ attributes, indices, mode, context, }: T);
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  { attributes, mode, context, } | T |  |
+|  { attributes, indices, mode, context, } | T |  |
 

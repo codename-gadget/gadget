@@ -23,5 +23,6 @@ export default class Sampler extends ContextConsumer
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
+|  [delete()](./webgl.sampler.delete.md) |  | Flags the underlying sampler for deletion. |
 |  [getSampler()](./webgl.sampler.getsampler.md) |  | Returns the underlying <code>WebGLSampler</code> object once ready. |
 

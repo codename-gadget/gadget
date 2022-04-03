@@ -9,18 +9,44 @@ Uploads an array of pixels to the GPU.
 <b>Signature:</b>
 
 ```typescript
-uploadPixels(pixels: ArrayBufferView, type: BufferDataType | TextureDataType, level?: number): Promise<void>;
+uploadPixels(pixelsPerLevel: {
+        [level: number]: ArrayBufferView;
+    }, type: BufferDataType | TextureDataType): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pixels | ArrayBufferView | The pixel data. |
-|  type | [BufferDataType](./webgl.bufferdatatype.md) \| [TextureDataType](./webgl.texturedatatype.md) | The formate the pixel data is in. |
-|  level | number | The mipmap level to upload to. |
+|  pixelsPerLevel | { \[level: number\]: ArrayBufferView; } | An object containing the pixel data per level. |
+|  type | [BufferDataType](./webgl.bufferdatatype.md) \| [TextureDataType](./webgl.texturedatatype.md) | The format the pixel data is in. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Example
+
+Uploading a 2x2px red/black checkerboard texture and a 1x1px dark red mipmap.
+
+```typescript
+import { Texture, BufferDataType } from '@gdgt/webgl';
+
+
+const myTexture = new Texture( {
+    width: 2,
+    height: 2,
+    levels: 2,
+} );
+
+await myTexture.uploadPixels(
+    {
+        0: new Uint8Array([
+            255, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 0, 0, 255,
+        ]),
+        1: new Uint8Array([128, 0, 0, 255]),
+    },
+    BufferDataType.unsignedByte,
+);
+```
 
