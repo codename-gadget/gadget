@@ -15,6 +15,24 @@ export default class Program<R extends Introspection, O extends {
 ```
 <b>Extends:</b> ContextConsumer
 
+## Example
+
+Using `@gdgt/hlsl-loader` you can create a program like this:
+
+```typescript
+import { Program } from '@gdgt/webgl';
+import * as myShader from './myShader.hlsl';
+
+const program = new Program( myShader );
+
+// you can now compile the program...
+await program.compile();
+
+// ... and use it afterwards
+program.use();
+someGeometry.draw();
+```
+
 ## Constructors
 
 |  Constructor | Modifiers | Description |
@@ -34,5 +52,6 @@ export default class Program<R extends Introspection, O extends {
 |  --- | --- | --- |
 |  [compile()](./webgl.program.compile.md) |  | Compiles the program.<!-- -->This is fairly expensive, since it compiles both shaders, links the program and sets up all uniform buffers and textures. |
 |  [getProgram()](./webgl.program.getprogram.md) |  | Returns the underlying <code>WebGLProgram</code>, once ready.<!-- -->If the program was not compiled before calling <code>getProgram()</code>, it will be compiled implicitly. Ideally, you should <code>await compile()</code> first. |
+|  [uploadUbos()](./webgl.program.uploadubos.md) |  | Calls <code>upload()</code> on all uniform buffers. |
 |  [use()](./webgl.program.use.md) |  | Sets the program and all UBOs and textures up for usage. |
 

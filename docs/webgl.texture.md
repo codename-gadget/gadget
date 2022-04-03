@@ -9,22 +9,19 @@ Generic GPU texture store, wrapping `WebGLTexture`<!-- -->.
 <b>Signature:</b>
 
 ```typescript
-export default class Texture extends ContextConsumer 
+export default class Texture extends AbstractTexture2D 
 ```
-<b>Extends:</b> ContextConsumer
+<b>Extends:</b> AbstractTexture2D
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)({ width, height, levels, storageFormat, context, })](./webgl.texture._constructor_.md) |  | Constructs a new instance of the <code>Texture</code> class |
+|  [(constructor)(props)](./webgl.texture._constructor_.md) |  | Constructs a new instance of the <code>Texture</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [bindSync()](./webgl.texture.bindsync.md) |  | If ready, binds the texture to <code>gl.TEXTURE_2D</code>. |
-|  [generateMipmaps()](./webgl.texture.generatemipmaps.md) |  | Generates a complete mip-chain. |
-|  [getTexture()](./webgl.texture.gettexture.md) |  | Returns the underlying <code>WebGLTexture</code> object once ready. |
-|  [uploadPixels(pixels, type, level)](./webgl.texture.uploadpixels.md) |  | Uploads an array of pixels to the GPU. |
+|  [uploadPixels(pixelsPerLevel, type)](./webgl.texture.uploadpixels.md) |  | Uploads an array of pixels to the GPU. |
 

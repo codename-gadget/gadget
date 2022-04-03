@@ -15,6 +15,7 @@
 |  [Sampler](./webgl.sampler.md) | A Sampler storing sampling parameters for texture access. |
 |  [SyncableBuffer](./webgl.syncablebuffer.md) | GPU data store with CPU-side data representation, enabling easy up/downloading. |
 |  [Texture](./webgl.texture.md) | Generic GPU texture store, wrapping <code>WebGLTexture</code>. |
+|  [TextureCube](./webgl.texturecube.md) | Generic GPU texture store, wrapping <code>WebGLTexture</code>. |
 
 ## Enumerations
 
@@ -42,11 +43,17 @@
 |  [GeometryProps](./webgl.geometryprops.md) |  |
 |  [ProgramProps](./webgl.programprops.md) |  |
 |  [SamplerProps](./webgl.samplerprops.md) |  |
-|  [TextureProps](./webgl.textureprops.md) |  |
+|  [Texture2DProps](./webgl.texture2dprops.md) |  |
 
 ## Variables
 
 |  Variable | Description |
 |  --- | --- |
 |  [defaultContext](./webgl.defaultcontext.md) | Default instance of Context used if no other context is specified. |
+
+## Type Aliases
+
+|  Type Alias | Description |
+|  --- | --- |
+|  [TextureCubeProps](./webgl.texturecubeprops.md) |  |
 

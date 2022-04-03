@@ -13,17 +13,51 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 ```
 <b>Extends:</b> ContextConsumer
 
+## Example
+
+
+```typescript
+import { Geometry } from '@gdgt/webgl';
+
+const geometry = new Geometry( {
+    attributes: {
+       0: {
+           data: new Float32Array([-1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0]),
+           type: BufferDataType.float,
+           size: 3,
+       },
+       2: {
+           data: new Float32Array([0, 0, 0, 1, 1, 1, 1, 0]),
+           type: BufferDataType.float,
+           size: 2,
+       },
+    },
+    indices: {
+        data: new Uint16Array([0, 1, 2, 2, 3, 0]),
+        type: BufferDataType.unsignedShort,
+    },
+} );
+
+// you can now upload all geometry buffers...
+await geometry.upload();
+
+// ...and draw the geometry afterwards.
+someProgram.use();
+geometry.draw();
+```
+
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)({ attributes, mode, context, })](./webgl.geometry._constructor_.md) |  | Constructs a new instance of the <code>Geometry</code> class |
+|  [(constructor)({ attributes, indices, mode, context, })](./webgl.geometry._constructor_.md) |  | Constructs a new instance of the <code>Geometry</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [attributes](./webgl.geometry.attributes.md) |  | { \[key in keyof T\['attributes'\]\]: T\['attributes'\]\[key\] extends { buffer: SyncableBuffer; } \| { data: ArrayBufferView; } ? SyncableBuffer : Buffer; } | The underlying attribute buffers. |
+|  [indices](./webgl.geometry.indices.md) |  | T\['indices'\] extends { buffer: SyncableBuffer; } \| { data: ArrayBufferView; } ? SyncableBuffer : T\['indices'\] extends { buffer: Buffer; } ? Buffer : undefined | The underlying index buffer.<!-- -->Only present if indices were declared on initialization. |
 
 ## Methods
 
@@ -32,5 +66,5 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 |  [delete()](./webgl.geometry.delete.md) |  | Flags the underlying VAO and all attribute buffers for deletion. The geometry cannot be used afterwards. |
 |  [draw()](./webgl.geometry.draw.md) |  | Draws the geometry. |
 |  [getVao()](./webgl.geometry.getvao.md) |  | Once ready, returns the underlying VertexArrayObject. |
-|  [upload()](./webgl.geometry.upload.md) |  | Calls <code>upload()</code> on all attribute buffers. |
+|  [upload()](./webgl.geometry.upload.md) |  | Calls <code>upload()</code> on all attribute buffers and the index buffer. |
 
