@@ -10,6 +10,8 @@ import {
 	TextureWrap,
 	SamplerType,
 	TextureBindingPoint,
+	TextureCubeFace,
+	inferFace,
 } from './textureEnums';
 
 
@@ -206,5 +208,51 @@ describe( 'Texture Enums', () => {
 		} );
 
 		// it( 'should infer the correct formats' );
+	} );
+
+	describe( 'TextureCubeFace', () => {
+		it( 'should be exhaustive and match GL constants', () => {
+			['x', 'y', 'z'].forEach( ( direction ) => {
+				['p', 'n'].forEach( ( sign ) => {
+					const enumKey = `${sign}${direction}` as never;
+					const glKey = `TEXTURE_CUBE_MAP_${
+						sign === 'p' ? 'POSITIVE' : 'NEGATIVE'
+					}_${direction.toUpperCase()}`;
+
+					expect(
+						TextureCubeFace[enumKey],
+					).toBeDefined();
+
+					expect(
+						TextureCubeFace[enumKey],
+					).toEqual(
+						( gl as never )[glKey],
+					);
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'inferFace', () => {
+		it( 'should infer correct GL constants', () => {
+			['x', 'y', 'z'].forEach( ( direction ) => {
+				['p', 'n'].forEach( ( sign ) => {
+					const enumKey = `${sign}${direction}` as never;
+					const glKey = `TEXTURE_CUBE_MAP_${
+						sign === 'p' ? 'POSITIVE' : 'NEGATIVE'
+					}_${direction.toUpperCase()}`;
+
+					expect(
+						inferFace( enumKey ),
+					).toBeDefined();
+
+					expect(
+						inferFace( enumKey ),
+					).toEqual(
+						( gl as never )[glKey],
+					);
+				} );
+			} );
+		} );
 	} );
 } );
