@@ -188,4 +188,16 @@ export default class Texture extends ContextConsumer {
 
 		return false;
 	}
+
+
+	/**
+	 * Flags the underlying texture for deletion.
+	 */
+	public async delete(): Promise<void> {
+		await this.ready;
+
+		const { gl, texture } = this;
+
+		gl.deleteTexture( texture );
+	}
 }
