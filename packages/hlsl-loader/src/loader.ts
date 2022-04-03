@@ -1,7 +1,7 @@
 import type { LoaderContext } from 'webpack';
 import { randomUUID } from 'crypto';
 import {
-	mkdir, readFile, rm, writeFile,
+	mkdir, readFile, rm, writeFile, access,
 } from 'fs/promises';
 import { exec as cbExec } from 'child_process';
 import { promisify } from 'util';
@@ -34,8 +34,9 @@ export default async function load(): Promise<string> {
 		getOptions,
 		getLogger,
 		context,
-		utils: { contextify },
+		utils: { contextify, absolutify },
 		mode: webpackMode,
+		addDependency,
 	} = ( this as LoaderContext<HlslLoaderOptions> );
 
 	const logger = getLogger();
@@ -71,6 +72,58 @@ export default async function load(): Promise<string> {
 
 		return '';
 	}
+
+
+	// changes in included files should trigger a webpack rebuild,
+	// we therefore need to traverse all includes and flag them as dependencies
+
+	const flaggedDependencies = new Set<string>();
+
+	const recursivelyFlagDependencies = async ( file: string ): Promise<void> => {
+		if ( flaggedDependencies.has( file ) ) return;
+
+		addDependency( file );
+		flaggedDependencies.add( file );
+
+		// after flagging the current file,
+		// we'll search its content for further includes
+
+		const src = await readFile( file, { encoding: 'utf-8' } );
+		const includes = src.matchAll( /^#include\s+"(.+)"/gmi );
+
+		await Promise.all(
+			Array.from( includes ).map( async ( match ) => {
+				const includePath = match[1];
+				// includePath could be relative to the current file,
+				// or in one of the user specified include directories
+				const potentialContexts = [path.dirname( file ), ...options.includeDirectories];
+
+				// eslint-disable-next-line no-restricted-syntax
+				for ( const ctx of potentialContexts ) {
+					const dependencyPath = absolutify( ctx, includePath );
+
+					// check whether the included file exists
+					// within the potential context ...
+					// eslint-disable-next-line no-await-in-loop
+					const err = await access( dependencyPath ).catch( ( e ) => e );
+
+					if ( !err ) {
+						// ... and if it does, flag its dependencies and end the search
+						// eslint-disable-next-line no-await-in-loop
+						await recursivelyFlagDependencies( dependencyPath );
+
+						return;
+					}
+				}
+			} ),
+		);
+	};
+
+	// recursively flag all dependencies -
+	// This is a potentially lengthy operation and does not influence the loader result.
+	// We can kick it off here and only wait for it after all other work is done.
+	const dependencyFlaggingDone = recursivelyFlagDependencies( resourcePath );
+
 
 	// random UUID used for temp files
 	const runId = randomUUID();
@@ -393,6 +446,9 @@ export default async function load(): Promise<string> {
 			exportDeclarations.join( '\n' ),
 		);
 	}
+
+	// wait until all dependencies have been flagged, for completeness sake
+	await dependencyFlaggingDone;
 
 
 	return srcExports.join( '\n' );
