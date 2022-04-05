@@ -20,6 +20,7 @@
     "dist",
     "bin"
   ],
+  "typedocMain": "./src/gadget-hlsl-loader.ts",
   "publishConfig": {
     "access": "public"
   },

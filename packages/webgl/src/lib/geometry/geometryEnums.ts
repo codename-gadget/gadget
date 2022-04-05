@@ -2,8 +2,6 @@
 
 /**
  * Enum specifying how a geometry is drawn.
- *
- * @public
  */
 export enum GeometryDrawMode {
 	/** Draws a triangle for every three vertices. */

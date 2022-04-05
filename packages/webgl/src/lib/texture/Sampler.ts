@@ -8,9 +8,6 @@ import {
 } from './textureEnums';
 
 
-/**
- * @public
- */
 export interface SamplerProps extends WithContext {
 	/**
 	 * The texture minification filter.
@@ -79,8 +76,6 @@ export interface SamplerProps extends WithContext {
 
 /**
  * A Sampler storing sampling parameters for texture access.
- *
- * @public
  */
 export default class Sampler extends ContextConsumer {
 	private sampler: WebGLSampler;

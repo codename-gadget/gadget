@@ -8,9 +8,6 @@ import {
 } from './textureEnums';
 
 
-/**
- * @public
- */
 export interface Texture2DProps extends WithContext {
 	/** The textures width in pixels. */
 	width: number

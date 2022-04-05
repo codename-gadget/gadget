@@ -1,28 +1,26 @@
-# `@gdgt/hlsl-loader`
-
 > HLSL for WebGL 2.0, including offline program introspection and Typescript support.
 
-# Motivations
+## Motivations
 
 Writing GLSL for WebGL is notoriously unfriendly from a dev's perspective. Without some kind of preprocessor like [glslx](https://github.com/evanw/glslx), there's no proper editor integration, no offline compilation or optimisation, and, worst of all, no support for importing files.
 
 Instead of trying to go the fully custom route like [glslx](https://github.com/evanw/glslx), this loader offloads the majority of work to HLSL, a well-established, well-supported languange and only provides the means to easily incorporate it into an existing WebGL project.
 
-# Main goals
+## Main goals
 
 - Converting HLSL to GLES 3.0 for use in WebGL 2.0
 - Supporting multiple entry points per HLSL file
 - Providing static introspection data, including UBO buffer layouts, vertex attributes and textures.
 
-# Usage
+## Usage
 
 Install the loader
 
-```
+```text
 yarn add --dev @gdgt/hlsl-loader
 ```
 
-```
+```text
 npm i -D @gdgt/hlsl-loader
 ```
 
@@ -66,7 +64,7 @@ By default `@gdgt/hlsl-loader` will look for two functions ("entry points") per 
 - `vsMain` will be treated as the vertex shader entry. Its GLES 3.0 source is exported as `vertexShader`
 - `psMain` will be treated as the fragment shader entry. Its GLES 3.0 source is exported as `fragmentShader`
 
-# Example
+## Example
 
 ```HLSL
 // shader.hlsl
@@ -118,7 +116,7 @@ import {
 }
 ```
 
-# Loader options
+## Loader options
 
 | Option                 | Default             | Description                                                                                                                   |
 | ---------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -128,11 +126,11 @@ import {
 | `logGlsl`              | `false`             | Whether to log the compiled GLSL code to the console.<br />May be useful during development, disabled for production builds.  |
 | `generateDeclarations` | `true`              | Whether to emit `.d.ts` files containing declarations for imported HLSL files.<br />Disabled for production builds.           |
 
-# How it works
+## How it works
 
 The inital HLSL file is run through the [DirectX Shader Compiler (dxc)](https://github.com/microsoft/DirectXShaderCompiler), converting it to a [SPIR-V](https://www.khronos.org/spir/) binary per entrypoint. Subsequently, [spriv-cross](https://github.com/KhronosGroup/SPIRV-Cross)s reflection functionality is used to gather information on each program. Finally, the [SPIR-V](https://www.khronos.org/spir/) binaries are converted to GLES 3.0 via [spriv-cross](https://github.com/KhronosGroup/SPIRV-Cross), renaming some interface variables to ensure compatibility. Introspection info from all entry-points is merged and exported as JSON.
 
-# Limitaions
+## Limitaions
 
 - Only UBOs are supported at the moment. Plain uniform arrays will be ignored, with the only exception being sampler objects. As long as you stick to `cbuffer`s in HLSL, you should never encounter this limitation.
 - Currently, uniforms and attributes are limited to the following types: `float`, `int` and `bool`, including their vector types, and `float4x4` matrices. This list is likely to be expanded in the future.
@@ -145,9 +143,9 @@ The inital HLSL file is run through the [DirectX Shader Compiler (dxc)](https://
 
 For a `dxc` specifc list of limitations, see `dxc`s [SPIR-V docs](https://github.com/Microsoft/DirectXShaderCompiler/blob/master/docs/SPIR-V.rst).
 
-# Tips
+## Tips
 
-## Specifying the location of vertex attributes
+### Specifying the location of vertex attributes
 
 Buffer attribute indices/locations can be explicitly specified using the `[[vk::location(n)]]` attribute. This is carried over to the exported introspection object.
 
@@ -158,7 +156,7 @@ struct VSInput {
 };
 ```
 
-## Textures and SamplerState
+### Textures and SamplerState
 
 HLSL ordinarily does not support combined Texture-Sampler objects the way GLES 3.0 expects them.
 To work around this, we flag both Texture and SamplerState using the `[[vk::combinedImageSampler]]` attribute and bind them to the same unit using `[[vk::binding(1)]]`.
@@ -177,7 +175,7 @@ float4 main() : SV_TARGET {
 
 See the [`dxc` SPIR-V docs](https://github.com/Microsoft/DirectXShaderCompiler/blob/master/docs/SPIR-V.rst#vulkan-specific-attributes) for a complete list of supported attributes.
 
-## Multiple entrypoints
+### Multiple entrypoints
 
 By default, `@gdgt/hlsl-loader` will attempt to extract two entry points per HLSL file:
 
@@ -205,12 +203,12 @@ You can change this by adding an `exports` object to the loaders config:
 
 If you want to keep your main functions named the same across stages, you can also use [dxcs predefined version macros](https://github.com/microsoft/DirectXShaderCompiler/wiki/Predefined-Version-Macros) to conditionally include them.
 
-# Todos
+## Todos
 
 - End to end tests
 - Support for matrix types other than `float4x4`
 
-# Notice / Attribution
+## Notice / Attribution
 
 This loader builds on and ships binaries of the following projects:
 
@@ -219,6 +217,6 @@ This loader builds on and ships binaries of the following projects:
 
 See [NOTICE](./NOTICE) for more info.
 
-# License
+## License
 
 `@gdgt/hlsl-loader` is distributed under the terms of the Apache 2.0 License. See [LICENSE](./LICENSE) for more info.

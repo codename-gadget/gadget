@@ -16,7 +16,8 @@
                 "definedTags": [
                     "internal",
                     "defaultValue",
-                    "remarks"
+                    "remarks",
+                    "packageDocumentation"
                 ]
             }
         ],

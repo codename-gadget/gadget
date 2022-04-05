@@ -1,0 +1,23 @@
+{
+  "entryPoints": ["."],
+  "entryPointStrategy": "packages",
+  "out": "docs/temp",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "disableSources": true,
+  "sort": "source-order",
+  "name": "Gadget",
+  "includeVersion": true,
+  "customCss": "./docs/custom.css",
+  "darkHighlightTheme": "github-dark",
+  "readme": "./docs/intro.md",
+  "includes": "./packages",
+  "intentionallyNotExported": [
+    "Introspection",
+    "TexturesFromIntrospection",
+    "UbosFromIntrospection",
+    "CubeOf",
+    "AttributeDeclaration",
+    "IndicesDeclaration"
+  ]
+}

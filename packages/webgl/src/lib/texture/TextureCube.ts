@@ -9,16 +9,11 @@ import {
 import AbstractTexture2D, { Texture2DProps } from './AbstractTexture2D';
 
 
-/**
- * @public
- */
 export type TextureCubeProps = Omit<Texture2DProps, 'height'>;
 
 
 /**
  * Generic GPU texture store, wrapping `WebGLTexture`.
- *
- * @public
  */
 export default class TextureCube extends AbstractTexture2D {
 	public constructor( props: TextureCubeProps ) {

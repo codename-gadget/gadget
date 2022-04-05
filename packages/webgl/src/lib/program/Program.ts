@@ -62,9 +62,6 @@ function viewOrListFromIntro(
 }
 
 
-/**
- * @public
- */
 export interface ProgramProps<I, O> extends WithContext {
 	/**
 	 * Vertex shader source code.
@@ -101,7 +98,6 @@ export interface ProgramProps<I, O> extends WithContext {
 /**
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
- * @public
  * @example
  * Using `@gdgt/hlsl-loader` you can create a program like this:
  * ```typescript

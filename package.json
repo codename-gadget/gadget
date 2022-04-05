@@ -5,7 +5,7 @@
     "prepare": "husky install && git config gitflow.path.hooks .husky",
     "build": "lerna run build",
     "lint": "eslint . --max-warnings 0",
-    "docs": "ts-node build/extractApi.ts",
+    "docs": "typedoc --treatWarningsAsErrors",
     "test": "karma start --singleRun"
   },
   "devDependencies": {
@@ -13,7 +13,7 @@
     "@commitlint/config-conventional": "^16.2.1",
     "@commitlint/config-lerna-scopes": "^16.2.2",
     "@johh/eslint-config": "0.0.5",
-    "@microsoft/api-extractor": "^7.19.5",
+    "@microsoft/api-extractor": "^7.20.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@rollup/plugin-typescript": "^8.3.1",
@@ -49,6 +49,8 @@
     "ts-node": "^10.7.0",
     "ts-transformer-minify-privates": "^0.4.0",
     "tslib": "^2.3.1",
+    "typedoc": "^0.22.13",
+    "typedoc-plugin-mdn-links": "^1.0.5",
     "typescript": "^4.6.2",
     "webpack": "^5.70.0"
   },
