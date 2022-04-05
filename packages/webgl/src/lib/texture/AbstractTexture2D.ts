@@ -26,7 +26,7 @@ export interface Texture2DProps extends WithContext {
 	/**
 	 * How the data is stored in GPU memory.
 	 *
-	 * @defaultValue TextureStorageFormat.rgba8
+	 * @defaultValue {@link TextureStorageFormat.rgba8}
 	 */
 	storageFormat?: TextureStorageFormat,
 }
