@@ -130,7 +130,7 @@ import {
 
 The inital HLSL file is run through the [DirectX Shader Compiler (dxc)](https://github.com/microsoft/DirectXShaderCompiler), converting it to a [SPIR-V](https://www.khronos.org/spir/) binary per entrypoint. Subsequently, [spriv-cross](https://github.com/KhronosGroup/SPIRV-Cross)s reflection functionality is used to gather information on each program. Finally, the [SPIR-V](https://www.khronos.org/spir/) binaries are converted to GLES 3.0 via [spriv-cross](https://github.com/KhronosGroup/SPIRV-Cross), renaming some interface variables to ensure compatibility. Introspection info from all entry-points is merged and exported as JSON.
 
-## Limitaions
+## Limitations
 
 - Only UBOs are supported at the moment. Plain uniform arrays will be ignored, with the only exception being sampler objects. As long as you stick to `cbuffer`s in HLSL, you should never encounter this limitation.
 - Currently, uniforms and attributes are limited to the following types: `float`, `int` and `bool`, including their vector types, and `float4x4` matrices. This list is likely to be expanded in the future.
