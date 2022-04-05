@@ -21,8 +21,6 @@ interface SyncableBufferProps<T = BufferSrcData> extends Omit<BufferProps, 'size
 
 /**
  * GPU data store with CPU-side data representation, enabling easy up/downloading.
- *
- * @public
  */
 export default class SyncableBuffer<T extends BufferSrcData = BufferSrcData> extends Buffer {
 	/** CPU-side representation of the data. */

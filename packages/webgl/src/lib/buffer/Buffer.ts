@@ -13,9 +13,6 @@ const devCheckBuffer = ( buffer: unknown ): void => {
 };
 
 
-/**
- * @public
- */
 export interface BufferProps extends WithContext {
 	/**
 	 * Enum specifying the binding point that the buffer will be bound to when bind() is called.
@@ -34,8 +31,6 @@ export interface BufferProps extends WithContext {
 
 /**
  * Generic GPU data store wrapping WebGLBuffer.
- *
- * @public
  */
 export default class Buffer extends ContextConsumer {
 	private buffer: WebGLBuffer;

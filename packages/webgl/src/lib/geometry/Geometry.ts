@@ -68,9 +68,6 @@ type IndicesDeclaration = {
 } & AttributeDataInfo;
 
 
-/**
- * @public
- */
 export interface GeometryProps extends WithContext {
 	/** Object of vertex attribute declarations, the `key` being the attribute index. */
 	attributes: Record<number, AttributeDeclaration>;
@@ -90,7 +87,6 @@ export interface GeometryProps extends WithContext {
 /**
  * Drawable geometry with multiple vertex attributes.
  *
- * @public
  * @example
  * ```typescript
  * import { Geometry } from '@gdgt/webgl';

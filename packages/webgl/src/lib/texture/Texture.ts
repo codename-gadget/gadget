@@ -9,8 +9,6 @@ import AbstractTexture2D, { Texture2DProps } from './AbstractTexture2D';
 
 /**
  * Generic GPU texture store, wrapping `WebGLTexture`.
- *
- * @public
  */
 export default class Texture extends AbstractTexture2D {
 	public constructor( props: Texture2DProps ) {

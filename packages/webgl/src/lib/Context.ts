@@ -3,8 +3,6 @@ import { devLog, prodLog } from './utils/log';
 
 /**
  * The rendering context, tied to a canvas element.
- *
- * @public
  */
 export default class Context {
 	private glContextReady: Promise<WebGL2RenderingContext>;
@@ -56,7 +54,5 @@ export default class Context {
 
 /**
  * Default instance of Context used if no other context is specified.
- *
- * @public
  */
 export const defaultContext = new Context();

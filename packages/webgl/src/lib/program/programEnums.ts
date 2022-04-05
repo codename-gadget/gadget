@@ -1,8 +1,6 @@
 
 /**
  * Enum specifying a uniform values type.
- *
- * @public
  */
 export enum UniformType {
 	float = 5126,
