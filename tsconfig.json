@@ -12,7 +12,6 @@
         "lib": [
             "ES2017",
             "dom",
-            "webworker",
         ],
         "plugins": [],
         "rootDir": ".",
@@ -27,5 +26,5 @@
         "compilerOptions": {
             "module": "commonjs"
         }
-    }
+    },
 }
