@@ -18,7 +18,7 @@ export { default as Context, defaultContext } from './lib/Context';
 
 
 export { default as Buffer, BufferProps } from './lib/buffer/Buffer';
-export { default as SyncableBuffer } from './lib/buffer/SyncableBuffer';
+export { default as SyncableBuffer, SyncableBufferProps } from './lib/buffer/SyncableBuffer';
 export {
 	BufferDataType,
 	BufferBindingPoint,

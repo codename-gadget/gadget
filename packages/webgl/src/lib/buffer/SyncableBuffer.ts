@@ -1,10 +1,7 @@
 import Buffer, { BufferProps } from './Buffer';
 
 
-type BufferSrcData = ArrayBuffer | SharedArrayBuffer;
-
-
-interface SyncableBufferProps<T = BufferSrcData> extends Omit<BufferProps, 'size'> {
+export interface SyncableBufferProps<T = ArrayBuffer | SharedArrayBuffer> extends Omit<BufferProps, 'size'> {
 	/**
 	 * `ArrayBuffer` or `SharedArrayBuffer` from which the buffer will be created.
 	 */
@@ -22,7 +19,9 @@ interface SyncableBufferProps<T = BufferSrcData> extends Omit<BufferProps, 'size
 /**
  * GPU data store with CPU-side data representation, enabling easy up/downloading.
  */
-export default class SyncableBuffer<T extends BufferSrcData = BufferSrcData> extends Buffer {
+export default class SyncableBuffer<
+	T extends ArrayBuffer | SharedArrayBuffer = ArrayBuffer,
+> extends Buffer {
 	/** CPU-side representation of the data. */
 	public readonly data: T;
 	private dataView: DataView;
