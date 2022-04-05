@@ -17,7 +17,7 @@ export interface BufferProps extends WithContext {
 	/**
 	 * Enum specifying the binding point that the buffer will be bound to when bind() is called.
 	 *
-	 * @defaultValue BufferBindingPoint.arrayBuffer
+	 * @defaultValue {@link BufferBindingPoint.arrayBuffer}
 	 */
 	target?: BufferBindingPoint,
 

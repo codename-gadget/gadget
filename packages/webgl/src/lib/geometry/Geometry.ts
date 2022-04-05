@@ -78,7 +78,7 @@ export interface GeometryProps extends WithContext {
 	/**
 	 * How the geometry should be drawn.
 	 *
-	 * @defaultValue GeometryDrawMode.triangles
+	 * @defaultValue {@link GeometryDrawMode.triangles}
 	 */
 	mode?: GeometryDrawMode;
 }

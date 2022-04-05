@@ -12,35 +12,35 @@ export interface SamplerProps extends WithContext {
 	/**
 	 * The texture minification filter.
 	 *
-	 * @defaultValue TextureMinFilter.linear
+	 * @defaultValue {@link TextureMinFilter.linear}
 	 */
 	minFilter?: TextureMinFilter,
 
 	/**
 	 * The texture magnification filter.
 	 *
-	 * @defaultValue TextureMagFilter.linear
+	 * @defaultValue {@link TextureMagFilter.linear}
 	 */
 	magFilter?: TextureMagFilter,
 
 	/**
 	 * Texture wrapping mode for the `s`/`x` coordinate.
 	 *
-	 * @defaultValue TextureWrap.clampToEdge
+	 * @defaultValue {@link TextureWrap.clampToEdge}
 	 */
 	wrapS?: TextureWrap,
 
 	/**
 	 * Texture wrapping mode for the `t`/`y` coordinate.
 	 *
-	 * @defaultValue TextureWrap.clampToEdge
+	 * @defaultValue {@link TextureWrap.clampToEdge}
 	 */
 	wrapT?: TextureWrap,
 
 	/**
 	 * Texture wrapping mode for the `r`/`z` coordinate.
 	 *
-	 * @defaultValue TextureWrap.clampToEdge
+	 * @defaultValue {@link TextureWrap.clampToEdge}
 	 */
 	wrapR?: TextureWrap,
 
@@ -61,14 +61,14 @@ export interface SamplerProps extends WithContext {
 	/**
 	 * The texture comparison mode.
 	 *
-	 * @defaultValue TextureCompareMode.none
+	 * @defaultValue {@link TextureCompareMode.none}
 	 */
 	compareMode?: TextureCompareMode,
 
 	/**
 	 * The texture comparison function.
 	 *
-	 * @defaultValue TextureCompareFunc.lessOrEqual
+	 * @defaultValue {@link TextureCompareFunc.lessOrEqual}
 	 */
 	compareFunc?: TextureCompareFunc,
 }
