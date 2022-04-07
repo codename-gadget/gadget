@@ -17,14 +17,19 @@ async function finishDocs(): Promise<void> {
 	// typedoc produces HTML files with dots in their name,
 	// which causes Cloudflare Pages to misbehave.
 	// We need to go through all produced files, change the links and rename them if needed.
+	// Additionally, the search index needs to be fixed as well.
 
 	const htmlFiles = await glob( `${__dirname}/../docs/temp/**/*.html` );
 
-	await Promise.all( htmlFiles.map( async ( fileName ) => {
+	await Promise.all([
+		...htmlFiles,
+		// also fix the search index
+		path.resolve( __dirname, '../docs/temp/assets/search.js' ),
+	].map( async ( fileName ) => {
 		let content = await readFile( fileName, { encoding: 'utf-8' } );
 
 		// find all relative links (not starting with http), containing ".html"
-		const links = content.matchAll( /(?<=href=")(?!http)\S+\.html(#\S*)?(?=")/gm );
+		const links = content.matchAll( /(?<=href="|\\"url\\":\\")(?!http)[\w/.]+\.html(#\w*)?(?=\\"|"(>| ))/gm );
 
 		for ( const [link] of links ) {
 			const { name, ext } = path.parse( link );
