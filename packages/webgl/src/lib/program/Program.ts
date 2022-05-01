@@ -120,7 +120,7 @@ export interface ProgramProps<I, O> extends WithContext {
  */
 export default class Program<
 	R extends Introspection,
-	O extends { [key in keyof R['ubos']]?: Buffer },
+	O extends { [key in keyof R['ubos']]?: Buffer } = Record<never, never>,
 > extends ContextConsumer {
 	private program: WebGLProgram;
 	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
