@@ -43,9 +43,9 @@ export default class Context {
 
 
 	/**
-	 * Returns the WebGL2RenderingContext of the canvas element it's tied to once available.
+	 * Returns the `WebGL2RenderingContext` of the canvas element it's tied to once available.
 	 *
-	 * @returns The WebGL2RenderingContext
+	 * @returns The underlying `WebGL2RenderingContext`.
 	 */
 	public async getGlContext(): Promise<WebGL2RenderingContext> {
 		return this.glContextReady;
@@ -53,6 +53,6 @@ export default class Context {
 }
 
 /**
- * Default instance of Context used if no other context is specified.
+ * Default instance of {@linkcode Context} used if no other context is specified.
  */
 export const defaultContext = new Context();
