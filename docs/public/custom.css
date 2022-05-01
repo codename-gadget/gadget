@@ -64,6 +64,8 @@ p,
 .tsd-signature-type,
 .tsd-signature-symbol,
 .tsd-hierarchy .target,
+ul.tsd-type-parameters h4,
+ul.tsd-parameters h5,
 code,
 pre,
 pre * {
@@ -478,8 +480,8 @@ ul.tsd-descriptions {
 
 .tsd-sources a {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.75rem;
+  right: 0.4rem;
   font-size: 0;
   text-decoration: none;
 }
@@ -488,7 +490,7 @@ ul.tsd-descriptions {
   content: "↗";
   color: var(--color-text-aside);
   font-size: 1rem;
-  margin-right: 1ch;
+  padding-right: 1ch;
 }
 
 input[type="checkbox"] + .tsd-widget:before,
@@ -717,4 +719,24 @@ input[type="checkbox"]:checked + .tsd-widget:before {
 
 #tsd-search .results a:hover {
   background-color: var(--color-panel-divider);
+}
+
+.tsd-navigation {
+  contain: layout;
+}
+
+.tsd-navigation.secondary {
+  max-height: calc(100vh - 9rem);
+  top: 8.5rem;
+}
+
+.tsd-navigation.secondary,
+.tsd-page-toolbar {
+  transition-timing-function: cubic-bezier(0.37, 0.08, 0.045, 1);
+  transition-duration: 0.5s;
+}
+
+.tsd-navigation.secondary.tsd-navigation--toolbar-hide {
+  max-height: calc(100vh - 5rem);
+  top: 2.5rem;
 }
