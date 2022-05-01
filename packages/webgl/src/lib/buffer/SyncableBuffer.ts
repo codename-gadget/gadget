@@ -58,8 +58,8 @@ export default class SyncableBuffer<
 	 * If parts of the buffer have already been invalidated,
 	 * the range containing all parts will be invalidated.
 	 *
-	 * @param start - First byte to invalidate. @defaultValue `0`
-	 * @param end - Last byte to invalidate. @defaultValue `Infinity`
+	 * @param start - First byte to invalidate.
+	 * @param end - Last byte to invalidate.
 	 */
 	public invalidate( start = 0, end = Infinity ): void {
 		this.invalidStart = Math.max( 0, Math.min( start, this.invalidStart ) );

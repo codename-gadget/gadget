@@ -98,6 +98,10 @@ export interface ProgramProps<I, O> extends WithContext {
 /**
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
+ * @typeParam R - Type representation of the static program introspection,
+ * inferred from {@linkcode ProgramProps.introspection}.
+ * @typeParam O - List of UBOs external to this program.
+ * Inferred from {@linkcode ProgramProps.introspection} and {@linkcode ProgramProps.ubos}.
  * @example
  * Using `@gdgt/hlsl-loader` you can create a program like this:
  * ```typescript
