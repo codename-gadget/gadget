@@ -33,13 +33,14 @@ export default async function load(): Promise<string> {
 		resourcePath,
 		getOptions,
 		getLogger,
-		context,
+		rootContext,
 		utils: { contextify, absolutify },
 		mode: webpackMode,
 		addDependency,
+		emitWarning,
 	} = ( this as LoaderContext<HlslLoaderOptions> );
 
-	const logger = getLogger();
+	const logger = getLogger( '[@gdgt/hlsl-loader]' );
 
 	// options from loader config
 	const loaderOptions = getOptions( optionsSchema as unknown ) || {};
@@ -66,9 +67,9 @@ export default async function load(): Promise<string> {
 
 
 	if ( Object.keys( options.exports ).length < 1 ) {
-		logger.warn(
-			'\n[@gdgt/hlsl-loader] No exports configured \u2013 the loader will export nothing.',
-		);
+		emitWarning( new Error(
+			'\nNo exports configured \u2013 the loader will export nothing.',
+		) );
 
 		return '';
 	}
@@ -252,9 +253,9 @@ export default async function load(): Promise<string> {
 			} );
 		}
 
+
 		// track interface and buffer layout for all UBOs relevant to
 		// the current shader
-
 		const usedNames = new Set();
 
 		reflection.ubos?.forEach( ( { type, name, block_size } ) => {
@@ -267,13 +268,13 @@ export default async function load(): Promise<string> {
 			// HLSL uses registers for UBO identification, the provided names
 			// are not guaranteed to be unique and need to be filtered out.
 			if ( usedNames.has( name ) ) {
-				logger.warn(
-					`\n[@gdgt/hlsl-loader] Multiple cbuffers are named "${
+				emitWarning( new Error(
+					`\nMultiple cbuffers are named "${
 						name.replace( /^type\./, '' )
 					}".\n\tThis will result in incomplete introspection data for ${
-						contextify( context, resourcePath )
+						contextify( rootContext, resourcePath )
 					}`,
-				);
+				) );
 
 				return;
 			}
@@ -341,6 +342,17 @@ export default async function load(): Promise<string> {
 	} ) );
 
 
+	if ( sources.size < 1 ) {
+		emitWarning( new Error(
+			`\nNo entry points found in ${
+				contextify( rootContext, resourcePath )
+			}.\n\tLooking for the following functions: ${
+				Object.entries( options.exports ).map( ( e ) => e[1].entry ).join( ', ' )
+			}`,
+		) );
+	}
+
+
 	// dxc will output some wonky UBO symbol names:
 	// UBOs are named 'type.myUbo' publicly and 'myUbo' internally. Ideally,
 	// it should be the other way around.
@@ -379,13 +391,6 @@ export default async function load(): Promise<string> {
 	} );
 
 
-	if ( sources.size < 1 ) {
-		logger.warn( `\nNo entry points found in ${
-			contextify( context, resourcePath )
-		}.\n\tLooking for the following functions: ${
-			Object.entries( options.exports ).map( ( e ) => e[1].entry ).join( ', ' )
-		}` );
-	}
 
 
 	// assemble JS source and type declarations
@@ -431,7 +436,7 @@ export default async function load(): Promise<string> {
 				}" (compiled from "${
 					options.exports[exportName].entry
 				}" in ${
-					contextify( context, resourcePath )
+					contextify( rootContext, resourcePath )
 				}):\n\n${
 					src
 				}`,
