@@ -3,6 +3,46 @@ import { devLog, prodLog } from './utils/log';
 
 /**
  * The rendering context, tied to a canvas element.
+ *
+ * @example Most of the time, you won't need to manually create a context.
+ *
+ * The {@linkcode defaultContext} is, as the name suggests, the context that is used,
+ * unless another one is manually specified. It still needs to be initialized:
+ * ```typescript
+ * import { defaultContext, Sampler } from '@gdgt/webgl';
+ *
+ *
+ * const canvas = document.createElement( 'canvas' );
+ * document.body.appendChild( canvas );
+ *
+ * defaultContext.initialize( canvas );
+ *
+ * // All objects created without a specified context are tied to defaultContext:
+ * const sampler = new Sampler();
+ * // is equivalent to
+ * const sampler = new Sampler({ context: defaultContext });
+ *
+ * // You can also access the underlying WebGL2RenderingContext.
+ * // This will resolve once defaultContext has been initialized.
+ * const gl = await defaultContext.getGlContext();
+ * ```
+ *
+ * If you'd rather manage your own context, you can do so by providing each
+ * object with your context upon instantiation:
+ * ```typescript
+ * import { Context, Sampler } from '@gdgt/webgl';
+ *
+ *
+ * const canvas = document.createElement( 'canvas' );
+ * document.body.appendChild( canvas );
+ *
+ * const myContext = new Context();
+ * myContext.initialize( canvas );
+ *
+ * const sampler = new Sampler({ context: myContext });
+ * ```
+ * Remember to do so on __every__ object you create – using objects across
+ * multiple contexts is currently __not__ supported.
  */
 export default class Context {
 	private glContextReady: Promise<WebGL2RenderingContext>;
