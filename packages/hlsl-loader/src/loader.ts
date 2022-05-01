@@ -15,9 +15,10 @@ import dxcArgs from './lib/dxcArgs';
 import spirvCrossArgs from './lib/spirvCrossArgs';
 import { dxc, spirvCross } from './lib/binaries';
 import mapMap from './lib/mapMap';
-import toGlType from './lib/toGlType';
+import { toGlEnum, toGlTypeString } from './lib/glTypes';
 import toGlName from './lib/toGlName';
 import introspectionForType from './lib/unwrapType';
+import SymbolMissingError from './lib/SymbolMissingError';
 
 
 const exec = promisify( cbExec );
@@ -33,13 +34,14 @@ export default async function load(): Promise<string> {
 		resourcePath,
 		getOptions,
 		getLogger,
-		context,
+		rootContext,
 		utils: { contextify, absolutify },
 		mode: webpackMode,
 		addDependency,
+		emitWarning,
 	} = ( this as LoaderContext<HlslLoaderOptions> );
 
-	const logger = getLogger();
+	const logger = getLogger( '[@gdgt/hlsl-loader]' );
 
 	// options from loader config
 	const loaderOptions = getOptions( optionsSchema as unknown ) || {};
@@ -66,9 +68,9 @@ export default async function load(): Promise<string> {
 
 
 	if ( Object.keys( options.exports ).length < 1 ) {
-		logger.warn(
-			'\n[@gdgt/hlsl-loader] No exports configured \u2013 the loader will export nothing.',
-		);
+		emitWarning( new Error(
+			'\nNo exports configured \u2013 the loader will export nothing.',
+		) );
 
 		return '';
 	}
@@ -138,6 +140,7 @@ export default async function load(): Promise<string> {
 
 	// map SPIR-V binaries to export name
 	const spirvs = new Map<string, Buffer>();
+	const emittedWarnings = new Set<string>();
 
 
 	await Promise.all(
@@ -147,7 +150,7 @@ export default async function load(): Promise<string> {
 				// outputting SPIR-V binary to stdout.
 				const tmpFile = path.resolve( `./.temp/${runId}-${i}.spv` );
 
-				const { stderr } = await exec([
+				const { stderr }: { stderr: string } = await exec([
 					dxc,
 					resourcePath,
 					...dxcArgs,
@@ -163,7 +166,20 @@ export default async function load(): Promise<string> {
 						return;
 					}
 
-					throw new Error( `dxc failed: ${stderr}` );
+					if ( !stderr.includes( ': error:' ) && stderr.includes( ': warning: ' ) ) {
+						// The same warnings may occur multiple times – once per entry point.
+						// Filter out warnings that have already been emitted.
+						if ( !emittedWarnings.has( stderr ) ) {
+							emittedWarnings.add( stderr );
+							emitWarning(
+								new Error(
+									`\n${stderr.replace( ': warning: ', '\nwarning: ' )}`,
+								),
+							);
+						}
+					} else {
+						throw new Error( `dxc failed:\n${stderr}` );
+					}
 				}
 
 				spirvs.set( exportName, await readFile( tmpFile ) );
@@ -230,7 +246,7 @@ export default async function load(): Promise<string> {
 				attributes.set(
 					options.mangle ? `_a${location}` : `_a_${toGlName( name )}`,
 					{
-						type: toGlType( type ),
+						type: toGlEnum( type ),
 						location,
 					},
 				);
@@ -240,7 +256,7 @@ export default async function load(): Promise<string> {
 				varyings.set(
 					options.mangle ? `_v${location}` : `_v_${toGlName( name )}`,
 					{
-						type: toGlType( type ),
+						type: toGlEnum( type ),
 						location,
 					},
 				);
@@ -252,9 +268,9 @@ export default async function load(): Promise<string> {
 			} );
 		}
 
+
 		// track interface and buffer layout for all UBOs relevant to
 		// the current shader
-
 		const usedNames = new Set();
 
 		reflection.ubos?.forEach( ( { type, name, block_size } ) => {
@@ -267,13 +283,13 @@ export default async function load(): Promise<string> {
 			// HLSL uses registers for UBO identification, the provided names
 			// are not guaranteed to be unique and need to be filtered out.
 			if ( usedNames.has( name ) ) {
-				logger.warn(
-					`\n[@gdgt/hlsl-loader] Multiple cbuffers are named "${
+				emitWarning( new Error(
+					`\nMultiple cbuffers are named "${
 						name.replace( /^type\./, '' )
 					}".\n\tThis will result in incomplete introspection data for ${
-						contextify( context, resourcePath )
+						contextify( rootContext, resourcePath )
 					}`,
-				);
+				) );
 
 				return;
 			}
@@ -291,7 +307,7 @@ export default async function load(): Promise<string> {
 			textures.set(
 				name,
 				{
-					type: toGlType( type ),
+					type: toGlEnum( type ),
 					binding,
 				},
 			);
@@ -341,6 +357,17 @@ export default async function load(): Promise<string> {
 	} ) );
 
 
+	if ( sources.size < 1 ) {
+		emitWarning( new Error(
+			`\nNo entry points found in ${
+				contextify( rootContext, resourcePath )
+			}.\n\tLooking for the following functions: ${
+				Object.entries( options.exports ).map( ( e ) => e[1].entry ).join( ', ' )
+			}`,
+		) );
+	}
+
+
 	// dxc will output some wonky UBO symbol names:
 	// UBOs are named 'type.myUbo' publicly and 'myUbo' internally. Ideally,
 	// it should be the other way around.
@@ -350,23 +377,34 @@ export default async function load(): Promise<string> {
 		if ( name.startsWith( 'type.' ) ) {
 			const publicName = toGlName( name );
 			const instanceName = toGlName( name.replace( /^type\./g, '' ) );
+			let uboInSrc = false;
+
 
 			sources.forEach( ( src, exportName ) => {
+				const newSrc = src
+					// replace the (internal) instance name with a generic one
+					.replace(
+						new RegExp( `(?<!\\w)${instanceName}(?!\\w)`, 'gm' ),
+						options.mangle ? `_u${currentUbo}` : `_u_${instanceName}`,
+					)
+					// replace the wonky public name with the original instance name
+					.replace(
+						new RegExp( `(?<!\\w)${publicName}(?!\\w)`, 'gm' ),
+						instanceName,
+					);
+
+				// check if there's actually a UBO with the given name present
+				if ( newSrc.includes( `uniform ${instanceName}` ) ) uboInSrc = true;
+
 				sources.set(
 					exportName,
-					src
-					// replace the (internal) instance name with a generic one
-						.replace(
-							new RegExp( `(?<!\\w)${instanceName}(?!\\w)`, 'gm' ),
-							options.mangle ? `_u${currentUbo}` : `_u_${instanceName}`,
-						)
-					// replace the wonky public name with the original instance name
-						.replace(
-							new RegExp( `(?<!\\w)${publicName}(?!\\w)`, 'gm' ),
-							instanceName,
-						),
+					newSrc,
 				);
 			} );
+
+			if ( !uboInSrc ) {
+				throw new SymbolMissingError( instanceName, 'UBO' );
+			}
 
 			const members = ubos[name];
 
@@ -379,17 +417,31 @@ export default async function load(): Promise<string> {
 	} );
 
 
-	if ( sources.size < 1 ) {
-		logger.warn( `\nNo entry points found in ${
-			contextify( context, resourcePath )
-		}.\n\tLooking for the following functions: ${
-			Object.entries( options.exports ).map( ( e ) => e[1].entry ).join( ', ' )
-		}` );
-	}
+	// verify texture names
+	textures.forEach( ( { binding, type }, key ) => {
+		let textureInSrc = false;
+
+		sources.forEach( ( src ) => {
+			if ( src.includes( `${toGlTypeString( type )} ${key};` ) ) {
+				textureInSrc = true;
+			}
+		} );
+
+		if ( !textureInSrc ) {
+			if ( key in ubos ) {
+				throw new Error( `The texture called "${
+					key
+				}" (binding ${
+					binding
+				}) conflicts with a UBO of the same name. Please make sure UBO and texture names are unique.` );
+			}
+
+			throw new SymbolMissingError( key, 'texture', `binding ${binding}` );
+		}
+	} );
 
 
 	// assemble JS source and type declarations
-
 	const srcExports = [];
 	const exportDeclarations = [
 		'/* This file was auto-generated by @gdgt/hlsl-loader. Do not edit. */\n',
@@ -431,7 +483,7 @@ export default async function load(): Promise<string> {
 				}" (compiled from "${
 					options.exports[exportName].entry
 				}" in ${
-					contextify( context, resourcePath )
+					contextify( rootContext, resourcePath )
 				}):\n\n${
 					src
 				}`,
