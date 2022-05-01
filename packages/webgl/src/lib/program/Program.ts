@@ -211,8 +211,11 @@ export default class Program<
 				if ( !src.startsWith( '#version 300 es' ) ) {
 					devLog( {
 						msg: 'Shader does not conform to GLSL ES 3.00. The first line needs to be "#version 300 es".',
-						groupLabel: 'shader source',
-						groupContent: src,
+						groups: {
+							'Shader source': {
+								content: src,
+							},
+						},
 					} );
 				}
 			} );
@@ -301,22 +304,51 @@ export default class Program<
 
 		if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
 			if ( __DEV_BUILD__ ) {
+				const programInfo = gl.getProgramInfoLog( this.program );
+
 				devLog( {
 					level: 'error',
 					msg: 'Program linking failed',
-					groupLabel: 'Info Log',
-					expanded: true,
-					groupContent: [
-						'Program Info Log:',
-						gl.getProgramInfoLog( this.program ),
-						'Vertex Shader Info Log:',
-						gl.getShaderInfoLog( vs ),
-						'Fragment Shader Info Log:',
-						gl.getShaderInfoLog( fs ),
-					],
+					groups: {
+						'Info Log': {
+							expanded: true,
+							content: [
+								'Program LINK_STATUS: failed',
+								programInfo ? `Program info log: \n${programInfo}` : 'No further info provided.',
+
+								...[vs, fs].map( ( shader ) => {
+									const compileStatus = gl.getShaderParameter( shader, gl.COMPILE_STATUS );
+
+									const output = [
+										`\n${
+											shader === vs ? 'Vertex' : 'Fragment'
+										} shader COMPILE_STATUS: ${compileStatus ? 'compiled' : 'failed'}`,
+									];
+
+									if ( !compileStatus ) {
+										const infoLog = gl.getShaderInfoLog( shader );
+
+										output.push(
+											infoLog
+												? `Shader info log: \n${infoLog}`
+												: 'No further info provided.',
+										);
+									}
+
+									return output;
+								} ),
+							].flat().join( '\n' ),
+						},
+						'Vertex shader source': {
+							content: gl.getShaderSource( vs ),
+						},
+						'Fragment shader source': {
+							content: gl.getShaderSource( fs ),
+						},
+					},
 				} );
 			} else {
-				prodLog( 'Program' );
+				prodLog( 'Program linking failed' );
 			}
 
 			gl.deleteProgram( this.program );
