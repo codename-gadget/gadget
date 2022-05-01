@@ -352,6 +352,8 @@ export default class Program<
 			}
 
 			gl.deleteProgram( this.program );
+			gl.deleteShader( vs );
+			gl.deleteShader( fs );
 			this.program = null;
 
 			return;
