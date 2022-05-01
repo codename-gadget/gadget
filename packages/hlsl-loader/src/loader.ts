@@ -140,6 +140,7 @@ export default async function load(): Promise<string> {
 
 	// map SPIR-V binaries to export name
 	const spirvs = new Map<string, Buffer>();
+	const emittedWarnings = new Set<string>();
 
 
 	await Promise.all(
@@ -149,7 +150,7 @@ export default async function load(): Promise<string> {
 				// outputting SPIR-V binary to stdout.
 				const tmpFile = path.resolve( `./.temp/${runId}-${i}.spv` );
 
-				const { stderr } = await exec([
+				const { stderr }: { stderr: string } = await exec([
 					dxc,
 					resourcePath,
 					...dxcArgs,
@@ -165,7 +166,20 @@ export default async function load(): Promise<string> {
 						return;
 					}
 
-					throw new Error( `dxc failed: ${stderr}` );
+					if ( !stderr.includes( ': error:' ) && stderr.includes( ': warning: ' ) ) {
+						// The same warnings may occur multiple times – once per entry point.
+						// Filter out warnings that have already been emitted.
+						if ( !emittedWarnings.has( stderr ) ) {
+							emittedWarnings.add( stderr );
+							emitWarning(
+								new Error(
+									`\n${stderr.replace( ': warning: ', '\nwarning: ' )}`,
+								),
+							);
+						}
+					} else {
+						throw new Error( `dxc failed:\n${stderr}` );
+					}
 				}
 
 				spirvs.set( exportName, await readFile( tmpFile ) );
