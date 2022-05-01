@@ -186,6 +186,7 @@ export enum TextureFormat {
 	rgbInteger = 36248,
 	rgba = 6408,
 	rgbaInteger = 36249,
+	depthComponent = 6402,
 }
 
 
@@ -245,6 +246,9 @@ export enum TextureStorageFormat {
 	rgba16ui = 36214,
 	rgba32i = 36226,
 	rgba32ui = 36208,
+	depthComponent16 = 33189,
+	depthComponent24 = 33190,
+	depthComponent32f = 36012,
 }
 
 
@@ -330,6 +334,11 @@ export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): T
 		case TextureStorageFormat.rgba32i:
 		case TextureStorageFormat.rgba32ui:
 			return TextureFormat.rgbaInteger;
+
+		case TextureStorageFormat.depthComponent16:
+		case TextureStorageFormat.depthComponent24:
+		case TextureStorageFormat.depthComponent32f:
+			return TextureFormat.depthComponent;
 
 		default:
 			return undefined;
