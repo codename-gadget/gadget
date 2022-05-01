@@ -363,23 +363,34 @@ export default async function load(): Promise<string> {
 		if ( name.startsWith( 'type.' ) ) {
 			const publicName = toGlName( name );
 			const instanceName = toGlName( name.replace( /^type\./g, '' ) );
+			let uboInSrc = false;
+
 
 			sources.forEach( ( src, exportName ) => {
+				const newSrc = src
+					// replace the (internal) instance name with a generic one
+					.replace(
+						new RegExp( `(?<!\\w)${instanceName}(?!\\w)`, 'gm' ),
+						options.mangle ? `_u${currentUbo}` : `_u_${instanceName}`,
+					)
+					// replace the wonky public name with the original instance name
+					.replace(
+						new RegExp( `(?<!\\w)${publicName}(?!\\w)`, 'gm' ),
+						instanceName,
+					);
+
+				// check if there's actually a UBO with the given name present
+				if ( newSrc.includes( `uniform ${instanceName}` ) ) uboInSrc = true;
+
 				sources.set(
 					exportName,
-					src
-					// replace the (internal) instance name with a generic one
-						.replace(
-							new RegExp( `(?<!\\w)${instanceName}(?!\\w)`, 'gm' ),
-							options.mangle ? `_u${currentUbo}` : `_u_${instanceName}`,
-						)
-					// replace the wonky public name with the original instance name
-						.replace(
-							new RegExp( `(?<!\\w)${publicName}(?!\\w)`, 'gm' ),
-							instanceName,
-						),
+					newSrc,
 				);
 			} );
+
+			if ( !uboInSrc ) {
+				throw new SymbolMissingError( instanceName, 'UBO' );
+			}
 
 			const members = ubos[name];
 
