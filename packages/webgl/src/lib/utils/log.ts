@@ -1,4 +1,8 @@
 /* eslint-disable no-console */
+
+let recentLogs: Set<unknown>;
+let omitedMessages = 0;
+
 interface DevLogProps {
 	/**
 	 * the message to log
@@ -46,6 +50,15 @@ export function devLog( {
 	// exclude code from prod build.
 	// ideally each devLog call should be wrapped as well
 	if ( __DEV_BUILD__ ) {
+		const serialized = JSON.stringify( props );
+
+		if ( recentLogs.has( serialized ) ) {
+			omitedMessages += 1;
+
+			return;
+		}
+		recentLogs.add( serialized );
+
 		const log = `%c☢%c [DEV]%c ${msg}`;
 		const styles = [
 			'background: orange; color: black; padding: 0 .4em; border-radius: .25em;',
@@ -77,6 +90,22 @@ export function devLog( {
 			console.groupEnd();
 		}
 	}
+}
+
+
+if ( __DEV_BUILD__ ) {
+	recentLogs = new Set();
+
+	setInterval( () => {
+		if ( omitedMessages > 0 ) {
+			devLog( {
+				msg: `omited ${omitedMessages} duplicate messages.`,
+				level: 'info',
+			} );
+		}
+		omitedMessages = 0;
+		recentLogs.clear();
+	}, 4000 );
 }
 
 
