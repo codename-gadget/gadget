@@ -1,6 +1,6 @@
 import type { SpirvReflection } from '../types/SpirvReflection';
 import toGlName from './toGlName';
-import toGlType from './toGlType';
+import { toGlEnum } from './glTypes';
 
 
 /**
@@ -8,7 +8,7 @@ import toGlType from './toGlType';
  *
  * @param reflection - SPIRV-Cross reflection object to base the introspection on
  * @param typeId - The type to introspect.
- * @param offset - Initial buffer offset. @defaultValue 0
+ * @param offset - Initial buffer offset.
  * @returns The introspection object.
  * @internal
  */
@@ -53,7 +53,7 @@ export default function introspectionForType(
 
 
 	return {
-		'@type': toGlType( typeId ),
+		'@type': toGlEnum( typeId ),
 		'@offset': offset,
 	};
 }

@@ -15,7 +15,7 @@ import dxcArgs from './lib/dxcArgs';
 import spirvCrossArgs from './lib/spirvCrossArgs';
 import { dxc, spirvCross } from './lib/binaries';
 import mapMap from './lib/mapMap';
-import toGlType from './lib/toGlType';
+import { toGlEnum } from './lib/glTypes';
 import toGlName from './lib/toGlName';
 import introspectionForType from './lib/unwrapType';
 
@@ -230,7 +230,7 @@ export default async function load(): Promise<string> {
 				attributes.set(
 					options.mangle ? `_a${location}` : `_a_${toGlName( name )}`,
 					{
-						type: toGlType( type ),
+						type: toGlEnum( type ),
 						location,
 					},
 				);
@@ -240,7 +240,7 @@ export default async function load(): Promise<string> {
 				varyings.set(
 					options.mangle ? `_v${location}` : `_v_${toGlName( name )}`,
 					{
-						type: toGlType( type ),
+						type: toGlEnum( type ),
 						location,
 					},
 				);
@@ -291,7 +291,7 @@ export default async function load(): Promise<string> {
 			textures.set(
 				name,
 				{
-					type: toGlType( type ),
+					type: toGlEnum( type ),
 					binding,
 				},
 			);
