@@ -1,4 +1,8 @@
 /* eslint-disable no-console */
+
+let recentLogs: Set<unknown>;
+let omitedMessages = 0;
+
 interface DevLogProps {
 	/**
 	 * the message to log
@@ -12,22 +16,18 @@ interface DevLogProps {
 	 */
 	level?: 'info' | 'warn' | 'error';
 
-	/** Stuff to log inside a collapsable group. Arrays will be unrolled and logged line by line. */
-	groupContent?: unknown;
+	/** Stuff to log inside collapsable groups. */
+	groups?: Record<string, {
+		/**
+		 * Whether to log the group in an expanded state.
+		 *
+		 * @defaultValue false
+		 */
+		expanded?: boolean;
 
-	/**
-	 * The group's label. Only relevant if groupContent is set.
-	 *
-	 * @defaultValue 'more info'
-	 */
-	groupLabel?: string;
-
-	/**
-	 * Whether to log the group in an expanded state.
-	 *
-	 * @defaultValue false
-	 */
-	expanded?: boolean;
+		/** Stuff to log. Arrays will be unrolled and logged line by line. */
+		content: unknown;
+	}>
 }
 
 
@@ -36,16 +36,24 @@ interface DevLogProps {
  *
  * @param props - DevLogProps
  */
-export function devLog( {
-	msg,
-	level = 'warn',
-	groupContent,
-	groupLabel = 'more info',
-	expanded,
-}: DevLogProps ): void {
+export function devLog( props: DevLogProps ): void {
 	// exclude code from prod build.
 	// ideally each devLog call should be wrapped as well
 	if ( __DEV_BUILD__ ) {
+		const serialized = JSON.stringify( props );
+
+		if ( recentLogs.has( serialized ) ) {
+			omitedMessages += 1;
+
+			return;
+		}
+		recentLogs.add( serialized );
+
+		const {
+			msg,
+			level = 'warn',
+			groups,
+		} = props;
 		const log = `%c☢%c [DEV]%c ${msg}`;
 		const styles = [
 			'background: orange; color: black; padding: 0 .4em; border-radius: .25em;',
@@ -67,16 +75,35 @@ export function devLog( {
 				break;
 		}
 
-		if ( groupContent ) {
-			( expanded ? console.group : console.groupCollapsed )( groupLabel );
-			if ( Array.isArray( groupContent ) ) {
-				groupContent.forEach( ( c ) => console.log( c ) );
-			} else {
-				console.log( groupContent );
-			}
-			console.groupEnd();
+		if ( groups ) {
+			Object.entries( groups ).forEach( ([label, { expanded, content }]) => {
+				( expanded ? console.group : console.groupCollapsed )( label );
+				if ( Array.isArray( content ) ) {
+					content.forEach( ( c ) => console.log( c ) );
+				} else {
+					console.log( content );
+				}
+				console.groupEnd();
+			} );
+			console.log( '\n' );
 		}
 	}
+}
+
+
+if ( __DEV_BUILD__ ) {
+	recentLogs = new Set();
+
+	setInterval( () => {
+		if ( omitedMessages > 0 ) {
+			devLog( {
+				msg: `omited ${omitedMessages} duplicate messages.`,
+				level: 'info',
+			} );
+		}
+		omitedMessages = 0;
+		recentLogs.clear();
+	}, 4000 );
 }
 
 

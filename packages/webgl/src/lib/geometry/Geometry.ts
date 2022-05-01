@@ -226,6 +226,18 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			} );
 		} );
 
+
+		if ( __DEV_BUILD__ ) {
+			if ( !Object.keys( attributes ).includes( '0' ) ) {
+				devLog( {
+					msg: `Geometry doesn't have a vertex attribute with index 0. Attributes present: ${
+						Object.keys( attributes ).join( ', ' )
+					}. This can be very slow in certain implementations and should generally be avoided.`,
+				} );
+			}
+		}
+
+
 		super( async () => {
 			const { gl } = this;
 

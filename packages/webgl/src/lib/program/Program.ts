@@ -98,7 +98,7 @@ export interface ProgramProps<I, O> extends WithContext {
 /**
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
- * @typeParam R - Type representation of the static program introspection,
+ * @typeParam I - Type representation of the static program introspection,
  * inferred from {@linkcode ProgramProps.introspection}.
  * @typeParam O - List of UBOs external to this program.
  * Inferred from {@linkcode ProgramProps.introspection} and {@linkcode ProgramProps.ubos}.
@@ -119,8 +119,8 @@ export interface ProgramProps<I, O> extends WithContext {
 ```
  */
 export default class Program<
-	R extends Introspection,
-	O extends { [key in keyof R['ubos']]?: Buffer },
+	I extends Introspection,
+	O extends { [key in keyof I['ubos']]?: Buffer } = Record<never, never>,
 > extends ContextConsumer {
 	private program: WebGLProgram;
 	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
@@ -129,10 +129,10 @@ export default class Program<
 	private fragmentSrc: string;
 
 	/** Individual member views of UBOs specific to this program. */
-	public ubos: UbosFromIntrospection<R, O>;
+	public ubos: UbosFromIntrospection<I, O>;
 
 	/** Texture slots used by this program. */
-	public textures: TexturesFromIntrospection<R>;
+	public textures: TexturesFromIntrospection<I>;
 
 
 	public constructor( {
@@ -141,9 +141,9 @@ export default class Program<
 		ubos: uboOverrides,
 		vertexShader,
 		fragmentShader,
-	}: ProgramProps<R, O> ) {
+	}: ProgramProps<I, O> ) {
 		const ubos: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
-		const uniformBuffers: Program<R, O>['uniformBuffers'] = [];
+		const uniformBuffers: Program<I, O>['uniformBuffers'] = [];
 		const bufferPromises: Promise<WebGLBuffer>[] = [];
 
 		// TODO: clean up and document code
@@ -198,10 +198,10 @@ export default class Program<
 			await Promise.all( bufferPromises );
 		}, context );
 
-		this.ubos = ubos as Program<R, O>['ubos'];
+		this.ubos = ubos as Program<I, O>['ubos'];
 		this.uniformBuffers = uniformBuffers;
 
-		this.textures = textures as Program<R, O>['textures'];
+		this.textures = textures as Program<I, O>['textures'];
 
 		this.vertexSrc = vertexShader;
 		this.fragmentSrc = fragmentShader;
@@ -211,8 +211,11 @@ export default class Program<
 				if ( !src.startsWith( '#version 300 es' ) ) {
 					devLog( {
 						msg: 'Shader does not conform to GLSL ES 3.00. The first line needs to be "#version 300 es".',
-						groupLabel: 'shader source',
-						groupContent: src,
+						groups: {
+							'Shader source': {
+								content: src,
+							},
+						},
 					} );
 				}
 			} );
@@ -301,25 +304,56 @@ export default class Program<
 
 		if ( !gl.getProgramParameter( this.program, gl.LINK_STATUS ) ) {
 			if ( __DEV_BUILD__ ) {
+				const programInfo = gl.getProgramInfoLog( this.program );
+
 				devLog( {
 					level: 'error',
 					msg: 'Program linking failed',
-					groupLabel: 'Info Log',
-					expanded: true,
-					groupContent: [
-						'Program Info Log:',
-						gl.getProgramInfoLog( this.program ),
-						'Vertex Shader Info Log:',
-						gl.getShaderInfoLog( vs ),
-						'Fragment Shader Info Log:',
-						gl.getShaderInfoLog( fs ),
-					],
+					groups: {
+						'Info Log': {
+							expanded: true,
+							content: [
+								'Program LINK_STATUS: failed',
+								programInfo ? `Program info log: \n${programInfo}` : 'No further info provided.',
+
+								...[vs, fs].map( ( shader ) => {
+									const compileStatus = gl.getShaderParameter( shader, gl.COMPILE_STATUS );
+
+									const output = [
+										`\n${
+											shader === vs ? 'Vertex' : 'Fragment'
+										} shader COMPILE_STATUS: ${compileStatus ? 'compiled' : 'failed'}`,
+									];
+
+									if ( !compileStatus ) {
+										const infoLog = gl.getShaderInfoLog( shader );
+
+										output.push(
+											infoLog
+												? `Shader info log: \n${infoLog}`
+												: 'No further info provided.',
+										);
+									}
+
+									return output;
+								} ),
+							].flat().join( '\n' ),
+						},
+						'Vertex shader source': {
+							content: gl.getShaderSource( vs ),
+						},
+						'Fragment shader source': {
+							content: gl.getShaderSource( fs ),
+						},
+					},
 				} );
 			} else {
-				prodLog( 'Program' );
+				prodLog( 'Program linking failed' );
 			}
 
 			gl.deleteProgram( this.program );
+			gl.deleteShader( vs );
+			gl.deleteShader( fs );
 			this.program = null;
 
 			return;
