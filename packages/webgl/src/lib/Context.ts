@@ -22,10 +22,17 @@ export default class Context {
 	 * before any rendering can take place.
 	 *
 	 * @param canvas - The canvas element to render to
+	 * @param options - Additional settings for context creation, passed to the canvas element.
+	 * See {@linkcode https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext#contextattributes | WebGLContextAttributes}.
+	 * `{ alpha: true }` is used  unless explicitly overwritten.
+	 * Note that `{ alpha: false }` can lead to major performance issues on some platforms.
 	 */
-	public initialize( canvas: HTMLCanvasElement ): void {
+	public initialize( canvas: HTMLCanvasElement, options: WebGLContextAttributes = {} ): void {
 		if ( this.resolveContext ) {
-			const ctx = canvas.getContext( 'webgl2' );
+			const ctx = canvas.getContext( 'webgl2', {
+				alpha: true,
+				...options,
+			} );
 
 			ctx.getExtension( 'OES_texture_float_linear' );
 
