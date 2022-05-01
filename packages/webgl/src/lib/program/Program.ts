@@ -98,7 +98,7 @@ export interface ProgramProps<I, O> extends WithContext {
 /**
  * Representation of a `WebGLProgram`, its UBOs and textures.
  *
- * @typeParam R - Type representation of the static program introspection,
+ * @typeParam I - Type representation of the static program introspection,
  * inferred from {@linkcode ProgramProps.introspection}.
  * @typeParam O - List of UBOs external to this program.
  * Inferred from {@linkcode ProgramProps.introspection} and {@linkcode ProgramProps.ubos}.
@@ -119,8 +119,8 @@ export interface ProgramProps<I, O> extends WithContext {
 ```
  */
 export default class Program<
-	R extends Introspection,
-	O extends { [key in keyof R['ubos']]?: Buffer } = Record<never, never>,
+	I extends Introspection,
+	O extends { [key in keyof I['ubos']]?: Buffer } = Record<never, never>,
 > extends ContextConsumer {
 	private program: WebGLProgram;
 	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
@@ -129,10 +129,10 @@ export default class Program<
 	private fragmentSrc: string;
 
 	/** Individual member views of UBOs specific to this program. */
-	public ubos: UbosFromIntrospection<R, O>;
+	public ubos: UbosFromIntrospection<I, O>;
 
 	/** Texture slots used by this program. */
-	public textures: TexturesFromIntrospection<R>;
+	public textures: TexturesFromIntrospection<I>;
 
 
 	public constructor( {
@@ -141,9 +141,9 @@ export default class Program<
 		ubos: uboOverrides,
 		vertexShader,
 		fragmentShader,
-	}: ProgramProps<R, O> ) {
+	}: ProgramProps<I, O> ) {
 		const ubos: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
-		const uniformBuffers: Program<R, O>['uniformBuffers'] = [];
+		const uniformBuffers: Program<I, O>['uniformBuffers'] = [];
 		const bufferPromises: Promise<WebGLBuffer>[] = [];
 
 		// TODO: clean up and document code
@@ -198,10 +198,10 @@ export default class Program<
 			await Promise.all( bufferPromises );
 		}, context );
 
-		this.ubos = ubos as Program<R, O>['ubos'];
+		this.ubos = ubos as Program<I, O>['ubos'];
 		this.uniformBuffers = uniformBuffers;
 
-		this.textures = textures as Program<R, O>['textures'];
+		this.textures = textures as Program<I, O>['textures'];
 
 		this.vertexSrc = vertexShader;
 		this.fragmentSrc = fragmentShader;
