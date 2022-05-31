@@ -3,6 +3,7 @@
   "entryPointStrategy": "packages",
   "out": "docs/temp",
   "excludePrivate": true,
+  "excludeInternal": true,
   "disableSources": false,
   "sort": ["required-first", "source-order"],
   "name": "Gadget",

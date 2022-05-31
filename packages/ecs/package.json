@@ -1,0 +1,33 @@
+{
+  "name": "@gdgt/ecs",
+  "version": "0.0.0",
+  "description": "Barebones ECS framework",
+  "author": "johh <code@johh.net>",
+  "homepage": "http://docs.gdgt.dev",
+  "license": "Apache-2.0",
+  "main": "dist/gadget-ecs.js",
+  "module": "dist/gadget-ecs.js",
+  "typedocMain": "src/gadget-ecs.ts",
+  "directories": {
+    "lib": "dist"
+  },
+  "files": [
+    "dist",
+    "dev"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "start": "npx rollup -c -w --configPlugin typescript",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codename-gadget/gadget.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codename-gadget/gadget/issues"
+  }
+}

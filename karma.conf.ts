@@ -36,6 +36,7 @@ export default ( config: Config ): void => {
 
 		exclude: [
 			'packages/hlsl-loader/**',
+			'packages/ecs/src/env.d.ts',
 		],
 
 		// preprocess matching files before serving them to the browser
@@ -50,12 +51,16 @@ export default ( config: Config ): void => {
 			],
 			exclude: [
 				'packages/hlsl-loader',
+				'packages/ecs/src/env.d.ts',
 			],
 			bundlerOptions: {
 				constants: {
 					__DEV_BUILD__: true,
 					__VERSION__: '"TESTBUILD"',
 				},
+			},
+			compilerOptions: {
+				downlevelIteration: true,
 			},
 			reports: {
 				html: '_coverage',
