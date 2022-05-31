@@ -4,6 +4,8 @@
         "declaration": true,
         "declarationMap": true,
         "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "node",
