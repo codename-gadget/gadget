@@ -199,15 +199,6 @@ export default class Entity {
 	): void {
 		const [symbol] = declaration;
 
-		if (
-			__DEV_BUILD__
-            && !this.mutationObservers[symbol]?.has( callback )
-		) {
-			console.warn(
-				`WARNING: attempting to remove non-existent mutation observer for component "${symbol.description}".`,
-			);
-		}
-
 		this.mutationObservers[symbol]?.delete( callback );
 	}
 
