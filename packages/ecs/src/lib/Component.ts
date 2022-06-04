@@ -10,7 +10,7 @@ const identifiers = new Set<symbol>();
  * This is the value the component has when added to an {@linkcode Entity}.
  * @returns The component declaration.
  */
-function declareComponent<T extends Record<string | symbol, unknown>>(
+function declareComponent<T = unknown>(
 	defaultValueFactory: () => T,
 ): ComponentDeclaration<T>;
 
@@ -23,7 +23,7 @@ function declareComponent<T extends Record<string | symbol, unknown>>(
  * This is the value the component has when added to an {@linkcode Entity}.
  * @returns The component declaration.
  */
-function declareComponent<T extends Record<string | symbol, unknown>>(
+function declareComponent<T = unknown>(
 	identifier: symbol | string,
 	defaultValueFactory: () => T,
 ): ComponentDeclaration<T>;
@@ -37,7 +37,7 @@ function declareComponent<T extends Record<string | symbol, unknown>>(
  * the component has when added to an {@linkcode Entity}), or `undefined`.
  * @returns The component declaration.
  */
-function declareComponent<T extends Record<string | symbol, unknown>>(
+function declareComponent<T = unknown>(
 	identifierOrDefaultValueFactory: symbol | string | ( () => T ),
 	defaultValueFactoryOrUndefined?: ( () => T ) | undefined,
 ): ComponentDeclaration<T> {

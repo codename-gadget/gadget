@@ -63,7 +63,7 @@ export default class Entity {
 		declarations.forEach( ( declaration ) => {
 			const [symbol] = declaration;
 
-			if ( !this.components[symbol]) {
+			if ( this.components[symbol] !== undefined ) {
 				if ( __DEV_BUILD__ ) {
 					console.warn(
 						`WARNING: Removing component "${symbol.description}", which is not present.`,
@@ -89,7 +89,7 @@ export default class Entity {
 	public has( declaration: ComponentDeclaration ): boolean {
 		const [symbol] = declaration;
 
-		return !!this.components[symbol];
+		return this.components[symbol] !== undefined;
 	}
 
 
@@ -104,17 +104,21 @@ export default class Entity {
 		const [symbol] = declaration;
 
 		if ( __DEV_BUILD__ ) {
-			if ( !this.components[symbol]) {
+			if ( this.components[symbol] === undefined ) {
 				console.warn(
-					`WARNING: Reading component "${symbol.description}", which is not present.`,
+					`WARNING: Reading component "${symbol.description}", which is undefined.`,
 				);
 
 				return undefined;
 			}
 
-			// return a frozen object in dev mode to prevent mutation.
+			// return a frozen object for pure objects in dev mode to prevent mutation.
 			// This is skipped in prod mode due to pref implications.
-			return Object.freeze( { ...( this.components[symbol] as object ) } ) as T;
+			if ( Object.prototype.toString.call( this.components[symbol]) === '[object Object]' ) {
+				return Object.freeze( { ...( this.components[symbol] as object ) } ) as T;
+			}
+
+			return this.components[symbol] as T;
 		}
 
 		return this.components[symbol] as T;
@@ -133,9 +137,9 @@ export default class Entity {
 	public getMutable<T>( declaration: ComponentDeclaration<T> ): T | undefined {
 		const [symbol] = declaration;
 
-		if ( __DEV_BUILD__ && !this.components[symbol]) {
+		if ( __DEV_BUILD__ && this.components[symbol] === undefined ) {
 			console.warn(
-				`WARNING: Accessing component "${symbol.description}", which is not present.`,
+				`WARNING: Accessing component "${symbol.description}", which is undefined.`,
 			);
 		}
 
