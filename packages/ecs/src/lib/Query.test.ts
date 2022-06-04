@@ -4,9 +4,9 @@ import Query from './Query';
 
 
 describe( 'Query', () => {
-	const componentA = declareComponent( 'A', { a: 1 } );
-	const componentB = declareComponent( 'B', { b: 1 } );
-	const componentC = declareComponent( 'C', { c: 1 } );
+	const componentA = declareComponent( 'A', () => ( { a: 1 } ) );
+	const componentB = declareComponent( 'B', () => ( { b: 1 } ) );
+	const componentC = declareComponent( 'C', () => ( { c: 1 } ) );
 
 	const abcEntity = new Entity([componentA, componentB, componentC]);
 	const abEntity = new Entity([componentA, componentB]);
@@ -33,7 +33,7 @@ describe( 'Query', () => {
 			has: [componentA, componentC],
 		} );
 
-		const componentD = declareComponent( 'D', { d: 1 } );
+		const componentD = declareComponent( 'D', () => ( { d: 1 } ) );
 		const acdEntity = new Entity([componentC, componentA, componentD]);
 		const { entities } = query.collect();
 

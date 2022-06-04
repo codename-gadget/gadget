@@ -7,7 +7,7 @@
   "disableSources": false,
   "sort": ["required-first", "source-order"],
   "name": "Gadget",
-  "includeVersion": true,
+  "includeVersion": false,
   "customCss": "./docs/public/custom.css",
   "cleanOutputDir": true,
   "darkHighlightTheme": "github-dark",
