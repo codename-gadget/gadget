@@ -1,4 +1,4 @@
-export type ComponentDeclaration<T = object> = [symbol, T];
+export type ComponentDeclaration<T = object> = [symbol, () => T];
 
 let unnamedComponentCount = 0;
 const identifiers = new Set<symbol>();
@@ -6,12 +6,12 @@ const identifiers = new Set<symbol>();
 /**
  * Declares a new component.
  *
- * @param defaultValue - The components default value. This is the value
- * the component has when added to an {@linkcode Entity}.
+ * @param defaultValueFactory - A function returning the components default value.
+ * This is the value the component has when added to an {@linkcode Entity}.
  * @returns The component declaration.
  */
 function declareComponent<T extends Record<string | symbol, unknown>>(
-	defaultValue: T,
+	defaultValueFactory: () => T,
 ): ComponentDeclaration<T>;
 
 /**
@@ -19,41 +19,41 @@ function declareComponent<T extends Record<string | symbol, unknown>>(
  *
  * @param identifier - A unique identifier. If a `string` is provided,
  * you'll need to ensure that it is unique manually.
- * @param defaultValue - The components default value. This is the value
- * the component has when added to an {@linkcode Entity}.
+ * @param defaultValueFactory -  A function returning the components default value.
+ * This is the value the component has when added to an {@linkcode Entity}.
  * @returns The component declaration.
  */
 function declareComponent<T extends Record<string | symbol, unknown>>(
 	identifier: symbol | string,
-	defaultValue: T,
+	defaultValueFactory: () => T,
 ): ComponentDeclaration<T>;
 
 /**
  * Declares a new component.
  *
- * @param identifierOrDefaultValue - Either a unique identifier (if a `string` is provided,
+ * @param identifierOrDefaultValueFactory - Either a unique identifier (if a `string` is provided,
  * you'll need to ensure that it is unique manually), or the components default value.
- * @param defaultValueOrUndefined - Either the components default value (this is the value
+ * @param defaultValueFactoryOrUndefined - Either the components default value (this is the value
  * the component has when added to an {@linkcode Entity}), or `undefined`.
  * @returns The component declaration.
  */
 function declareComponent<T extends Record<string | symbol, unknown>>(
-	identifierOrDefaultValue: symbol | string | T,
-	defaultValueOrUndefined?: T | undefined,
+	identifierOrDefaultValueFactory: symbol | string | ( () => T ),
+	defaultValueFactoryOrUndefined?: ( () => T ) | undefined,
 ): ComponentDeclaration<T> {
 	let symbol: symbol;
-	let defaultValue: T;
+	let defaultValueFactory: () => T;
 
-	if ( defaultValueOrUndefined ) {
-		defaultValue = defaultValueOrUndefined;
+	if ( defaultValueFactoryOrUndefined ) {
+		defaultValueFactory = defaultValueFactoryOrUndefined;
 
-		if ( typeof identifierOrDefaultValue === 'symbol' ) {
-			symbol = identifierOrDefaultValue;
-		} else if ( typeof identifierOrDefaultValue === 'string' ) {
-			symbol = Symbol.for( identifierOrDefaultValue );
+		if ( typeof identifierOrDefaultValueFactory === 'symbol' ) {
+			symbol = identifierOrDefaultValueFactory;
+		} else if ( typeof identifierOrDefaultValueFactory === 'string' ) {
+			symbol = Symbol.for( identifierOrDefaultValueFactory );
 		}
 	} else {
-		defaultValue = identifierOrDefaultValue as T;
+		defaultValueFactory = identifierOrDefaultValueFactory as () => T;
 	}
 
 	if ( !symbol ) {
@@ -70,7 +70,7 @@ function declareComponent<T extends Record<string | symbol, unknown>>(
 
 	identifiers.add( symbol );
 
-	return [symbol, { ...defaultValue }];
+	return [symbol, defaultValueFactory];
 }
 
 

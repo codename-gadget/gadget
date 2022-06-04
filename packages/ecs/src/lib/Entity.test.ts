@@ -3,8 +3,8 @@ import Entity from './Entity';
 
 
 describe( 'Entity', () => {
-	const xComponent = declareComponent( 'x', { x: 0 } );
-	const yComponent = declareComponent( 'y', { y: 0 } );
+	const xComponent = declareComponent( 'x', () => ( { x: 0 } ) );
+	const yComponent = declareComponent( 'y', () => ( { y: 0 } ) );
 
 	it( 'should report added components', () => {
 		const entity = new Entity();
@@ -38,19 +38,6 @@ describe( 'Entity', () => {
 	} );
 
 
-	it( 'should clone component default value internally', () => {
-		const testComponent = declareComponent( { test: 1 } );
-
-		const entity = new Entity([testComponent]);
-
-		testComponent[1].test = 2;
-
-		expect( entity.get( testComponent ).test ).toEqual( 1 );
-
-		entity.destroy();
-	} );
-
-
 	it( 'should provide a frozen value when reading a component', () => {
 		const entity = new Entity([xComponent, yComponent]);
 
@@ -70,7 +57,7 @@ describe( 'Entity', () => {
 
 
 	it( 'should hold changes to component', () => {
-		const testComponent = declareComponent( { test: 1 } );
+		const testComponent = declareComponent( () => ( { test: 1 } ) );
 
 		const entity = new Entity([testComponent]);
 
@@ -93,7 +80,7 @@ describe( 'Entity', () => {
 
 
 	it( 'should not overwrite existing components', () => {
-		const testComponent = declareComponent( { test: 1 } );
+		const testComponent = declareComponent( () => ( { test: 1 } ) );
 
 		const entity = new Entity([testComponent]);
 

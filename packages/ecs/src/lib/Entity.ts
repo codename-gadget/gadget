@@ -35,7 +35,7 @@ export default class Entity {
 	 */
 	public add( ...declarations: ComponentDeclaration[]): void {
 		declarations.forEach( ( declaration ) => {
-			const [symbol, defaultValue] = declaration;
+			const [symbol, defaultValueFactory] = declaration;
 
 			if ( this.components[symbol]) {
 				if ( __DEV_BUILD__ ) {
@@ -47,7 +47,7 @@ export default class Entity {
 				return;
 			}
 
-			this.components[symbol] = { ...defaultValue };
+			this.components[symbol] = defaultValueFactory();
 		} );
 
 		this.world.updateQueries( this );
