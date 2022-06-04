@@ -63,7 +63,7 @@ export default class Entity {
 		declarations.forEach( ( declaration ) => {
 			const [symbol] = declaration;
 
-			if ( this.components[symbol] !== undefined ) {
+			if ( this.components[symbol] === undefined ) {
 				if ( __DEV_BUILD__ ) {
 					console.warn(
 						`WARNING: Removing component "${symbol.description}", which is not present.`,
