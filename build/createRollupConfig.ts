@@ -3,39 +3,56 @@ import type { RollupOptions } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
+import json from '@rollup/plugin-json';
+import copy from 'rollup-plugin-copy';
 import minifyPrivatesTransformer from 'ts-transformer-minify-privates';
 import path from 'path';
-import lernaInfo from '../lerna.json';
+import * as lernaInfo from '../lerna.json';
 
 
 /**
  * Creates a rollup config for compiling both a prod and dev versions.
  *
- * @param name Entry file name without extension
- * @param withDevBuild Whether to build a second version at ./dist/dev with __DEV_BUILD__ enabled
+ * @param name - Entry file name without extension
+ * @param withDevBuild - Whether to build a second version at
+ * @param cjs - Whether to build as CommonJS
+ * `./dist/dev` with `__DEV_BUILD__` enabled
  * @returns The rollup config
  */
 export default function createRollupConfig(
 	name: string,
 	withDevBuild = false,
+	cjs = false,
 ): RollupOptions[] {
 	const config = ( isDevVersion: boolean ): RollupOptions => {
-		const outDir = isDevVersion ? './dist/dev' : './dist';
+		const outDir = isDevVersion ? './dev/dist' : './dist';
 
 		return {
 			input: `./src/${name}.ts`,
 			output: {
 				dir: outDir,
-				format: 'esm',
+				format: cjs ? 'commonjs' : 'esm',
 				sourcemap: isDevVersion,
+				exports: 'auto',
 			},
 			external: [
+				// browser externals
 				'gl-matrix',
+
+				// node.js internals
+				'util',
+				'fs',
+				'fs/promises',
+				'path',
+				'child_process',
+				'crypto',
 			],
 			cache: false,
 			plugins: [
+				json(),
 				typescript( {
-					sourceMap: isDevVersion,
+					sourceMap: false,
+					inlineSourceMap: isDevVersion,
 					outDir,
 					declarationDir: outDir,
 					rootDir: path.join( __dirname, 'src' ),
@@ -62,19 +79,27 @@ export default function createRollupConfig(
 						__VERSION__: JSON.stringify( lernaInfo.version ),
 					},
 				} ),
-				terser( {
-					format: {
-						comments: isDevVersion ? 'some' : false,
-					},
-					mangle: {
-						properties: {
-							regex: /^_private_\w+/,
+				...( isDevVersion ? [
+					copy( {
+						targets: [
+							{ src: './package.json', dest: './dev' },
+						],
+					} ),
+				] : [
+					terser( {
+						format: {
+							comments: isDevVersion ? 'some' : false,
 						},
-					},
+						mangle: {
+							properties: {
+								regex: /^_private_\w+/,
+							},
+						},
 					// compress: {
 					// drop_console: !isDevVersion,
 					// },
-				} ),
+					} ),
+				]),
 			],
 		};
 	};

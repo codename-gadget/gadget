@@ -3,6 +3,40 @@
     "ignorePatterns": [
         "**/node_modules",
         "**/dist",
-        "_coverage"
-    ]
+        "_coverage",
+        "docs"
+    ],
+    "plugins": [
+        "eslint-plugin-tsdoc"
+    ],
+    "rules": {
+        "jsdoc/check-tag-names": [
+            "warn",
+            {
+                "definedTags": [
+                    "internal",
+                    "defaultValue",
+                    "remarks",
+                    "packageDocumentation",
+                    "typeParam",
+                    "linkcode"
+                ]
+            }
+        ],
+        "jsdoc/require-param": [
+            "warn",
+            {
+                "enableRootFixer": false,
+                "checkDestructured": false,
+            }
+        ],
+        "jsdoc/check-param-names": [
+            "warn",
+            {
+                "checkDestructured": false
+            }
+        ],
+        "jsdoc/valid-types": 0,
+        "tsdoc/syntax": "warn"
+    }
 }

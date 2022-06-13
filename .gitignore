@@ -1,6 +1,8 @@
 node_modules/
 packages/**/node_modules/
 packages/**/dist/
+packages/**/dev/
+docs/temp/
 _coverage/
 .DS_Store
 yarn-error.log

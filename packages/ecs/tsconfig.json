@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "declarationDir": "dist/",
+    },
+    "include": [
+        "src/**/*",
+        "src/env.d.ts",
+        "rollup.config.ts",
+    ]
+}

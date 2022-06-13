@@ -1,8 +1,11 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
+        "sourceMap": false,
         "declaration": true,
+        "declarationMap": true,
         "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "node",
@@ -11,7 +14,6 @@
         "lib": [
             "ES2017",
             "dom",
-            "webworker",
         ],
         "plugins": [],
         "rootDir": ".",
@@ -26,5 +28,5 @@
         "compilerOptions": {
             "module": "commonjs"
         }
-    }
+    },
 }

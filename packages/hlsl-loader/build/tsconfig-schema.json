@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "skipLibCheck": true,
+        "lib": [
+            "es5",
+        ],
+    },
+}
