@@ -193,4 +193,27 @@ describe( 'Entity', () => {
 			entity.destroy();
 		} ).not.toThrow();
 	} );
+
+
+	it( 'should throw when interacted with after destruction', () => {
+		const entity = new Entity([xComponent]);
+
+		entity.destroy();
+
+		expect( () => {
+			entity.add( yComponent );
+		} ).toThrow();
+
+		expect( () => {
+			entity.remove( xComponent );
+		} ).toThrow();
+
+		expect( () => {
+			entity.addMutationObserver( xComponent, () => {} );
+		} ).toThrow();
+
+		expect( () => {
+			entity.removeMutationObserver( xComponent, () => {} );
+		} ).toThrow();
+	} );
 } );
