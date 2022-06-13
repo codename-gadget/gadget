@@ -43,3 +43,12 @@ jobs:
       # Check if docs are complete and can be built
       - name: Create docs
         run: yarn docs
+
+      # Perform release dry run when the PR is targeting main
+      - name: Release dry run
+        if: ${{ github.ref_name != 'develop' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx lerna exec --concurrency 1 -- npx --no-install semantic-release -e semantic-release-monorepo --dry-run --branches main
+
