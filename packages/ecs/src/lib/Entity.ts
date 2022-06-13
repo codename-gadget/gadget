@@ -34,6 +34,10 @@ export default class Entity {
 	 * @param declarations - The components to add.
 	 */
 	public add( ...declarations: ComponentDeclaration[]): void {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to access destroyed entity.' );
+		}
+
 		declarations.forEach( ( declaration ) => {
 			const [symbol, defaultValueFactory] = declaration;
 
@@ -60,6 +64,10 @@ export default class Entity {
 	 * @param declarations - The components to remove.
 	 */
 	public remove( ...declarations: ComponentDeclaration[]): void {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to access destroyed entity.' );
+		}
+
 		declarations.forEach( ( declaration ) => {
 			const [symbol] = declaration;
 
@@ -87,6 +95,14 @@ export default class Entity {
 	 * @returns `true` if the component exists, `false` otherwise.
 	 */
 	public has( declaration: ComponentDeclaration ): boolean {
+		if ( !this.components ) {
+			if ( __DEV_BUILD__ ) {
+				console.warn( 'WARNING: accessing destroyed entity.' );
+			}
+
+			return false;
+		}
+
 		const [symbol] = declaration;
 
 		return this.components[symbol] !== undefined;
@@ -101,6 +117,10 @@ export default class Entity {
 	 * @returns The __readonly__ value.
 	 */
 	public get<T>( declaration: ComponentDeclaration<T> ): Readonly<T> | undefined {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to read from destroyed entity.' );
+		}
+
 		const [symbol] = declaration;
 
 		if ( __DEV_BUILD__ ) {
@@ -135,6 +155,10 @@ export default class Entity {
 	 * @returns The __mutable__ value.
 	 */
 	public getMutable<T>( declaration: ComponentDeclaration<T> ): T | undefined {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to access destroyed entity.' );
+		}
+
 		const [symbol] = declaration;
 
 		if ( __DEV_BUILD__ && this.components[symbol] === undefined ) {
@@ -165,6 +189,10 @@ export default class Entity {
 		declaration: ComponentDeclaration,
 		callback: ( entity: Entity ) => void,
 	): () => void {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to observe destroyed entity.' );
+		}
+
 		const [symbol] = declaration;
 
 		if ( !this.mutationObservers[symbol]) {
@@ -197,6 +225,10 @@ export default class Entity {
 		declaration: ComponentDeclaration,
 		callback: ( entity: Entity ) => void,
 	): void {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to access destroyed entity.' );
+		}
+
 		const [symbol] = declaration;
 
 		this.mutationObservers[symbol]?.delete( callback );
@@ -217,5 +249,8 @@ export default class Entity {
 		);
 
 		this.world.unregisterEntity( this );
+
+		this.components = null;
+		this.mutationObservers = null;
 	}
 }
