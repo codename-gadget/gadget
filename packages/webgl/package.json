@@ -1,10 +1,10 @@
 {
   "name": "@gdgt/webgl",
   "version": "0.0.0",
-  "description": "> TODO: description",
+  "description": "Simple WebGL 2.0 abstraction, built for convenience",
   "author": "johh <code@johh.net>",
-  "homepage": "",
-  "license": "MIT",
+  "homepage": "http://docs.gdgt.dev",
+  "license": "Apache-2.0",
   "main": "dist/gadget-webgl.js",
   "module": "dist/gadget-webgl.js",
   "typedocMain": "src/gadget-webgl.ts",
@@ -27,5 +27,12 @@
     "test": "echo \"Error: run tests from root\" && exit 1",
     "start": "npx rollup -c -w --configPlugin typescript",
     "build": "rollup --config rollup.config.ts --configPlugin typescript"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codename-gadget/gadget.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codename-gadget/gadget/issues"
   }
 }
