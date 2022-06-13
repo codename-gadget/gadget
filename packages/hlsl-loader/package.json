@@ -1,7 +1,7 @@
 {
   "name": "@gdgt/hlsl-loader",
   "version": "0.0.0",
-  "description": "Webpack loader for using HLSL in WebGL",
+  "description": "Webpack loader for using HLSL in WebGL 2.0",
   "keywords": [
     "HLSL",
     "GLSL",
@@ -13,7 +13,7 @@
     "dxc"
   ],
   "author": "johh <code@johh.net>",
-  "homepage": "https://github.com/codename-gadget/gadget#readme",
+  "homepage": "http://docs.gdgt.dev",
   "license": "Apache-2.0",
   "main": "dist/gadget-hlsl-loader.js",
   "files": [
