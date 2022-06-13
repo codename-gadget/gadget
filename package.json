@@ -48,6 +48,8 @@
     "rollup": "^2.70.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-terser": "^7.0.2",
+    "semantic-release": "^19.0.3",
+    "semantic-release-monorepo": "^7.0.5",
     "ts-node": "^10.7.0",
     "ts-transformer-minify-privates": "^0.4.0",
     "tslib": "^2.3.1",
