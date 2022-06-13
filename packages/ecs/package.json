@@ -8,6 +8,11 @@
   "main": "dist/gadget-ecs.js",
   "module": "dist/gadget-ecs.js",
   "typedocMain": "src/gadget-ecs.ts",
+  "type": "module",
+  "exports": {
+    "development": "./dev/dist/gadget-ecs.js",
+    "default": "./dist/gadget-ecs.js"
+  },
   "directories": {
     "lib": "dist"
   },

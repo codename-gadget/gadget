@@ -8,11 +8,17 @@
   "main": "dist/gadget-webgl.js",
   "module": "dist/gadget-webgl.js",
   "typedocMain": "src/gadget-webgl.ts",
+  "type": "module",
+  "exports": {
+    "development": "./dev/dist/gadget-webgl.js",
+    "default": "./dist/gadget-webgl.js"
+  },
   "directories": {
     "lib": "dist"
   },
   "files": [
-    "dist"
+    "dist",
+    "dev"
   ],
   "publishConfig": {
     "access": "public"
