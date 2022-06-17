@@ -30,7 +30,8 @@
   },
   "scripts": {
     "build": "ts-node build/createSchema.ts && rollup --config rollup.config.ts --configPlugin typescript",
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "postinstall": "npx --no cpy-cli bin/darwin/lib/libdxcompiler.dylib . --rename=libdxcompiler.3.7.dylib && npx --no cpy-cli bin/linux/lib/libdxcompiler.so . --rename=libdxcompiler.so.3.7"
   },
   "bugs": {
     "url": "https://github.com/codename-gadget/gadget/issues"
