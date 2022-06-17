@@ -18,7 +18,8 @@
   "main": "dist/gadget-hlsl-loader.js",
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "postinstall.mjs"
   ],
   "typedocMain": "./src/gadget-hlsl-loader.ts",
   "publishConfig": {
@@ -30,7 +31,8 @@
   },
   "scripts": {
     "build": "ts-node build/createSchema.ts && rollup --config rollup.config.ts --configPlugin typescript",
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "postinstall": "node ./postinstall.mjs"
   },
   "bugs": {
     "url": "https://github.com/codename-gadget/gadget/issues"
