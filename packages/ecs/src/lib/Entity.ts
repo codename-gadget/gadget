@@ -10,6 +10,9 @@ import defaultWorld from './defaultWorld';
  * The Entity representation, which can carry mulitple components and appear in {@linkcode Query}s.
  */
 export default class Entity {
+	/** ID unique to this entity. */
+	public readonly id: number;
+
 	// TODO: make configurable
 	private world = defaultWorld;
 	private components: Record<symbol, unknown> = {};
@@ -22,7 +25,7 @@ export default class Entity {
 	 * @param declarations - The components to add.
 	 */
 	public constructor( declarations: ComponentDeclaration[] = []) {
-		this.world.registerEntity( this );
+		this.id = this.world.registerEntity( this );
 
 		this.add( ...declarations );
 	}
