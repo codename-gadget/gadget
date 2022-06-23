@@ -6,6 +6,16 @@ describe( 'Entity', () => {
 	const xComponent = declareComponent( 'x', () => ( { x: 0 } ) );
 	const yComponent = declareComponent( 'y', () => ( { y: 0 } ) );
 
+	it( 'should have a unique id', () => {
+		const entityA = new Entity();
+		const entityB = new Entity();
+
+		expect( entityA.id ).toBeGreaterThan( -1 );
+		expect( entityB.id ).toBeGreaterThan( -1 );
+		expect( entityA.id ).not.toBe( entityB.id );
+	} );
+
+
 	it( 'should report added components', () => {
 		const entity = new Entity();
 
@@ -192,6 +202,22 @@ describe( 'Entity', () => {
 			entity.removeMutationObserver( xComponent, callback );
 			entity.destroy();
 		} ).not.toThrow();
+	} );
+
+
+	it( 'should throw in dev mode when causing an infinite mutation loop', () => {
+		const entity = new Entity([xComponent]);
+
+		entity.addMutationObserver(
+			xComponent,
+			() => {
+				entity.getMutable( xComponent );
+			},
+		);
+
+		expect( () => {
+			entity.getMutable( xComponent );
+		} ).toThrow();
 	} );
 
 
