@@ -202,18 +202,18 @@ export default class Entity {
 	/**
 	 * Registers a given callback to be run upon mutation to given component.
 	 *
-	 * "Mutation" in this case means, that the value of a component changed.
+	 * @remarks "Mutation" in this case means, that the value of a component changed.
 	 * Addition and removal of a component is not considered a mutation.
-	 *
 	 * @remarks Note, that since mutations are flagged while reading the observed value, the callback
 	 * is likely going to run __before__ the actual change takes place. This can be worked around by
 	 * running any code accessing the updated value inside a microtask:
+	 * @example
 	 * ```typescript
 	 * entity.addMutationObserver( myComponent, () => {
-	 *  // delay reading to ensure all changes have taken place
-	 *  queueMicrotask( () => {
-	 *    console.log( entity.get( myComponent ) );
-	 *  } );
+	 *    // delay reading to ensure all changes have taken place
+	 *    queueMicrotask( () => {
+	 *        console.log( entity.get( myComponent ) );
+	 *    } );
 	 * } );
 	 * ```
 	 * @param declaration - The component to observe.
