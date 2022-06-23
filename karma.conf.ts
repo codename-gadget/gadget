@@ -83,6 +83,7 @@ export default ( config: Config ): void => {
 			jasmine: {
 				random: false,
 			},
+			captureConsole: false,
 		},
 
 		browsers: ['ChromeHeadless'],
