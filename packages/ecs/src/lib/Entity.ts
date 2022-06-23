@@ -17,6 +17,7 @@ export default class Entity {
 	private world = defaultWorld;
 	private components: Record<symbol, unknown> = {};
 	private mutationObservers: Record<symbol, Set<( entity: Entity ) => void>> = {};
+	private lockedMutations: Set<symbol>;
 
 
 	/**
@@ -26,6 +27,10 @@ export default class Entity {
 	 */
 	public constructor( declarations: ComponentDeclaration[] = []) {
 		this.id = this.world.registerEntity( this );
+
+		if ( __DEV_BUILD__ ) {
+			this.lockedMutations = new Set();
+		}
 
 		this.add( ...declarations );
 	}
@@ -170,7 +175,25 @@ export default class Entity {
 			);
 		}
 
+		if ( __DEV_BUILD__ ) {
+			if ( this.lockedMutations.has( symbol ) ) {
+				throw new Error( `ERROR: Mutation of component "${
+					symbol.description
+				}" triggered by a mutation observer to "${
+					symbol.description
+				}". This is an infinite loop and will not be caught in production mode, leading to a hard crash.` );
+			} else {
+				this.lockedMutations.add( symbol );
+			}
+		}
+
 		this.mutationObservers[symbol]?.forEach( ( observer ) => observer( this ) );
+
+		if ( __DEV_BUILD__ ) {
+			queueMicrotask( () => {
+				this.lockedMutations.delete( symbol );
+			} );
+		}
 
 		return this.components[symbol] as T;
 	}

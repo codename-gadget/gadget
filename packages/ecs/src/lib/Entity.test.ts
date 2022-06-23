@@ -205,6 +205,22 @@ describe( 'Entity', () => {
 	} );
 
 
+	it( 'should throw in dev mode when causing an infinite mutation loop', () => {
+		const entity = new Entity([xComponent]);
+
+		entity.addMutationObserver(
+			xComponent,
+			() => {
+				entity.getMutable( xComponent );
+			},
+		);
+
+		expect( () => {
+			entity.getMutable( xComponent );
+		} ).toThrow();
+	} );
+
+
 	it( 'should throw when interacted with after destruction', () => {
 		const entity = new Entity([xComponent]);
 
