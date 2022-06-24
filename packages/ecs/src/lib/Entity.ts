@@ -10,10 +10,14 @@ import defaultWorld from './defaultWorld';
  * The Entity representation, which can carry mulitple components and appear in {@linkcode Query}s.
  */
 export default class Entity {
+	/** ID unique to this entity. */
+	public readonly id: number;
+
 	// TODO: make configurable
 	private world = defaultWorld;
 	private components: Record<symbol, unknown> = {};
 	private mutationObservers: Record<symbol, Set<( entity: Entity ) => void>> = {};
+	private lockedMutations: Set<symbol>;
 
 
 	/**
@@ -22,7 +26,11 @@ export default class Entity {
 	 * @param declarations - The components to add.
 	 */
 	public constructor( declarations: ComponentDeclaration[] = []) {
-		this.world.registerEntity( this );
+		this.id = this.world.registerEntity( this );
+
+		if ( __DEV_BUILD__ ) {
+			this.lockedMutations = new Set();
+		}
 
 		this.add( ...declarations );
 	}
@@ -167,7 +175,25 @@ export default class Entity {
 			);
 		}
 
+		if ( __DEV_BUILD__ ) {
+			if ( this.lockedMutations.has( symbol ) ) {
+				throw new Error( `ERROR: Mutation of component "${
+					symbol.description
+				}" triggered by a mutation observer to "${
+					symbol.description
+				}". This is an infinite loop and will not be caught in production mode, leading to a hard crash.` );
+			} else {
+				this.lockedMutations.add( symbol );
+			}
+		}
+
 		this.mutationObservers[symbol]?.forEach( ( observer ) => observer( this ) );
+
+		if ( __DEV_BUILD__ ) {
+			queueMicrotask( () => {
+				this.lockedMutations.delete( symbol );
+			} );
+		}
 
 		return this.components[symbol] as T;
 	}
@@ -176,11 +202,20 @@ export default class Entity {
 	/**
 	 * Registers a given callback to be run upon mutation to given component.
 	 *
-	 * Note, that due to current implementation details, the callback might run
-	 * __before__ the actual change takes place.
-	 *
-	 * @remarks "Mutation" means, that the value of a component changed.
+	 * @remarks "Mutation" in this case means, that the value of a component changed.
 	 * Addition and removal of a component is not considered a mutation.
+	 * @remarks Note, that since mutations are flagged while reading the observed value, the callback
+	 * is likely going to run __before__ the actual change takes place. This can be worked around by
+	 * running any code accessing the updated value inside a microtask:
+	 * @example
+	 * ```typescript
+	 * entity.addMutationObserver( myComponent, () => {
+	 *    // delay reading to ensure all changes have taken place
+	 *    queueMicrotask( () => {
+	 *        console.log( entity.get( myComponent ) );
+	 *    } );
+	 * } );
+	 * ```
 	 * @param declaration - The component to observe.
 	 * @param callback - The callback to run on mutation.
 	 * @returns A removal callback, that, if run, removes the mutation observer.

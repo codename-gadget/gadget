@@ -10,6 +10,7 @@ export interface WithWorld {
  * @internal
  */
 export default class World {
+	private previousEntityId = -1;
 	private entities = new Set<Entity>();
 	private queries = new Set<Query>();
 
@@ -26,8 +27,11 @@ export default class World {
 	}
 
 
-	public registerEntity( entity: Entity ): void {
+	public registerEntity( entity: Entity ): number {
 		this.entities.add( entity );
+		this.previousEntityId += 1;
+
+		return this.previousEntityId;
 		// registerEntity is followed by entity.add(),
 		// which calls this.updateQueries
 	}
