@@ -47,20 +47,39 @@ export default class Entity {
 		}
 
 		declarations.forEach( ( declaration ) => {
-			const [symbol, defaultValueFactory] = declaration;
+			// TODO: this updates all queries once per component and is in
+			// desperate need of some optimisation.
+			this.addWithValue( declaration, null );
+		} );
+	}
 
-			if ( this.components[symbol]) {
-				if ( __DEV_BUILD__ ) {
-					console.warn(
-						`WARNING: component "${symbol.description}" already exists. This is a noop.`,
-					);
-				}
 
-				return;
+	/**
+	 * Adds a component to the entity using `value` as the initial value.
+	 *
+	 * @param declaration - The component to add.
+	 * @param value - Initial value of the added component.
+	 */
+	public addWithValue<T>( declaration: ComponentDeclaration<T>, value: T ): void {
+		if ( __DEV_BUILD__ && !this.components ) {
+			console.error( 'ERROR: trying to access destroyed entity.' );
+		}
+
+		const [symbol, defaultValueFactory] = declaration;
+
+		if ( this.components[symbol]) {
+			if ( __DEV_BUILD__ ) {
+				console.warn(
+					`WARNING: component "${symbol.description}" already exists. This is a noop.`,
+				);
 			}
 
-			this.components[symbol] = defaultValueFactory();
-		} );
+			return;
+		}
+
+		const defaultOrValue = value ?? defaultValueFactory();
+
+		this.components[symbol] = defaultOrValue;
 
 		this.world.updateQueries( this );
 	}
