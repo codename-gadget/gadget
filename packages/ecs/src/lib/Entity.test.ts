@@ -48,6 +48,29 @@ describe( 'Entity', () => {
 	} );
 
 
+	it( 'should have a custom initial component value, if specified', () => {
+		const entity = new Entity();
+		const customValue = { x: 20 };
+
+		entity.addWithValue( xComponent, customValue );
+
+		expect( entity.get( xComponent ) ).toEqual( customValue );
+
+		entity.destroy();
+	} );
+
+
+	it( 'should use default initial component value, if custom value is null', () => {
+		const entity = new Entity();
+
+		entity.addWithValue( xComponent, null );
+
+		expect( entity.get( xComponent ).x ).toEqual( 0 );
+
+		entity.destroy();
+	} );
+
+
 	it( 'should provide a frozen value when reading a component', () => {
 		const entity = new Entity([xComponent, yComponent]);
 
