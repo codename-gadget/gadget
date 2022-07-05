@@ -119,7 +119,7 @@ export interface ProgramProps<I, O> extends WithContext {
 ```
  */
 export default class Program<
-	I extends Introspection,
+	I extends Introspection = Introspection,
 	O extends { [key in keyof I['ubos']]?: Buffer } = Record<never, never>,
 > extends ContextConsumer {
 	private program: WebGLProgram;
