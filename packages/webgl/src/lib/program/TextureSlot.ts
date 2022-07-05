@@ -36,7 +36,7 @@ export interface TextureSlotProps extends WithContext {
 export default class TextureSlot extends ContextConsumer {
 	private texture: Texture;
 	private textureReady: boolean;
-	private sampler: WebGLSampler;
+	private sampler: WebGLSampler = null;
 	private unit: number;
 
 
@@ -68,11 +68,17 @@ export default class TextureSlot extends ContextConsumer {
 	/**
 	 * Assigns a given sampler to the texture slot.
 	 *
-	 * @param sampler - The sampler to assign to the texture slot.
+	 * @param sampler - The sampler to assign to the texture slot, or `null` for no sampler.
 	 */
-	public async setSampler( sampler: Sampler ): Promise<void> {
-		this.sampler = null;
-		this.sampler = await sampler.getSampler();
+	public async setSampler( sampler: Sampler | null ): Promise<void> {
+		if ( sampler ) {
+			// undefined means that there is supposed to be a sampler in use,
+			// but it is not ready yet.
+			this.sampler = undefined;
+			this.sampler = await sampler.getSampler();
+		} else {
+			this.sampler = null;
+		}
 	}
 
 
@@ -84,7 +90,7 @@ export default class TextureSlot extends ContextConsumer {
 	 * @returns Index of the bound texture unit if successful, `-1` otherwise.
 	 */
 	public bind( debugName?: string ): number {
-		if ( this.unit ) {
+		if ( this.unit !== undefined ) {
 			this.bindTo( this.unit, debugName );
 
 			return this.unit;
@@ -116,7 +122,8 @@ export default class TextureSlot extends ContextConsumer {
 			gl, texture, textureReady, sampler,
 		} = this;
 
-		if ( gl && textureReady && sampler ) {
+		// we're waiting for neither the texture nor the sampler
+		if ( gl && textureReady && sampler !== undefined ) {
 			gl.activeTexture( gl.TEXTURE0 + unit );
 			texture.bindSync();
 
@@ -132,8 +139,8 @@ export default class TextureSlot extends ContextConsumer {
 				msg += 'while its context has not been initialized.';
 			} else if ( !texture ) {
 				msg += 'with no texture assigned.';
-			} else if ( !sampler ) {
-				msg += 'with no sampler assigned.';
+			} else if ( sampler === undefined ) {
+				msg += 'while the assigned sampler is not ready.';
 			} else if ( !textureReady ) {
 				msg += 'while the assigned texture is not ready.';
 			}
