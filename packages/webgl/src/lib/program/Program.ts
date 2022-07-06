@@ -240,6 +240,21 @@ export default class Program<
 
 
 	/**
+	 * Calls `uploadSync()` on all uniform buffers.
+	 * This is only usable after all buffers have been initialized.
+	 */
+	public uploadUbosSync(): void {
+		const { uniformBuffers } = this;
+
+		uniformBuffers.forEach( ( { buffer } ) => {
+			if ( buffer instanceof SyncableBuffer ) {
+				buffer.uploadSync();
+			}
+		} );
+	}
+
+
+	/**
 	 * Returns the underlying `WebGLProgram`, once ready.
 	 *
 	 * If the program was not compiled before calling `getProgram()`,
