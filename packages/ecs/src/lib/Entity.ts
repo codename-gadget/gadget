@@ -209,9 +209,7 @@ export default class Entity {
 		this.mutationObservers[symbol]?.forEach( ( observer ) => observer( this ) );
 
 		if ( __DEV_BUILD__ ) {
-			queueMicrotask( () => {
-				this.lockedMutations.delete( symbol );
-			} );
+			this.lockedMutations.delete( symbol );
 		}
 
 		return this.components[symbol] as T;
