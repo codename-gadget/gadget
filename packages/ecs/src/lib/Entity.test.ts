@@ -102,6 +102,18 @@ describe( 'Entity', () => {
 	} );
 
 
+	it( 'should allow reading a component mutably multiple times', () => {
+		const entity = new Entity([xComponent]);
+
+		expect( () => {
+			entity.getMutable( xComponent );
+			entity.getMutable( xComponent );
+		} ).not.toThrow();
+
+		entity.destroy();
+	} );
+
+
 	it( 'should return undefined for components that are not present', () => {
 		const entity = new Entity();
 
