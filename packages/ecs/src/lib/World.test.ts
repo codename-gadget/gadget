@@ -61,13 +61,10 @@ describe( 'World', () => {
 
 		world.destroy();
 
-		try {
+		expect( () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const entity = new Entity([], world );
-
-			expect( entity ).toBe( entity );
-		} catch ( err ) {
-			expect( true ).toBe( true );
-		}
+		} ).toThrow();
 
 		World.destroyAll();
 	} );
