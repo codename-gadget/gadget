@@ -10,22 +10,26 @@ import defaultWorld from './defaultWorld';
  * The Entity representation, which can carry mulitple components and appear in {@linkcode Query}s.
  */
 export default class Entity {
+	public static isDestroyed( entity: Entity ): boolean {
+		return entity.isDestroyed;
+	}
+
 	/** ID unique to this entity. */
 	public readonly id: number;
 
-	// TODO: make configurable
-	private world = defaultWorld;
 	private components: Record<symbol, unknown> = {};
 	private mutationObservers: Record<symbol, Set<( entity: Entity ) => void>> = {};
 	private lockedMutations: Set<symbol>;
+	private isDestroyed = false;
 
 
 	/**
 	 * Constructs a new {@linkcode Entity} and adds the given components to it.
 	 *
 	 * @param declarations - The components to add.
+	 * @param world - The world to add the entity to.
 	 */
-	public constructor( declarations: ComponentDeclaration[] = []) {
+	public constructor( declarations: ComponentDeclaration[] = [], private world = defaultWorld ) {
 		this.id = this.world.registerEntity( this );
 
 		if ( __DEV_BUILD__ ) {
@@ -160,7 +164,7 @@ export default class Entity {
 			}
 
 			// return a frozen object for pure objects in dev mode to prevent mutation.
-			// This is skipped in prod mode due to pref implications.
+			// This is skipped in prod mode due to perf implications.
 			if ( Object.prototype.toString.call( this.components[symbol]) === '[object Object]' ) {
 				return Object.freeze( { ...( this.components[symbol] as object ) } ) as T;
 			}
@@ -306,5 +310,7 @@ export default class Entity {
 
 		this.components = null;
 		this.mutationObservers = null;
+
+		this.isDestroyed = true;
 	}
 }
