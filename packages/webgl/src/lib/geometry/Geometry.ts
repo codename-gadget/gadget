@@ -345,11 +345,12 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	/**
 	 * Draws the geometry.
 	 *
+	 * @param mode - Draw mode override. Defaults to the mode specified during construction.
 	 * @returns `true` if the geometry has been successfully drawn, `false` otherwise.
 	 */
-	public draw(): boolean {
+	public draw( mode = this.mode ): boolean {
 		const {
-			gl, vao, mode, primitiveCount, indicesInfo,
+			gl, vao, primitiveCount, indicesInfo,
 		} = this;
 
 		if ( !vao ) {
