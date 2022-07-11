@@ -154,11 +154,6 @@ export default class Query<P extends QueryProps = QueryProps> {
 	private add( entity: Entity ): void {
 		const { entities, added } = this.nextResult as QueryResult;
 
-		if ( this.trackAdded && !entities.has( entity ) ) {
-			added.add( entity );
-		}
-
-
 		// this looks ugly but ensures that entities.has is
 		// only called if actually needed
 		if (

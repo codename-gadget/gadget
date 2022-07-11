@@ -1,77 +1,8 @@
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
-import {
-	TextureCompareFunc,
-	TextureCompareMode,
-	TextureMagFilter,
-	TextureMinFilter,
-	TextureWrap,
-} from './textureEnums';
+import { getSamplingParams, SamplingParams } from './samplingParams';
 
 
-export interface SamplerProps extends WithContext {
-	/**
-	 * The texture minification filter.
-	 *
-	 * @defaultValue {@linkcode TextureMinFilter.linear}
-	 */
-	minFilter?: TextureMinFilter,
-
-	/**
-	 * The texture magnification filter.
-	 *
-	 * @defaultValue {@linkcode TextureMagFilter.linear}
-	 */
-	magFilter?: TextureMagFilter,
-
-	/**
-	 * Texture wrapping mode for the `s`/`x` coordinate.
-	 *
-	 * @defaultValue {@linkcode TextureWrap.clampToEdge}
-	 */
-	wrapS?: TextureWrap,
-
-	/**
-	 * Texture wrapping mode for the `t`/`y` coordinate.
-	 *
-	 * @defaultValue {@linkcode TextureWrap.clampToEdge}
-	 */
-	wrapT?: TextureWrap,
-
-	/**
-	 * Texture wrapping mode for the `r`/`z` coordinate.
-	 *
-	 * @defaultValue {@linkcode TextureWrap.clampToEdge}
-	 */
-	wrapR?: TextureWrap,
-
-	/**
-	 * The minimum level-of-detail.
-	 *
-	 * @defaultValue -1000
-	 */
-	minLod?: number,
-
-	/**
-	 * The maximum level-of-detail.
-	 *
-	 * @defaultValue 1000
-	 */
-	maxLod?: number,
-
-	/**
-	 * The texture comparison mode.
-	 *
-	 * @defaultValue {@linkcode TextureCompareMode.none}
-	 */
-	compareMode?: TextureCompareMode,
-
-	/**
-	 * The texture comparison function.
-	 *
-	 * @defaultValue {@linkcode TextureCompareFunc.lessOrEqual}
-	 */
-	compareFunc?: TextureCompareFunc,
-}
+export type SamplerProps = SamplingParams & WithContext;
 
 
 /**
@@ -83,19 +14,22 @@ export default class Sampler extends ContextConsumer {
 
 	public constructor( {
 		context,
-		minFilter = TextureMinFilter.linear,
-		magFilter = TextureMagFilter.linear,
-		wrapS = TextureWrap.clampToEdge,
-		wrapT = TextureWrap.clampToEdge,
-		wrapR = TextureWrap.clampToEdge,
-		minLod = -1000,
-		maxLod = 1000,
-		compareMode = TextureCompareMode.none,
-		compareFunc = TextureCompareFunc.lessOrEqual,
+		...samplingParams
 	}: SamplerProps = {} ) {
 		super(
 			async () => {
 				const { gl } = this;
+				const {
+					minFilter,
+					magFilter,
+					wrapS,
+					wrapT,
+					wrapR,
+					minLod,
+					maxLod,
+					compareMode,
+					compareFunc,
+				} = getSamplingParams( samplingParams );
 				const sampler = gl.createSampler();
 
 				gl.samplerParameteri( sampler, gl.TEXTURE_MIN_FILTER, minFilter );
