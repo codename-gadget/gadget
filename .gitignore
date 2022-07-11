@@ -7,3 +7,6 @@ _coverage/
 .DS_Store
 yarn-error.log
 lerna-debug.log
+
+packages/hlsl-loader/bin/darwin/lib/libdxcompiler.3.7.dylib
+packages/hlsl-loader/bin/linux/lib/libdxcompiler.so.3.7
