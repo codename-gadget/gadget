@@ -15,6 +15,7 @@ if ( __DEV_BUILD__ ) {
 
 
 export { default as Context, defaultContext } from './lib/Context';
+export type { WithContext } from './lib/abstracts/ContextConsumer';
 
 
 export { default as Buffer, BufferProps } from './lib/buffer/Buffer';
@@ -33,8 +34,9 @@ export { GeometryDrawMode } from './lib/geometry/geometryEnums';
 
 
 export { default as Sampler, SamplerProps } from './lib/texture/Sampler';
+export type { SamplingParams } from './lib/texture/samplingParams';
 export { default as Texture } from './lib/texture/Texture';
-export { Texture2DProps } from './lib/texture/AbstractTexture2D';
+export type { Texture2DProps } from './lib/texture/AbstractTexture2D';
 export { default as TextureCube, TextureCubeProps } from './lib/texture/TextureCube';
 export {
 	TextureMagFilter,
