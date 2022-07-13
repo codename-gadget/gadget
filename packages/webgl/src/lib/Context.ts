@@ -76,6 +76,10 @@ export default class Context {
 
 			ctx.getExtension( 'OES_texture_float_linear' );
 
+			if ( !ctx.getExtension( 'EXT_color_buffer_half_float' ) ) {
+				ctx.getExtension( 'EXT_color_buffer_float' );
+			}
+
 			this.resolveContext( ctx );
 			this.resolveContext = null;
 		} else if ( __DEV_BUILD__ ) {

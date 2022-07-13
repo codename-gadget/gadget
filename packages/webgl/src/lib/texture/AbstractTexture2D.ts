@@ -104,6 +104,27 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 
 
 	/**
+	 * Returns the underlying `WebGLTexture` object if ready, or `null` otherwise.
+	 * Use `getTexture()` to wait until the texture is ready.
+	 *
+	 * @returns `WebGLTexture` if ready, `null` otherwise.
+	 */
+	public getTextureSync(): WebGLTexture | null {
+		if ( this.texture ) {
+			return this.texture;
+		}
+
+		if ( __DEV_BUILD__ ) {
+			devLog( {
+				msg: 'Trying to get texture before it is ready. This is a noop.',
+			} );
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * If ready, binds the texture to the relevant binding point.
 	 *
 	 * @returns `true` if the texture has been successfully bound, `false` otherwise.

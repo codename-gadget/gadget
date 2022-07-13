@@ -1,3 +1,4 @@
+import { devLog } from '../utils/log';
 import Buffer, { BufferProps } from './Buffer';
 
 
@@ -79,12 +80,32 @@ export default class SyncableBuffer<
 	public async upload(): Promise<void> {
 		await this.ready;
 
+		this.uploadSync();
+	}
+
+
+	/**
+	 * Uploads the range marked as invalid to the GPU buffer immediately.
+	 * This is only usable after the buffer has been initialized.
+	 */
+	public uploadSync(): void {
 		const {
 			gl, dataView, target, invalidStart, invalidEnd,
 		} = this;
 
 		if ( invalidEnd - invalidStart > 0 ) {
-			this.bind();
+			const isBound = this.bind();
+
+			if ( !isBound ) {
+				if ( __DEV_BUILD__ ) {
+					devLog( {
+						msg: 'Trying to upload buffer before it is ready. Use await upload() instead.',
+					} );
+				}
+
+				return;
+			}
+
 			gl.bufferSubData(
 				target,
 				invalidStart,
