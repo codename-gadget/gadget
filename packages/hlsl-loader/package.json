@@ -37,11 +37,14 @@
   "bugs": {
     "url": "https://github.com/codename-gadget/gadget/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "json-stable-stringify": "^1.0.1"
+  },
   "peerDependencies": {
     "webpack": "^5.70.0"
   },
   "devDependencies": {
+    "@types/json-stable-stringify": "^1.0.34",
     "ts-json-schema-generator": "^1.0.0"
   }
 }
