@@ -148,6 +148,46 @@ describe( 'Entity', () => {
 	} );
 
 
+	it( 'should provide an exhaustive list of components', () => {
+		const entity = new Entity([xComponent, yComponent]);
+
+		const values = entity.getAll();
+
+		expect( values[xComponent[0]]).toBeDefined();
+		expect( values[yComponent[0]]).toBeDefined();
+
+		entity.destroy();
+	} );
+
+
+	it( 'should not list deleted components', () => {
+		const entity = new Entity([xComponent, yComponent]);
+
+		entity.remove( yComponent );
+
+		const values = entity.getAll();
+
+		expect( Object.prototype.hasOwnProperty.call( values, xComponent[0]) ).toBeTrue();
+		expect( Object.prototype.hasOwnProperty.call( values, yComponent[0]) ).toBeFalse();
+
+		entity.destroy();
+	} );
+
+
+	it( 'should provide the component list as readonly in dev mode', () => {
+		const entity = new Entity([xComponent, yComponent]);
+
+		const values = entity.getAll();
+
+		expect( () => {
+			// @ts-expect-error Testing for readonly error.
+			values[Symbol( 'test' )] = 0;
+		} ).toThrow();
+
+		entity.destroy();
+	} );
+
+
 	it( 'should call mutation observer on getMutable', () => {
 		const entity = new Entity([xComponent, yComponent]);
 		const callback = jasmine.createSpy();
