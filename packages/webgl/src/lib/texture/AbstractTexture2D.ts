@@ -1,5 +1,6 @@
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import { devLog } from '../utils/log';
+import { getSamplingParams, SamplingParams } from './samplingParams';
 import {
 	inferFormatFromStorageFormat,
 	TextureBindingPoint,
@@ -8,7 +9,7 @@ import {
 } from './textureEnums';
 
 
-export interface Texture2DProps extends WithContext {
+export interface Texture2DProps extends WithContext, SamplingParams {
 	/** The textures width in pixels. */
 	width: number
 
@@ -42,6 +43,8 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 	protected width: number;
 	protected height: number;
 	protected format: TextureFormat;
+	protected minLod: number;
+	protected maxLod: number;
 
 
 	public constructor(
@@ -51,9 +54,23 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 			levels = 1,
 			storageFormat = TextureStorageFormat.rgba8,
 			context,
+			...samplingParams
 		}: Texture2DProps,
 		private bindingPoint: TextureBindingPoint,
 	) {
+		const {
+			minFilter,
+			magFilter,
+			wrapS,
+			wrapT,
+			wrapR,
+			minLod,
+			maxLod,
+			compareMode,
+			compareFunc,
+		} = getSamplingParams( samplingParams );
+
+
 		super(
 			async () => {
 				const { gl } = this;
@@ -61,6 +78,15 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 
 				gl.bindTexture( bindingPoint, texture );
 				gl.texStorage2D( bindingPoint, levels, storageFormat, width, height );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_MIN_FILTER, minFilter );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_MAG_FILTER, magFilter );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_WRAP_S, wrapS );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_WRAP_T, wrapT );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_WRAP_R, wrapR );
+				gl.texParameterf( bindingPoint, gl.TEXTURE_MIN_LOD, minLod );
+				gl.texParameterf( bindingPoint, gl.TEXTURE_MAX_LOD, maxLod );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_COMPARE_MODE, compareMode );
+				gl.texParameteri( bindingPoint, gl.TEXTURE_COMPARE_FUNC, compareFunc );
 				gl.bindTexture( bindingPoint, null );
 
 
@@ -68,6 +94,8 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 				this.width = width;
 				this.height = height;
 				this.format = inferFormatFromStorageFormat( storageFormat );
+				this.minLod = minLod;
+				this.maxLod = maxLod;
 			},
 			context,
 		);

@@ -35,7 +35,7 @@ export { GeometryDrawMode } from './lib/geometry/geometryEnums';
 
 export { default as Sampler, SamplerProps } from './lib/texture/Sampler';
 export type { SamplingParams } from './lib/texture/samplingParams';
-export { default as Texture } from './lib/texture/Texture';
+export { default as Texture, TextureProps } from './lib/texture/Texture';
 export type { Texture2DProps } from './lib/texture/AbstractTexture2D';
 export { default as TextureCube, TextureCubeProps } from './lib/texture/TextureCube';
 export {
