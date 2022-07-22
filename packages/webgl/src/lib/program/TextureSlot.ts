@@ -1,5 +1,5 @@
 import type Sampler from '../texture/Sampler';
-import type Texture from '../texture/Texture';
+import type AbstractTexture2D from '../texture/AbstractTexture2D';
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import { devLog, prodLog } from '../utils/log';
 
@@ -10,7 +10,7 @@ export interface TextureSlotProps extends WithContext {
 	 *
 	 * @defaultValue undefined
 	 */
-	texture?: Texture,
+	texture?: AbstractTexture2D,
 
 	/**
 	 * Sampler used for sampling `texture`.
@@ -34,8 +34,8 @@ export interface TextureSlotProps extends WithContext {
  * @internal
  */
 export default class TextureSlot extends ContextConsumer {
-	private texture: Texture;
 	private textureReady: boolean;
+	private texture: AbstractTexture2D;
 	private sampler: WebGLSampler = null;
 	private unit: number;
 
@@ -56,7 +56,7 @@ export default class TextureSlot extends ContextConsumer {
 	 *
 	 * @param texture - The texture to assign to the texture slot.
 	 */
-	public async setTexture( texture: Texture ): Promise<void> {
+	public async setTexture( texture: AbstractTexture2D ): Promise<void> {
 		this.textureReady = false;
 		this.texture = texture;
 
