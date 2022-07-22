@@ -69,8 +69,6 @@ export type QueryResult<P extends QueryProps = QueryProps
  * @typeParam P - The {@linkcode QueryProps} the {@linkcode Query} was constructed with.
  */
 export default class Query<P extends QueryProps = QueryProps> {
-	// TODO: make configurable
-	private world = defaultWorld;
 	private nextResult: QueryResult<P>;
 	private previousResult: QueryResult<P>;
 	private has: ComponentDeclaration[] = [];
@@ -83,13 +81,17 @@ export default class Query<P extends QueryProps = QueryProps> {
 	 * Constructs a new {@linkcode Query}. See {@linkcode QueryProps} for options.
 	 *
 	 * @param param0 - see {@linkcode QueryProps}
+	 * @param world - The world to add the query to.
 	 */
-	public constructor( {
-		has,
-		trackAdded = false,
-		trackRemoved = false,
-		trackMutated,
-	}: P ) {
+	public constructor(
+		{
+			has,
+			trackAdded = false,
+			trackRemoved = false,
+			trackMutated,
+		}: P,
+		private world = defaultWorld,
+	) {
 		this.has = has;
 		this.trackAdded = trackAdded;
 		this.trackRemoved = trackRemoved;
