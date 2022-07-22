@@ -3,19 +3,55 @@ import resolutionForLevel from './resolutionForLevel';
 import {
 	TextureDataType,
 	TextureBindingPoint,
+	TextureMinFilter,
 } from './textureEnums';
 import AbstractTexture2D, { Texture2DProps } from './AbstractTexture2D';
+import { devLog } from '../utils/log';
 
+
+export interface TextureProps extends Texture2DProps {
+	/**
+	 * Whether to clamp mipmap LOD to levels that have been uploaded,
+	 * i.e. whether to show lower/higher res levels in place of empty ones.
+	 *
+	 * @defaultValue false
+	 * @remarks For this to have a visible effect, the texture needs to be sampled
+	 * with {@linkcode TextureProps.minFilter} set to any filter that takes mipmaps into account.
+	 *
+	 * Also, the texture cannot be used with a {@linkcode Sampler}.
+	 */
+	clampLodToUploadedLevels?: boolean;
+}
 
 /**
  * Generic GPU texture store, wrapping `WebGLTexture`.
  */
 export default class Texture extends AbstractTexture2D {
-	public constructor( props: Texture2DProps ) {
+	private clampLodToUploadedLevels = false;
+	private clampedMinLod = Infinity;
+	private clampedMaxLod = -Infinity;
+
+	public constructor( props: TextureProps ) {
 		super(
 			props,
 			TextureBindingPoint.texture2D,
 		);
+
+		if ( props.clampLodToUploadedLevels ) {
+			this.clampLodToUploadedLevels = true;
+
+			if (
+				__DEV_BUILD__
+                && !( props.minFilter === TextureMinFilter.linearMipmapLinear
+                    || props.minFilter === TextureMinFilter.linearMipmapNearest
+                    || props.minFilter === TextureMinFilter.nearestMipmapLinear
+                    || props.minFilter === TextureMinFilter.nearestMipmapNearest )
+			) {
+				devLog( {
+					msg: 'Using clampLodToUploadedLevels on a texture with its minFilter set to linear or nearest has no effect.',
+				} );
+			}
+		}
 	}
 
 
@@ -53,7 +89,7 @@ export default class Texture extends AbstractTexture2D {
 		await this.ready;
 
 		const {
-			gl, format, width, height,
+			gl, format, width, height, clampLodToUploadedLevels, minLod, maxLod,
 		} = this;
 
 		this.bindSync();
@@ -62,6 +98,11 @@ export default class Texture extends AbstractTexture2D {
 			const level = parseInt( _level, 10 );
 			const levelWidth = resolutionForLevel( width, level );
 			const levelHeight = resolutionForLevel( height, level );
+
+			if ( clampLodToUploadedLevels ) {
+				this.clampedMinLod = Math.max( minLod, Math.min( level, this.clampedMinLod ) );
+				this.clampedMaxLod = Math.min( maxLod, Math.max( level, this.clampedMaxLod ) );
+			}
 
 			// TODO: sanity checks
 
@@ -78,6 +119,11 @@ export default class Texture extends AbstractTexture2D {
 				0,
 			);
 		} );
+
+		if ( clampLodToUploadedLevels ) {
+			gl.texParameterf( gl.TEXTURE_2D, gl.TEXTURE_MIN_LOD, this.clampedMinLod );
+			gl.texParameterf( gl.TEXTURE_2D, gl.TEXTURE_MAX_LOD, this.clampedMaxLod );
+		}
 
 		gl.bindTexture( gl.TEXTURE_2D, null );
 	}
