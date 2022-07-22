@@ -34,7 +34,6 @@ export interface TextureSlotProps extends WithContext {
  * @internal
  */
 export default class TextureSlot extends ContextConsumer {
-	private textureReady: boolean;
 	private texture: AbstractTexture2D;
 	private sampler: WebGLSampler = null;
 	private unit: number;
@@ -56,12 +55,8 @@ export default class TextureSlot extends ContextConsumer {
 	 *
 	 * @param texture - The texture to assign to the texture slot.
 	 */
-	public async setTexture( texture: AbstractTexture2D ): Promise<void> {
-		this.textureReady = false;
+	public setTexture( texture: AbstractTexture2D ): void {
 		this.texture = texture;
-
-		await texture.getTexture();
-		this.textureReady = true;
 	}
 
 
@@ -119,17 +114,20 @@ export default class TextureSlot extends ContextConsumer {
 	 */
 	public bindTo( unit: number, debugName?: string ): boolean {
 		const {
-			gl, texture, textureReady, sampler,
+			gl, texture, sampler,
 		} = this;
 
 		// we're waiting for neither the texture nor the sampler
-		if ( gl && textureReady && sampler !== undefined ) {
+		if ( gl && texture && sampler !== undefined ) {
 			gl.activeTexture( gl.TEXTURE0 + unit );
-			texture.bindSync();
+
+			const textureBound = texture.bindSync();
 
 			gl.bindSampler( unit, sampler );
 
-			return true;
+			if ( textureBound ) {
+				return true;
+			}
 		}
 
 		if ( __DEV_BUILD__ ) {
@@ -141,7 +139,7 @@ export default class TextureSlot extends ContextConsumer {
 				msg += 'with no texture assigned.';
 			} else if ( sampler === undefined ) {
 				msg += 'while the assigned sampler is not ready.';
-			} else if ( !textureReady ) {
+			} else {
 				msg += 'while the assigned texture is not ready.';
 			}
 
