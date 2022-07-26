@@ -20,7 +20,7 @@ export type { WithContext } from './lib/abstracts/ContextConsumer';
 
 export { default as Buffer, BufferProps } from './lib/buffer/Buffer';
 export { default as SyncableBuffer, SyncableBufferProps } from './lib/buffer/SyncableBuffer';
-export { default as Framebuffer, FramebufferProps } from './lib/buffer/Framebuffer';
+export { default as Framebuffer, FramebufferProps, BlitParams } from './lib/buffer/Framebuffer';
 export { default as Renderbuffer, RenderbufferProps } from './lib/buffer/Renderbuffer';
 export {
 	BufferDataType,
