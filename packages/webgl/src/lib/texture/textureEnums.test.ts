@@ -115,6 +115,9 @@ describe( 'Texture Enums', () => {
 			[TextureFormat.rgbInteger, gl.RGB_INTEGER],
 			[TextureFormat.rgba, gl.RGBA],
 			[TextureFormat.rgbaInteger, gl.RGBA_INTEGER],
+			[TextureFormat.depthComponent, gl.DEPTH_COMPONENT],
+			[TextureFormat.depthStencil, gl.DEPTH_STENCIL],
+			[TextureFormat.stencil, gl.STENCIL],
 		]) );
 	} );
 
@@ -190,6 +193,12 @@ describe( 'Texture Enums', () => {
 				[TextureStorageFormat.srgb8alpha8, gl.SRGB8_ALPHA8],
 				[TextureStorageFormat.r11fg11fb10f, gl.R11F_G11F_B10F],
 				[TextureStorageFormat.rgb9e5, gl.RGB9_E5],
+				[TextureStorageFormat.depthComponent16, gl.DEPTH_COMPONENT16],
+				[TextureStorageFormat.depthComponent24, gl.DEPTH_COMPONENT24],
+				[TextureStorageFormat.depthComponent32f, gl.DEPTH_COMPONENT32F],
+				[TextureStorageFormat.depth24Stencil8, gl.DEPTH24_STENCIL8],
+				[TextureStorageFormat.depth32fStencil8, gl.DEPTH32F_STENCIL8],
+				[TextureStorageFormat.stencilIndex8, gl.STENCIL_INDEX8],
 			]) );
 		} );
 	} );

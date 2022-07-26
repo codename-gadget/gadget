@@ -187,6 +187,8 @@ export enum TextureFormat {
 	rgba = 6408,
 	rgbaInteger = 36249,
 	depthComponent = 6402,
+	depthStencil = 34041,
+	stencil = 6146,
 }
 
 
@@ -249,6 +251,9 @@ export enum TextureStorageFormat {
 	depthComponent16 = 33189,
 	depthComponent24 = 33190,
 	depthComponent32f = 36012,
+	depth24Stencil8 = 35056,
+	depth32fStencil8 = 36013,
+	stencilIndex8 = 36168,
 }
 
 
@@ -339,6 +344,13 @@ export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): T
 		case TextureStorageFormat.depthComponent24:
 		case TextureStorageFormat.depthComponent32f:
 			return TextureFormat.depthComponent;
+
+		case TextureStorageFormat.depth24Stencil8:
+		case TextureStorageFormat.depth32fStencil8:
+			return TextureFormat.depthStencil;
+
+		case TextureStorageFormat.stencilIndex8:
+			return TextureFormat.stencil;
 
 		default:
 			return undefined;

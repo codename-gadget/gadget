@@ -40,11 +40,13 @@ export interface Texture2DProps extends WithContext, SamplingParams {
  */
 export default abstract class AbstractTexture2D extends ContextConsumer {
 	private texture: WebGLTexture;
-	protected width: number;
-	protected height: number;
 	protected format: TextureFormat;
 	protected minLod: number;
 	protected maxLod: number;
+	/** Texture width in pixels. */
+	public readonly width: number;
+	/** Texture height in pixels. */
+	public readonly height: number;
 
 
 	public constructor(
@@ -91,14 +93,15 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 
 
 				this.texture = texture;
-				this.width = width;
-				this.height = height;
-				this.format = inferFormatFromStorageFormat( storageFormat );
-				this.minLod = minLod;
-				this.maxLod = maxLod;
 			},
 			context,
 		);
+
+		this.width = width;
+		this.height = height;
+		this.format = inferFormatFromStorageFormat( storageFormat );
+		this.minLod = minLod;
+		this.maxLod = maxLod;
 	}
 
 
