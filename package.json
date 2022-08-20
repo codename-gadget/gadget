@@ -43,7 +43,7 @@
     "karma-spec-reporter": "^0.0.33",
     "karma-typescript": "^5.5.3",
     "karma-webpack": "^5.0.0",
-    "lerna": "^4.0.0",
+    "lerna": "^5.4.3",
     "lint-staged": "^12.3.5",
     "rollup": "^2.70.0",
     "rollup-plugin-copy": "^3.4.0",
