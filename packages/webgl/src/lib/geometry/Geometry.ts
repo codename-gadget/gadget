@@ -211,9 +211,9 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			const {
 				size,
 				type,
+				divisor,
 				stride = 0,
 				offset = 0,
-				divisor = 0,
 			} = declaration;
 			let buffer: Buffer;
 
