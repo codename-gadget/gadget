@@ -212,7 +212,7 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 				size,
 				type,
 				divisor,
-				stride = 0,
+				stride = byteLengthPerMember( type ) * size,
 				offset = 0,
 			} = declaration;
 			let buffer: Buffer;
@@ -241,15 +241,40 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			}
 
 			attrs[index] = buffer;
-			attributeInfo.push( {
-				index,
-				buffer,
-				size,
-				type,
-				stride,
-				offset,
-				divisor,
-			} );
+
+
+			// spread across multiple attribute slots if necessary
+			let remainingMembers = size;
+
+			for ( let slot = 0; slot < size / 4; slot += 1 ) {
+				if ( __DEV_BUILD__ ) {
+					const collidingAttribute = attributeInfo.find( ( attr ) => attr.index === index + slot );
+
+					if ( collidingAttribute ) {
+						const collidingIndex = Object.entries( attrs ).find(
+							( b ) => b[1] === collidingAttribute.buffer,
+						)?.[0];
+
+						devLog( {
+							msg: `Attribute ${index} collides with attribute ${
+								collidingIndex
+							}. Keep in mind that attributes with a size >4 span multiple slots.`,
+						} );
+					}
+				}
+
+				attributeInfo.push( {
+					index: index + slot,
+					buffer,
+					size: Math.min( remainingMembers, 4 ),
+					type,
+					stride,
+					offset: offset + byteLengthPerMember( type ) * 4 * slot,
+					divisor,
+				} );
+
+				remainingMembers -= 4;
+			}
 
 			if ( __DEV_BUILD__ ) {
 				if ( divisor % 1 || divisor < 1 ) {
