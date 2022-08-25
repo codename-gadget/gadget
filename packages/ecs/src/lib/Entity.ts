@@ -305,6 +305,16 @@ export default class Entity {
 
 
 	/**
+	 * Returns whether {@linkcode Entity.destroy} has been called on the entity.
+	 *
+	 * @returns `true` if the entity was destroyed, `false` otherwise.
+	 */
+	public isDestroyed(): boolean {
+		return !this.components;
+	}
+
+
+	/**
 	 * Destorys the entity, removing all components.
 	 */
 	public destroy(): void {

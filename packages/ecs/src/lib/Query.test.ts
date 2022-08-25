@@ -128,6 +128,34 @@ describe( 'Query', () => {
 		query.destroy();
 	} );
 
+	it( 'should not list destroyed entities as qualified', () => {
+		const query = new Query( { has: [componentB, componentC] } );
+		const testEntity = new Entity([componentB, componentC]);
+
+		query.collect();
+
+		testEntity.destroy();
+
+		expect( query.collect().entities ).not.toContain( testEntity );
+
+		query.destroy();
+	} );
+
+
+	it( 'should not list destroyed entities as mutated', () => {
+		const query = new Query( { has: [componentB, componentC], trackMutated: [componentB] } );
+		const testEntity = new Entity([componentB, componentC]);
+
+		query.collect();
+
+		testEntity.getMutable( componentB );
+		testEntity.destroy();
+
+		expect( query.collect().mutated ).not.toContain( testEntity );
+
+		query.destroy();
+	} );
+
 
 	it( 'should handle entities added/removed multiple times', () => {
 		const query = new Query( {
