@@ -317,4 +317,18 @@ describe( 'Entity', () => {
 			entity.removeMutationObserver( xComponent, () => {} );
 		} ).toThrow();
 	} );
+
+
+	it( 'should report destruction correctly', () => {
+		const entityA = new Entity([xComponent]);
+		const entityB = new Entity([xComponent]);
+
+		entityA.destroy();
+
+		expect( entityA.isDestroyed() ).toBeTrue();
+
+		expect( entityB.isDestroyed() ).toBeFalse();
+
+		entityB.destroy();
+	} );
 } );
