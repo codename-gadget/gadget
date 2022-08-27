@@ -13,16 +13,16 @@ import {
 
 
 type SharedAttributeInfo = {
-	/** Number of components per vertex. E.g. `4` for a `vec4` */
+	/** Number of components per value. E.g. `4` for a `vec4` */
 	size: number;
 
 	/** Enum specifying the type of buffer/data provided. */
 	type: BufferDataType;
 
 	/**
-	 * Offset in bytes between the beginning of consecutive vertex attributes.
+	 * Offset in bytes between the beginning of consecutive values.
 	 *
-	 * If `0`, no padding between vertices is assumed, i.e.
+	 * If `0`, no padding between values is assumed, i.e.
 	 * `stride` will be equal to the byte length of `type` multiplied by `size`.
 	 *
 	 * @defaultValue 0
@@ -30,11 +30,22 @@ type SharedAttributeInfo = {
 	stride?: number;
 
 	/**
-	 * Start-offset in bytes of the first vertex. Must be a multiple of `type`s byte length.
+	 * Start offset in bytes of the first value. Must be a multiple of `type`s byte length.
 	 *
 	 * @defaultValue 0
 	 */
 	offset?: number;
+
+	/**
+	 * How many instances the value is applied to.
+	 * E.g. to have a different value for each instance, `divisor` should be `1`,
+	 * for pairs of instances to share a value, it should be `2`.
+	 *
+	 * If not set, the value is assumed to change per-vertex, rather than per-instance.
+	 *
+	 * @defaultValue `undefined`
+	 */
+	divisor?: number;
 };
 
 type AttributeDataInfo = DiscriminatingOr<{
@@ -74,6 +85,13 @@ export interface GeometryProps extends WithContext {
 
 	/** Object declaring the vertex indices to use. */
 	indices?: IndicesDeclaration,
+
+	/**
+	 * How many geometry instances should be drawn.
+	 *
+	 * @defaultValue 1
+	 */
+	instances?: number;
 
 	/**
 	 * How the geometry should be drawn.
@@ -123,6 +141,8 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	private attributeInfo: InternalAttributeInfo[];
 	private indicesInfo: { buffer: Buffer, type: IndicesDeclaration['type'] };
 	private primitiveCount: number;
+	private instanceCount: number;
+	private isInstanced = false;
 	private mode: GeometryDrawMode;
 
 	/** The underlying attribute buffers. */
@@ -154,12 +174,14 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 		attributes,
 		indices,
 		mode = GeometryDrawMode.triangles,
+		instances = 1,
 		context,
 	}: T ) {
 		const attrs: Record<number, Buffer> = {};
 		const attributeInfo: Geometry['attributeInfo'] = [];
 		let primitiveCount: number;
 		let indicesInfo: Geometry['indicesInfo'];
+		let isInstanced = instances > 1;
 
 		if ( indices ) {
 			const indexSize = byteLengthPerMember( indices.type );
@@ -189,10 +211,13 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			const {
 				size,
 				type,
-				stride = 0,
+				divisor,
+				stride = byteLengthPerMember( type ) * size,
 				offset = 0,
 			} = declaration;
 			let buffer: Buffer;
+
+			if ( divisor ) isInstanced = true;
 
 			if ( 'data' in declaration ) {
 				buffer = new SyncableBuffer( {
@@ -216,14 +241,49 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 			}
 
 			attrs[index] = buffer;
-			attributeInfo.push( {
-				index,
-				buffer,
-				size,
-				type,
-				stride,
-				offset,
-			} );
+
+
+			// spread across multiple attribute slots if necessary
+			let remainingMembers = size;
+
+			for ( let slot = 0; slot < size / 4; slot += 1 ) {
+				if ( __DEV_BUILD__ ) {
+					const collidingAttribute = attributeInfo.find( ( attr ) => attr.index === index + slot );
+
+					if ( collidingAttribute ) {
+						const collidingIndex = Object.entries( attrs ).find(
+							( b ) => b[1] === collidingAttribute.buffer,
+						)?.[0];
+
+						devLog( {
+							msg: `Attribute ${index} collides with attribute ${
+								collidingIndex
+							}. Keep in mind that attributes with a size >4 span multiple slots.`,
+						} );
+					}
+				}
+
+				attributeInfo.push( {
+					index: index + slot,
+					buffer,
+					size: Math.min( remainingMembers, 4 ),
+					type,
+					stride,
+					offset: offset + byteLengthPerMember( type ) * 4 * slot,
+					divisor,
+				} );
+
+				remainingMembers -= 4;
+			}
+
+			if ( __DEV_BUILD__ ) {
+				if ( divisor % 1 || divisor < 1 ) {
+					devLog( {
+						level: 'error',
+						msg: `"${divisor}" is not a valid attribute divisor. Only integers >0 are allowed.`,
+					} );
+				}
+			}
 		} );
 
 
@@ -254,6 +314,9 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 
 		this.mode = mode;
 		this.primitiveCount = primitiveCount;
+
+		this.isInstanced = isInstanced;
+		this.instanceCount = instances;
 	}
 
 
@@ -300,7 +363,7 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 
 		attributeInfo.forEach( ( attribute, i ) => {
 			const {
-				index, size, type, stride, offset,
+				index, size, type, stride, offset, divisor,
 			} = attribute;
 
 			gl.bindBuffer( gl.ARRAY_BUFFER, buffers[i]);
@@ -324,6 +387,8 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 				default:
 					throw new Error( 'Invalid buffer data type' );
 			}
+
+			if ( divisor ) gl.vertexAttribDivisor( index, divisor );
 		} );
 
 		gl.bindVertexArray( null );
@@ -350,7 +415,7 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	 */
 	public draw( mode = this.mode ): boolean {
 		const {
-			gl, vao, primitiveCount, indicesInfo,
+			gl, vao, primitiveCount, indicesInfo, isInstanced, instanceCount,
 		} = this;
 
 		if ( !vao ) {
@@ -368,7 +433,13 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 		gl.bindVertexArray( vao );
 
 		if ( indicesInfo ) {
-			gl.drawElements( mode, primitiveCount, indicesInfo.type, 0 );
+			if ( isInstanced ) {
+				gl.drawElementsInstanced( mode, primitiveCount, indicesInfo.type, 0, instanceCount );
+			} else {
+				gl.drawElements( mode, primitiveCount, indicesInfo.type, 0 );
+			}
+		} else if ( isInstanced ) {
+			gl.drawArraysInstanced( mode, 0, primitiveCount, instanceCount );
 		} else {
 			gl.drawArrays( mode, 0, primitiveCount );
 		}

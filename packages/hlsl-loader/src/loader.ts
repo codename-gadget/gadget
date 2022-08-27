@@ -6,6 +6,7 @@ import {
 import { exec as cbExec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import stringify from 'json-stable-stringify';
 
 import type { HlslLoaderOptions } from './types/Options';
 import type { SpirvReflection } from './types/SpirvReflection';
@@ -449,7 +450,7 @@ export default async function load(): Promise<string> {
 
 	// and the introspection object as an object
 	const introspectionExport = `export const introspection = ${
-		JSON.stringify( {
+		stringify( {
 			ubos,
 			textures: Object.fromEntries( textures ),
 			attributes: Object.fromEntries( attributes ),
@@ -466,8 +467,11 @@ export default async function load(): Promise<string> {
 	);
 
 
-	// GLSL programs are exported as strings...
-	sources.forEach( ( src, exportName ) => {
+	// GLSL programs are exported as strings
+	// sort by exportName to ensure deterministic export order
+	[...sources].sort(
+		( a, b ) => String( a[0]).localeCompare( b[0]),
+	).forEach( ([exportName, src]) => {
 		srcExports.push( `export const ${exportName} = \`${src}\`;` );
 		exportDeclarations.push(
 			`\n/** GLES 3.0 source of \`${options.exports[exportName].entry}\` */`,

@@ -58,6 +58,7 @@ export default class Entity {
 	}
 
 
+	// TODO: support component adding with symbol only?
 	/**
 	 * Adds a component to the entity using `value` as the initial value.
 	 *
@@ -221,6 +222,22 @@ export default class Entity {
 
 
 	/**
+	 * Returns a __readonly__ map of all component values present on the entity.
+	 *
+	 * @remarks Note, that the values are indexed by the internal symbol representation
+	 * of the component and not their declaration.
+	 * @returns A __readonly__ map of all component values.
+	 */
+	public getAll(): Readonly<Record<symbol, unknown>> {
+		if ( __DEV_BUILD__ ) {
+			return Object.freeze( { ...this.components } );
+		}
+
+		return this.components;
+	}
+
+
+	/**
 	 * Registers a given callback to be run upon mutation to given component.
 	 *
 	 * @remarks "Mutation" in this case means, that the value of a component changed.
@@ -288,6 +305,16 @@ export default class Entity {
 		const [symbol] = declaration;
 
 		this.mutationObservers[symbol]?.delete( callback );
+	}
+
+
+	/**
+	 * Returns whether {@linkcode Entity.destroy} has been called on the entity.
+	 *
+	 * @returns `true` if the entity was destroyed, `false` otherwise.
+	 */
+	public isDestroyed(): boolean {
+		return !this.components;
 	}
 
 

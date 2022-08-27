@@ -187,7 +187,8 @@ export default class Query<P extends QueryProps = QueryProps> {
 				if ( this.trackRemoved ) {
 					removed.add( entity );
 				}
-			} else if ( this.trackMutated ) {
+			}
+			if ( this.trackMutated ) {
 				mutated.delete( entity );
 			}
 		}

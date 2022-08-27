@@ -20,7 +20,7 @@ export type { WithContext } from './lib/abstracts/ContextConsumer';
 
 export { default as Buffer, BufferProps } from './lib/buffer/Buffer';
 export { default as SyncableBuffer, SyncableBufferProps } from './lib/buffer/SyncableBuffer';
-export { default as Framebuffer, FramebufferProps } from './lib/buffer/Framebuffer';
+export { default as Framebuffer, FramebufferProps, BlitParams } from './lib/buffer/Framebuffer';
 export { default as Renderbuffer, RenderbufferProps } from './lib/buffer/Renderbuffer';
 export {
 	BufferDataType,
@@ -35,7 +35,7 @@ export { GeometryDrawMode } from './lib/geometry/geometryEnums';
 
 export { default as Sampler, SamplerProps } from './lib/texture/Sampler';
 export type { SamplingParams } from './lib/texture/samplingParams';
-export { default as Texture } from './lib/texture/Texture';
+export { default as Texture, TextureProps } from './lib/texture/Texture';
 export type { Texture2DProps } from './lib/texture/AbstractTexture2D';
 export { default as TextureCube, TextureCubeProps } from './lib/texture/TextureCube';
 export {

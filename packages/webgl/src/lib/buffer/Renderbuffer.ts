@@ -16,6 +16,10 @@ export interface RenderbufferProps extends WithContext {
  */
 export default class Renderbuffer extends ContextConsumer {
 	private renderbuffer: WebGLRenderbuffer;
+	/** Buffer width in pixels. */
+	public readonly width: number;
+	/** Buffer height in pixels. */
+	public readonly height: number;
 
 	public constructor( {
 		width = 0,
@@ -50,6 +54,9 @@ export default class Renderbuffer extends ContextConsumer {
 
 			this.renderbuffer = renderbuffer;
 		}, context );
+
+		this.width = width;
+		this.height = height;
 	}
 
 
