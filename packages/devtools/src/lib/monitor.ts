@@ -15,6 +15,8 @@ export interface MonitorProps {
 	/**
 	 * How the monitored number should be displayed – `count` displaying a simple total,
 	 * while `rate` shows increase per second.
+	 *
+	 * @defaultValue `count`
 	 */
 	type?: 'count' | 'rate',
 	/** Unit to display next to the total. */
