@@ -18,6 +18,15 @@ export interface GroupProps {
  * Registers a monitor group.
  *
  * @param param0 - See {@linkcode GroupProps}
+ * @example
+ * ```typescript
+ * import { registerGroup } from '@gdgt/devtools';
+ *
+ * registerGroup( {
+ *   id: 'mygroup',
+ *   name: 'My Group',
+ * } );
+ * ```
  */
 export function registerGroup( { id, name }: GroupProps ): void {
 	if ( __DEV_BUILD__ ) {

@@ -28,6 +28,16 @@ export interface MonitorProps {
  * Registers a monitor.
  *
  * @param param0 - See {@linkcode MonitorProps}.
+ * @example
+ * ```typescript
+ * import { registerMonitor } from '@gdgt/devtools';
+ *
+ * registerMonitor( {
+ *   id: 'mygroup/mymonitor',
+ *   name: 'My Monitor',
+ *   type: 'rate',
+ * } );
+ * ```
  */
 export function registerMonitor( {
 	id, name, type = 'count', unit = '',
