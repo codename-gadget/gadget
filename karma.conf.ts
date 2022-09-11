@@ -37,6 +37,7 @@ export default ( config: Config ): void => {
 		exclude: [
 			'packages/hlsl-loader/**',
 			'packages/ecs/src/env.d.ts',
+			'packages/devtools/src/env.d.ts',
 		],
 
 		// preprocess matching files before serving them to the browser
@@ -52,6 +53,7 @@ export default ( config: Config ): void => {
 			exclude: [
 				'packages/hlsl-loader',
 				'packages/ecs/src/env.d.ts',
+				'packages/devtools/src/env.d.ts',
 			],
 			bundlerOptions: {
 				constants: {
