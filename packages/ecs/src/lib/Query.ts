@@ -1,6 +1,21 @@
+import { incrementMonitor, registerMonitor } from '@gdgt/devtools';
 import { ComponentDeclaration } from './Component';
 import defaultWorld from './defaultWorld';
 import type Entity from './Entity';
+
+
+if ( __DEV_BUILD__ ) {
+	registerMonitor( {
+		id: 'ecs/query_mutation',
+		type: 'rate',
+		name: 'Query mutations / sec',
+	} );
+	registerMonitor( {
+		id: 'ecs/query_update',
+		type: 'rate',
+		name: 'Query updates / sec',
+	} );
+}
 
 
 export interface QueryProps<C extends ComponentDeclaration[] = ComponentDeclaration[]> {
@@ -148,6 +163,10 @@ export default class Query<P extends QueryProps = QueryProps> {
 		} else {
 			this.remove( entity );
 		}
+
+		if ( __DEV_BUILD__ ) {
+			incrementMonitor( 'ecs/query_update' );
+		}
 	}
 
 
@@ -207,6 +226,10 @@ export default class Query<P extends QueryProps = QueryProps> {
 		const { mutated } = this.nextResult as QueryResult;
 
 		mutated.add( entity );
+
+		if ( __DEV_BUILD__ ) {
+			incrementMonitor( 'ecs/query_mutation' );
+		}
 	}
 
 
