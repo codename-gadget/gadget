@@ -62,6 +62,7 @@
     "*.{ts,tsx,js}": "eslint --max-warnings 0"
   },
   "dependencies": {
+    "@gdgt/devtools": "file:packages/devtools",
     "@gdgt/webgl": "file:packages/webgl"
   },
   "workspaces": [
