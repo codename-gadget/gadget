@@ -15,8 +15,8 @@ import * as lernaInfo from '../lerna.json';
  *
  * @param name - Entry file name without extension
  * @param withDevBuild - Whether to build a second version at
- * @param cjs - Whether to build as CommonJS
  * `./dist/dev` with `__DEV_BUILD__` enabled
+ * @param cjs - Whether to build as CommonJS
  * @returns The rollup config
  */
 export default function createRollupConfig(
