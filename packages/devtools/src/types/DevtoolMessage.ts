@@ -2,6 +2,9 @@ import { GroupProps } from '../lib/group';
 import type { MonitorProps } from '../lib/monitor';
 
 
+/**
+ * @internal
+ */
 export type DevtoolReport = {
 	intent: 'register_monitor',
 	value: Required<MonitorProps>,
@@ -32,15 +35,26 @@ export type DevtoolReport = {
 };
 
 
+/**
+ * @internal
+ */
 export type DevtoolMessage = {
 	intent: 'send_registration'
 };
 
+
+/**
+ * @internal
+ */
 export type WrappedDevtoolMessage = {
 	type: 'gadget-devtools-message',
 	message: DevtoolMessage,
 };
 
+
+/**
+ * @internal
+ */
 export type WrappedDevtoolReport = {
 	type: 'gadget-devtools-report',
 	reports: DevtoolReport[]
