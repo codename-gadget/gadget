@@ -7,39 +7,16 @@ describe( 'World', () => {
 	const aComponent = declareComponent( 'a', () => ( { a: 0 } ) );
 	const bComponent = declareComponent( 'b', () => ( { b: 0 } ) );
 
-	it( 'should have a unique id', () => {
-		const worldA = new World( 'A' );
-		const worldB = new World( 'B' );
-
-		expect( worldA.id ).toBe( 'A' );
-		expect( worldB.id ).toBe( 'B' );
-
-		World.destroyAll();
-	} );
-
-	it( 'should generate random id', () => {
-		const world = new World();
-
-		expect( world.id ).not.toBe( undefined );
-		expect( world.id ).not.toBe( null );
-
-		World.destroyAll();
-	} );
-
 	it( 'should destroy', () => {
 		const world = new World();
 
-		expect( World.getWorld( world.id ) ).toBe( world );
-
 		world.destroy();
 
-		expect( World.getWorld( world.id ) ).toBe( undefined );
-
-		World.destroyAll();
+		expect( world.isDestroyed() ).toBe( true );
 	} );
 
 	it( 'should destroy entities', () => {
-		const world = new World( 'A' );
+		const world = new World();
 
 		const entityA = new Entity([], world );
 		const entityB = new Entity([], world );
@@ -49,11 +26,9 @@ describe( 'World', () => {
 
 		world.destroy();
 
-		expect( World.isDestroyed( world ) ).toBe( true );
-		expect( Entity.isDestroyed( entityA ) ).toBe( true );
-		expect( Entity.isDestroyed( entityB ) ).toBe( true );
-
-		World.destroyAll();
+		expect( world.isDestroyed() ).toBe( true );
+		expect( entityA.isDestroyed() ).toBe( true );
+		expect( entityB.isDestroyed() ).toBe( true );
 	} );
 
 	it( 'should throw if destroyed', () => {
@@ -65,7 +40,5 @@ describe( 'World', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const entity = new Entity([], world );
 		} ).toThrow();
-
-		World.destroyAll();
 	} );
 } );

@@ -10,17 +10,12 @@ import defaultWorld from './defaultWorld';
  * The Entity representation, which can carry mulitple components and appear in {@linkcode Query}s.
  */
 export default class Entity {
-	public static isDestroyed( entity: Entity ): boolean {
-		return entity.isDestroyed;
-	}
-
 	/** ID unique to this entity. */
 	public readonly id: number;
 
 	private components: Record<symbol, unknown> = {};
 	private mutationObservers: Record<symbol, Set<( entity: Entity ) => void>> = {};
 	private lockedMutations: Set<symbol>;
-	private isDestroyed = false;
 
 
 	/**
@@ -335,7 +330,5 @@ export default class Entity {
 
 		this.components = null;
 		this.mutationObservers = null;
-
-		this.isDestroyed = true;
 	}
 }

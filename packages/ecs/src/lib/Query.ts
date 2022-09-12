@@ -1,9 +1,13 @@
 import { ComponentDeclaration } from './Component';
 import defaultWorld from './defaultWorld';
 import type Entity from './Entity';
+import type World from './World';
 
 
 export interface QueryProps<C extends ComponentDeclaration[] = ComponentDeclaration[]> {
+	/** The {@linkcode World} that the query will query from. */
+	world?: World
+
 	/** The components an {@linkcode Entity} needs to have to match the {@linkcode Query}. */
 	has: C,
 
@@ -71,6 +75,7 @@ export type QueryResult<P extends QueryProps = QueryProps
 export default class Query<P extends QueryProps = QueryProps> {
 	private nextResult: QueryResult<P>;
 	private previousResult: QueryResult<P>;
+	private world: World;
 	private has: ComponentDeclaration[] = [];
 	private trackAdded: boolean;
 	private trackRemoved: boolean;
@@ -81,17 +86,17 @@ export default class Query<P extends QueryProps = QueryProps> {
 	 * Constructs a new {@linkcode Query}. See {@linkcode QueryProps} for options.
 	 *
 	 * @param param0 - see {@linkcode QueryProps}
-	 * @param world - The world to add the query to.
 	 */
 	public constructor(
 		{
+			world = defaultWorld,
 			has,
 			trackAdded = false,
 			trackRemoved = false,
 			trackMutated,
 		}: P,
-		private world = defaultWorld,
 	) {
+		this.world = world;
 		this.has = has;
 		this.trackAdded = trackAdded;
 		this.trackRemoved = trackRemoved;
