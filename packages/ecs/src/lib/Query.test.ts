@@ -1,6 +1,8 @@
 import declareComponent from './Component';
+import defaultWorld from './defaultWorld';
 import Entity from './Entity';
 import Query from './Query';
+import World from './World';
 
 
 describe( 'Query', () => {
@@ -400,5 +402,42 @@ describe( 'Query', () => {
 		query.destroy();
 
 		expect( query.isDestroyed() ).toBeTrue();
+	} );
+
+
+	it( 'should only list qualifiying entities in the same world', () => {
+		const world = new World();
+		const query = new Query( {
+			has: [componentB, componentC],
+			world,
+		} );
+		const bcEntityInCustomWorld = new Entity([
+			componentB,
+			componentC,
+		], world );
+
+		const result = query.collect();
+
+		expect( result.entities ).toContain( bcEntityInCustomWorld );
+		expect( result.entities ).not.toContain( bcEntity );
+
+		world.destroy();
+	} );
+
+	it( 'should query defaultWorld by default', () => {
+		const query = new Query( {
+			has: [componentB, componentC],
+		} );
+		const bcEntityInDefaultWorld = new Entity([
+			componentB,
+			componentC,
+		], defaultWorld );
+
+		const result = query.collect();
+
+		expect( result.entities ).toContain( bcEntityInDefaultWorld );
+
+		bcEntityInDefaultWorld.destroy();
+		query.destroy();
 	} );
 } );
