@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type Entity from './Entity';
 import type Query from './Query';
 
@@ -23,7 +24,10 @@ export default class World {
 	 * @internal
 	 */
 	public registerQuery( query: Query ): void {
-		if ( this.isDestroyed() ) { throw new Error( 'The world is already destroyed!' ); }
+		if ( __DEV_BUILD__ && this.isDestroyed() ) {
+			console.warn( 'ERROR: trying to query destroyed world.' );
+		}
+
 		this.queries.add( query );
 		this.entities.forEach( ( entity ) => {
 			query.test( entity );
@@ -38,7 +42,10 @@ export default class World {
 	 * @internal
 	 */
 	public unregisterQuery( query: Query ): void {
-		if ( this.isDestroyed() ) { throw new Error( 'The world is already destroyed!' ); }
+		if ( __DEV_BUILD__ && this.isDestroyed() ) {
+			console.warn( 'ERROR: trying to remove query from destroyed world.' );
+		}
+
 		this.queries.delete( query );
 	}
 
@@ -51,7 +58,10 @@ export default class World {
 	 * @internal
 	 */
 	public registerEntity( entity: Entity ): number {
-		if ( this.isDestroyed() ) { throw new Error( 'The world is already destroyed!' ); }
+		if ( __DEV_BUILD__ && this.isDestroyed() ) {
+			console.warn( 'ERROR: trying to add entity to destroyed world.' );
+		}
+
 		this.entities.add( entity );
 		this.previousEntityId += 1;
 
@@ -68,7 +78,10 @@ export default class World {
 	 * @internal
 	 */
 	public unregisterEntity( entity: Entity ): void {
-		if ( this.isDestroyed() ) { throw new Error( 'The world is already destroyed!' ); }
+		if ( __DEV_BUILD__ && this.isDestroyed() ) {
+			console.warn( 'ERROR: trying remove entity from destroyed world.' );
+		}
+
 		this.entities.delete( entity );
 		// unregisterEntity is preceeded by entity.remove(),
 		// which calls this.updateQueries
@@ -82,7 +95,10 @@ export default class World {
 	 * @internal
 	 */
 	public updateQueries( entity: Entity ): void {
-		if ( this.isDestroyed() ) { throw new Error( 'The world is already destroyed!' ); }
+		if ( __DEV_BUILD__ && this.isDestroyed() ) {
+			console.warn( 'ERROR: trying to access destroyed world.' );
+		}
+
 		this.queries.forEach( ( query ) => {
 			query.test( entity );
 		} );
