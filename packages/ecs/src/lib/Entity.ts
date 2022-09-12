@@ -13,8 +13,6 @@ export default class Entity {
 	/** ID unique to this entity. */
 	public readonly id: number;
 
-	// TODO: make configurable
-	private world = defaultWorld;
 	private components: Record<symbol, unknown> = {};
 	private mutationObservers: Record<symbol, Set<( entity: Entity ) => void>> = {};
 	private lockedMutations: Set<symbol>;
@@ -24,8 +22,9 @@ export default class Entity {
 	 * Constructs a new {@linkcode Entity} and adds the given components to it.
 	 *
 	 * @param declarations - The components to add.
+	 * @param world - The world to add the entity to, defaults to {@linkcode defaultWorld}.
 	 */
-	public constructor( declarations: ComponentDeclaration[] = []) {
+	public constructor( declarations: ComponentDeclaration[] = [], private world = defaultWorld ) {
 		this.id = this.world.registerEntity( this );
 
 		if ( __DEV_BUILD__ ) {
@@ -161,7 +160,7 @@ export default class Entity {
 			}
 
 			// return a frozen object for pure objects in dev mode to prevent mutation.
-			// This is skipped in prod mode due to pref implications.
+			// This is skipped in prod mode due to perf implications.
 			if ( Object.prototype.toString.call( this.components[symbol]) === '[object Object]' ) {
 				return Object.freeze( { ...( this.components[symbol] as object ) } ) as T;
 			}

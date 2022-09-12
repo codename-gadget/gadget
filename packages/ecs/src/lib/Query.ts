@@ -2,6 +2,7 @@ import { incrementMonitor, registerMonitor } from '@gdgt/devtools';
 import { ComponentDeclaration } from './Component';
 import defaultWorld from './defaultWorld';
 import type Entity from './Entity';
+import type World from './World';
 
 
 if ( __DEV_BUILD__ ) {
@@ -33,6 +34,13 @@ export interface QueryProps<C extends ComponentDeclaration[] = ComponentDeclarat
 	 * be listed as `mutated` in the query result.
 	 */
 	trackMutated?: C[number][],
+
+	/**
+	 * The world to query.
+	 *
+	 * @defaultValue {@linkcode defaultWorld}
+	 */
+	world?: World,
 }
 
 
@@ -84,10 +92,9 @@ export type QueryResult<P extends QueryProps = QueryProps
  * @typeParam P - The {@linkcode QueryProps} the {@linkcode Query} was constructed with.
  */
 export default class Query<P extends QueryProps = QueryProps> {
-	// TODO: make configurable
-	private world = defaultWorld;
 	private nextResult: QueryResult<P>;
 	private previousResult: QueryResult<P>;
+	private world: World;
 	private has: ComponentDeclaration[] = [];
 	private trackAdded: boolean;
 	private trackRemoved: boolean;
@@ -99,12 +106,16 @@ export default class Query<P extends QueryProps = QueryProps> {
 	 *
 	 * @param param0 - see {@linkcode QueryProps}
 	 */
-	public constructor( {
-		has,
-		trackAdded = false,
-		trackRemoved = false,
-		trackMutated,
-	}: P ) {
+	public constructor(
+		{
+			has,
+			trackAdded = false,
+			trackRemoved = false,
+			trackMutated,
+			world = defaultWorld,
+		}: P,
+	) {
+		this.world = world;
 		this.has = has;
 		this.trackAdded = trackAdded;
 		this.trackRemoved = trackRemoved;
@@ -270,6 +281,16 @@ export default class Query<P extends QueryProps = QueryProps> {
 		mutated?.clear();
 
 		return frozenResult;
+	}
+
+
+	/**
+	 * Returns whether {@linkcode Query.destroy} has been called on the query.
+	 *
+	 * @returns `true` if the query was destroyed, `false` otherwise.
+	 */
+	public isDestroyed(): boolean {
+		return !this.nextResult;
 	}
 
 
