@@ -389,4 +389,16 @@ describe( 'Query', () => {
 		query.destroy();
 		testEntity.destroy();
 	} );
+
+	it( 'should report being destroyed correctly', () => {
+		const query = new Query( {
+			has: [componentB, componentC],
+		} );
+
+		expect( query.isDestroyed() ).toBeFalse();
+
+		query.destroy();
+
+		expect( query.isDestroyed() ).toBeTrue();
+	} );
 } );

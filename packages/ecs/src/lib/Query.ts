@@ -262,6 +262,16 @@ export default class Query<P extends QueryProps = QueryProps> {
 
 
 	/**
+	 * Returns whether {@linkcode Query.destroy} has been called on the query.
+	 *
+	 * @returns `true` if the query was destroyed, `false` otherwise.
+	 */
+	public isDestroyed(): boolean {
+		return !this.nextResult;
+	}
+
+
+	/**
 	 * Destroys the {@linkcode Query}, clearing all previous results and
 	 * preventing it from being updated in the future.
 	 */
