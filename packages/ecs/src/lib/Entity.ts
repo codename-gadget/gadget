@@ -22,7 +22,7 @@ export default class Entity {
 	 * Constructs a new {@linkcode Entity} and adds the given components to it.
 	 *
 	 * @param declarations - The components to add.
-	 * @param world - The world to add the entity to.
+	 * @param world - The world to add the entity to, defaults to {@linkcode defaultWorld}.
 	 */
 	public constructor( declarations: ComponentDeclaration[] = [], private world = defaultWorld ) {
 		this.id = this.world.registerEntity( this );

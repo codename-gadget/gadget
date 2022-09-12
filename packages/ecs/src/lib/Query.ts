@@ -5,9 +5,6 @@ import type World from './World';
 
 
 export interface QueryProps<C extends ComponentDeclaration[] = ComponentDeclaration[]> {
-	/** The {@linkcode World} that the query will query from. */
-	world?: World
-
 	/** The components an {@linkcode Entity} needs to have to match the {@linkcode Query}. */
 	has: C,
 
@@ -22,6 +19,13 @@ export interface QueryProps<C extends ComponentDeclaration[] = ComponentDeclarat
 	 * be listed as `mutated` in the query result.
 	 */
 	trackMutated?: C[number][],
+
+	/**
+	 * The world to query.
+	 *
+	 * @defaultValue {@linkcode defaultWorld}
+	 */
+	world?: World,
 }
 
 
@@ -89,11 +93,11 @@ export default class Query<P extends QueryProps = QueryProps> {
 	 */
 	public constructor(
 		{
-			world = defaultWorld,
 			has,
 			trackAdded = false,
 			trackRemoved = false,
 			trackMutated,
+			world = defaultWorld,
 		}: P,
 	) {
 		this.world = world;
