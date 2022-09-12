@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import tsEs6Config from 'karma-typescript-es6-transform';
 import type { Config, ConfigOptions } from 'karma';
 import type { KarmaTypescriptConfig } from 'karma-typescript';
 
@@ -60,6 +63,9 @@ export default ( config: Config ): void => {
 					__DEV_BUILD__: true,
 					__VERSION__: '"TESTBUILD"',
 				},
+				transforms: [
+					tsEs6Config(),
+				],
 			},
 			compilerOptions: {
 				downlevelIteration: true,

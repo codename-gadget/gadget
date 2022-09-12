@@ -1,5 +1,7 @@
 import declareComponent from './Component';
+import defaultWorld from './defaultWorld';
 import Entity from './Entity';
+import Query from './Query';
 
 
 describe( 'Entity', () => {
@@ -330,5 +332,23 @@ describe( 'Entity', () => {
 		expect( entityB.isDestroyed() ).toBeFalse();
 
 		entityB.destroy();
+	} );
+
+
+	it( 'should be added to defaultWorld by default', () => {
+		const query = new Query( {
+			has: [xComponent],
+			world: defaultWorld,
+		} );
+		const entityInDefaultWorld = new Entity([
+			xComponent,
+		]);
+
+		const result = query.collect();
+
+		expect( result.entities ).toContain( entityInDefaultWorld );
+
+		entityInDefaultWorld.destroy();
+		query.destroy();
 	} );
 } );
