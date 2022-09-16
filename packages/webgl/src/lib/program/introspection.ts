@@ -1,7 +1,7 @@
 import type { SamplerType } from '../texture/textureEnums';
 import type { UniformType } from './programEnums';
 import type TextureSlot from './TextureSlot';
-import type UniformView from './UniformView';
+import type UniformView from '../buffer/UniformView';
 
 
 export type UboMember = {
@@ -14,7 +14,7 @@ UboMember | UboMemberList | number;
 
 type UboMemberList = UboData[] | { [key: string]: UboData };
 
-type UboIntrospection = { [key: string]: UboData, '@blockSize': number };
+export type UboIntrospection = { [key: string]: UboData, '@blockSize': number };
 
 type AttributeIntrospection = { type: UniformType, location: number };
 
