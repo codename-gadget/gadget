@@ -36,6 +36,9 @@ export default function createRollupConfig(
 				exports: 'auto',
 			},
 			external: [
+				// gadget externals
+				'@gdgt/devtools',
+
 				// browser externals
 				'gl-matrix',
 
