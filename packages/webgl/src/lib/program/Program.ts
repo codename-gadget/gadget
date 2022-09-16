@@ -1,65 +1,15 @@
 import { devLog, prodLog } from '../utils/log';
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import Buffer from '../buffer/Buffer';
-import { BufferBindingPoint, BufferUsage } from '../buffer/bufferEnums';
 import SyncableBuffer from '../buffer/SyncableBuffer';
 import {
 	Introspection,
 	TexturesFromIntrospection,
-	UboData,
-	UboMember,
 	UbosFromIntrospection,
 	UnwrappedUbo,
 } from './introspection';
-import { byteLengthOfUniformType } from './programEnums';
-import UniformView from './UniformView';
 import TextureSlot from './TextureSlot';
-
-
-function viewOrListFromIntro(
-	valueOrList: UboData,
-	parentBuffer: ArrayBuffer,
-	glBuffer: SyncableBuffer,
-): UniformView<Float32Array> | UnwrappedUbo {
-	if (
-		typeof valueOrList === 'object'
-		&& '@type' in valueOrList
-	) {
-		const { '@type': type, '@offset': offset } = valueOrList as UboMember;
-		const byteLength = byteLengthOfUniformType( type );
-
-		return new UniformView( {
-			view: new Float32Array(
-				parentBuffer,
-				offset,
-				byteLength / Float32Array.BYTES_PER_ELEMENT,
-			),
-			invalidate: () => {
-				glBuffer.invalidate(
-					offset,
-					offset + byteLength,
-				);
-			},
-			upload: () => glBuffer.upload(),
-		} );
-	}
-
-	if ( Array.isArray( valueOrList ) ) {
-		return (
-			valueOrList as UboData[]
-		).map( ( data ) => (
-			viewOrListFromIntro( data, parentBuffer, glBuffer )
-		) ) as UnwrappedUbo<UboData[]>;
-	}
-
-	const output: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
-
-	Object.entries( valueOrList ).forEach( ([key, data]) => {
-		output[key] = viewOrListFromIntro( data, parentBuffer, glBuffer );
-	} );
-
-	return output as UnwrappedUbo;
-}
+import Uniformbuffer from '../buffer/Uniformbuffer';
 
 
 export interface ProgramProps<I, O> extends WithContext {
@@ -142,7 +92,7 @@ export default class Program<
 		vertexShader,
 		fragmentShader,
 	}: ProgramProps<I, O> ) {
-		const ubos: Record<string, ReturnType<typeof viewOrListFromIntro>> = {};
+		const ubos: Record<string, UnwrappedUbo> = {};
 		const uniformBuffers: Program<I, O>['uniformBuffers'] = [];
 		const bufferPromises: Promise<WebGLBuffer>[] = [];
 
@@ -158,24 +108,16 @@ export default class Program<
 
 		if ( introspection.ubos ) {
 			Object.entries( introspection.ubos ).forEach( (
-				[name, { '@blockSize': size, ...members }],
+				[name, blockIntrospection],
 			) => {
 				if ( ubos[name] !== undefined ) return;
 
-				const arrayBuffer = new ArrayBuffer( size );
-				const buffer = new SyncableBuffer( {
+				const buffer = new Uniformbuffer( {
 					context,
-					target: BufferBindingPoint.uniformBuffer,
-					usage: BufferUsage.dynamicDraw,
-					data: arrayBuffer,
+					introspection: blockIntrospection,
 				} );
 
-
-				ubos[name] = viewOrListFromIntro(
-					members,
-					arrayBuffer,
-					buffer,
-				);
+				ubos[name] = buffer.uniforms;
 
 				uniformBuffers.push( { name, buffer } );
 				bufferPromises.push( buffer.getBuffer() );
@@ -220,6 +162,47 @@ export default class Program<
 				}
 			} );
 		}
+	}
+
+
+	/**
+	 * Instructs the program to use the given `buffer` as the source
+	 * for the uniform block with the given `name`.
+	 *
+	 * @remarks Note that this will not call `delete()` on the previously assigned buffer.
+	 * This will have to be done manually, to avoid the accumulation of orphaned buffers.
+	 * @param name - Name of the uniform block.
+	 * @param buffer - Buffer to use as the data source.
+	 * @returns `true` if the operation was successful, `false` otherwise.
+	 */
+	public setUbo<
+		U extends keyof I['ubos'] = keyof I['ubos'],
+	>( name: U, buffer: Uniformbuffer<I['ubos'][U]> ): boolean {
+		const uboIndex = this.uniformBuffers.findIndex( ( u ) => u.name === name );
+
+		if ( uboIndex > -1 ) {
+			this.uniformBuffers[uboIndex].buffer = buffer;
+
+			// if the ubo was represented by an external override,
+			// no view exists. Only update to the new view, if we had one previously.
+			if ( name in this.ubos ) {
+				( this.ubos as unknown )[name] = buffer.uniforms;
+			}
+
+			return true;
+		} if ( __DEV_BUILD__ ) {
+			devLog( {
+				msg: `UBO '${
+					String( name )
+				}' does not exist on this program. Known UBOs: ${
+					this.uniformBuffers
+						.map( ( u ) => `'${u.name}'` )
+						.join( ', ' )
+				}.`,
+			} );
+		}
+
+		return false;
 	}
 
 

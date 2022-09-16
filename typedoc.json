@@ -16,6 +16,8 @@
   "intentionallyNotExported": [
     "Introspection",
     "TexturesFromIntrospection",
+    "UnwrappedUbo",
+    "UboIntrospection",
     "UbosFromIntrospection",
     "CubeOf",
     "AttributeDeclaration",
