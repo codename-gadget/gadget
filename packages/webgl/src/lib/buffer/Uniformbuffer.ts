@@ -21,7 +21,7 @@ export interface UniformbufferProps<U> extends WithContext {
 
 /**
  * GPU buffer used as the data source for a uniform block,
- * with CPU side data representation and individual member views.
+ * with CPU-side data representation and individual member views.
  */
 export default class Uniformbuffer<
 	U extends UboIntrospection = UboIntrospection,
