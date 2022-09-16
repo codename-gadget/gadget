@@ -5,7 +5,7 @@ import type {
 
 // queue reports over the duration of one frame to bundle them
 let reports: DevtoolReport[];
-let timeout: number | null = null;
+let timeout: number | NodeJS.Timeout | null = null;
 
 // collect all registration messages to resend
 let registerMessages: DevtoolReport[];
@@ -53,6 +53,13 @@ if ( __DEV_BUILD__ ) {
 	sendClientRegistration();
 }
 
+function delay( callback: () => void ): number | NodeJS.Timeout {
+	if ( typeof requestAnimationFrame !== 'undefined' ) {
+		return requestAnimationFrame( callback );
+	}
+
+	return setTimeout( callback, 16 );
+}
 
 /**
  * Queues a message for sending.
@@ -74,7 +81,7 @@ export default function send( msg: DevtoolReport ): void {
 		}
 
 		if ( timeout === null ) {
-			timeout = requestAnimationFrame( () => {
+			timeout = delay( () => {
 				timeout = null;
 				postMessage( {
 					type: 'gadget-devtools-report',
