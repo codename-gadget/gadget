@@ -18,8 +18,26 @@ export interface BlitParams {
 
 	/** A list defining which attachments should have their content copied over. */
 	mask: Partial<{
-		/** Whether to copy the color attachment(s) content. */
-		color: boolean;
+		/**
+		 * Which color attachment(s) to copy.
+		 * Setting this to `true` will attempt to copy all color attachments.
+		 *
+		 * Alternatively, you can specify a destination/source mapping of color attachents:
+		 *
+		 * @example Copying color attachment `0` of `fboA` to color attachment `2` of `fboB`:
+		 * ```typescript
+		 * await fboB.blit({
+		 *     sourceFbo: fboA,
+		 *     mask: {
+		 *         color: {
+		 *             // destination: source
+		 *             2: 0,
+		 *         },
+		 *     },
+		 * })
+		 * ```
+		 */
+		color: boolean | Record<number, number>;
 		/** Whether to copy the depth attachment content. */
 		depth: boolean;
 		/** Whether to copy the stencil attachment content. */
@@ -268,7 +286,7 @@ export default class Framebuffer extends ContextConsumer {
 	public blitSync( {
 		sourceFbo, mask, filter = TextureMagFilter.nearest, sourceRect, destinationRect,
 	}: BlitParams ): void {
-		const { gl, fbo } = this;
+		const { gl, fbo, colorAttachments } = this;
 
 		const src = sourceFbo.fbo;
 		const srcCornerA = sourceRect?.[0] ?? [0, 0];
@@ -278,15 +296,74 @@ export default class Framebuffer extends ContextConsumer {
 		const destCornerB = destinationRect?.[1] ?? [this.width, this.height];
 
 		let maskBits = 0x00;
+		let attachmentsToCopy: [number, number][] = [];
+
+		if ( mask.color === true ) {
+			attachmentsToCopy = [];
+			colorAttachments.forEach( ( attachment ) => {
+				if ( sourceFbo.colorAttachments.includes( attachment ) ) {
+					attachmentsToCopy.push([attachment, attachment]);
+				} else if ( __DEV_BUILD__ ) {
+					devLog( {
+						msg: `Attachment ${
+							attachment - gl.COLOR_ATTACHMENT0
+						} does not exist on the source FBO and cannot be copied.`,
+					} );
+				}
+			} );
+		} else if ( typeof mask.color === 'object' ) {
+			attachmentsToCopy = Object.entries(
+				mask.color,
+			).map( ([destIndex, srcIndex]) => {
+				const destinationAttachment = parseInt( destIndex, 10 ) + gl.COLOR_ATTACHMENT0;
+				const sourceAttachment = srcIndex + gl.COLOR_ATTACHMENT0;
+
+				if ( __DEV_BUILD__ ) {
+					// check if src and dest exist
+					const errors = [];
+
+					if ( !sourceFbo.colorAttachments.includes( sourceAttachment ) ) {
+						errors.push(
+							`Source attachment (${
+								srcIndex
+							}) does not exist.`,
+						);
+					}
+					if ( !this.colorAttachments.includes( destinationAttachment ) ) {
+						errors.push(
+							`Destination attachment (${
+								destIndex
+							}) does not exist.`,
+						);
+					}
+					if ( errors.length > 0 ) {
+						devLog( {
+							level: 'error',
+							msg: `Error copying color attachments: ${errors.join( ' ' )}`,
+						} );
+					}
+				}
+
+				return [destinationAttachment, sourceAttachment];
+			} );
+		}
 
 		/* eslint-disable no-bitwise */
-		if ( mask.color ) maskBits |= gl.COLOR_BUFFER_BIT;
+		if ( attachmentsToCopy.length > 0 ) maskBits |= gl.COLOR_BUFFER_BIT;
 		if ( mask.depth ) maskBits |= gl.DEPTH_BUFFER_BIT;
 		if ( mask.stencil ) maskBits |= gl.STENCIL_BUFFER_BIT;
 		/* eslint-enable no-bitwise */
 
+
 		gl.bindFramebuffer( gl.READ_FRAMEBUFFER, src );
 		gl.bindFramebuffer( gl.DRAW_FRAMEBUFFER, fbo );
+
+		if ( attachmentsToCopy.length > 0 ) {
+			const [firstAttachmentSrc, firstAttachmentDest] = attachmentsToCopy.shift();
+
+			gl.readBuffer( firstAttachmentSrc );
+			gl.drawBuffers([firstAttachmentDest]);
+		}
 
 		gl.blitFramebuffer(
 			srcCornerA[0],
@@ -300,6 +377,26 @@ export default class Framebuffer extends ContextConsumer {
 			maskBits,
 			filter,
 		);
+
+		if ( attachmentsToCopy.length > 0 ) {
+			attachmentsToCopy.forEach( ([colorSrc, colorDest]) => {
+				gl.readBuffer( colorSrc );
+				gl.drawBuffers([...Array( colorDest - gl.COLOR_ATTACHMENT0 ).fill( gl.NONE ), colorDest]);
+
+				gl.blitFramebuffer(
+					srcCornerA[0],
+					srcCornerA[1],
+					srcCornerB[0],
+					srcCornerB[1],
+					destCornerA[0],
+					destCornerA[1],
+					destCornerB[0],
+					destCornerB[1],
+					gl.COLOR_BUFFER_BIT,
+					filter,
+				);
+			} );
+		}
 
 		gl.bindFramebuffer( gl.READ_FRAMEBUFFER, null );
 		gl.bindFramebuffer( gl.DRAW_FRAMEBUFFER, null );
