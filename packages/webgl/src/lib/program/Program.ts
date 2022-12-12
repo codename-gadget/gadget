@@ -74,7 +74,6 @@ export default class Program<
 > extends ContextConsumer {
 	private program: WebGLProgram;
 	private uniformBuffers: { name: string, buffer: Buffer | SyncableBuffer }[] = [];
-	private textureBindings: { location: WebGLUniformLocation, slot: TextureSlot }[] = [];
 	private vertexSrc: string;
 	private fragmentSrc: string;
 
@@ -130,7 +129,8 @@ export default class Program<
 		if ( introspection.textures ) {
 			Object.entries( introspection.textures ).forEach( ([key, { binding }]) => {
 				textures[key] = new TextureSlot( {
-					context, unit: binding,
+					context,
+					unit: binding,
 				} );
 			} );
 		}
@@ -276,7 +276,6 @@ export default class Program<
 			vertexSrc,
 			fragmentSrc,
 			uniformBuffers,
-			textureBindings,
 			textures,
 		} = this;
 
@@ -367,14 +366,16 @@ export default class Program<
 			);
 		} );
 
+
+		gl.useProgram( this.program );
+
 		Object.entries( textures ).forEach( ([key, slot]) => {
 			const location = gl.getUniformLocation( this.program, key );
 
-			textureBindings.push( {
-				location,
-				slot,
-			} );
+			gl.uniform1i( location, slot.getUnit() );
 		} );
+
+		gl.useProgram( null );
 	}
 
 
@@ -385,7 +386,7 @@ export default class Program<
 	 */
 	public use(): boolean {
 		const {
-			program, gl, uniformBuffers, textureBindings,
+			program, gl, uniformBuffers, textures,
 		} = this;
 
 		if ( !program ) {
@@ -409,15 +410,12 @@ export default class Program<
 			);
 		} );
 
-		// this could (and should?) be done a lot more efficiently.
-		textureBindings.forEach( ( { location, slot } ) => {
-			const unit = slot.bind(
+		Object.values( textures ).forEach( ( slot ) => {
+			slot.bind(
 				__DEV_BUILD__
 					? Object.entries( this.textures ).find( ( t ) => slot === t[1])?.[0]
 					: undefined,
 			);
-
-			gl.uniform1i( location, unit );
 		} );
 
 		return true;
