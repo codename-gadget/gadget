@@ -1,3 +1,4 @@
+import { decrementMonitor, incrementMonitor, registerMonitor } from '@gdgt/devtools';
 import { devLog } from '../utils/log';
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import { BufferBindingPoint, BufferUsage } from './bufferEnums';
@@ -11,6 +12,16 @@ const devCheckBuffer = ( buffer: unknown ): void => {
 		} );
 	}
 };
+
+const devBuffers = new Set();
+
+if ( __DEV_BUILD__ ) {
+	registerMonitor( {
+		id: 'webgl/buffer_count',
+		type: 'count',
+		name: 'Buffers',
+	} );
+}
 
 
 export interface BufferProps extends WithContext {
@@ -54,6 +65,11 @@ export default class Buffer extends ContextConsumer {
 			// allocate empty buffer
 			gl.bindBuffer( target, this.buffer );
 			gl.bufferData( target, size, usage );
+
+			if ( __DEV_BUILD__ ) {
+				incrementMonitor( 'webgl/buffer_count' );
+				devBuffers.add( this );
+			}
 		}, context );
 
 		this.target = target;
@@ -131,6 +147,14 @@ export default class Buffer extends ContextConsumer {
 		const { gl, buffer } = this;
 
 		gl.deleteBuffer( buffer );
+
+		devBuffers.delete( this );
+		if ( __DEV_BUILD__ && this.buffer ) {
+			decrementMonitor( 'webgl/buffer_count' );
+			// console.log( devBuffers );
+		}
+
+
 		this.buffer = null;
 	}
 }
