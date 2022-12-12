@@ -359,11 +359,19 @@ export default class Program<
 		// TODO: cache program
 
 		uniformBuffers.forEach( ( { name }, i ) => {
-			gl.uniformBlockBinding(
-				this.program,
-				gl.getUniformBlockIndex( this.program, name ),
-				i,
-			);
+			const blockIndex = gl.getUniformBlockIndex( this.program, name );
+
+			if ( blockIndex !== gl.INVALID_INDEX ) {
+				gl.uniformBlockBinding(
+					this.program,
+					gl.getUniformBlockIndex( this.program, name ),
+					i,
+				);
+			} else if ( __DEV_BUILD__ ) {
+				devLog( {
+					msg: `Uniform block "${name}" does not exist or is unused.`,
+				} );
+			}
 		} );
 
 
