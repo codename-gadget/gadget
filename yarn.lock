@@ -1313,13 +1313,18 @@
   resolved "https://registry.yarnpkg.com/@gdgt/devtools/-/devtools-1.0.0.tgz#99e62145e3df36c41987db9df8529666579696de"
   integrity sha512-8OyawIzqIKtUj0VIKZxnB3X11gJ46gvYgBIsMbA2TdoZtnTVGJBTVkwdECZVYZ1zjpir6IohlqOWGqllVO1l4A==
 
+"@gdgt/devtools@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@gdgt/devtools/-/devtools-1.1.0.tgz#4c8fa4333387b026b6c78b4bea6ceb10f82a135f"
+  integrity sha512-+BCHj+xbfnUzjULJUJee7IHIh32oSiTA4BWjigMB4nqp6jxVHfdumvgBCprZnrDNkQFO89wbLucpzHIbaN6rmg==
+
 "@gdgt/devtools@file:packages/devtools":
   version "0.0.0"
 
 "@gdgt/webgl@file:packages/webgl":
   version "0.0.0"
   dependencies:
-    "@gdgt/devtools" "^1.0.0"
+    "@gdgt/devtools" "^1.1.0"
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"

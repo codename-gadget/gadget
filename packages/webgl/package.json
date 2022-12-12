@@ -36,6 +36,6 @@
     "url": "https://github.com/codename-gadget/gadget/issues"
   },
   "dependencies": {
-    "@gdgt/devtools": "^1.0.0"
+    "@gdgt/devtools": "^1.1.0"
   }
 }
