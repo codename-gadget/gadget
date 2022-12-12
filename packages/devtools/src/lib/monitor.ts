@@ -57,16 +57,18 @@ export function registerMonitor( {
 
 
 /**
- * Increments a given monitor by 1.
+ * Increments a given monitor by a given value.
  *
  * @param id - id of the monitor to increment.
+ * @param amount - The amount to increment by.
  */
-export function incrementMonitor( id: string ): void {
+export function incrementMonitor( id: string, amount = 1 ): void {
 	if ( __DEV_BUILD__ ) {
 		send( {
 			intent: 'increment_monitor',
 			value: {
 				id,
+				value: amount,
 			},
 		} );
 	}
@@ -74,16 +76,18 @@ export function incrementMonitor( id: string ): void {
 
 
 /**
- * Decrements a given monitor by 1.
+ * Decrements a given monitor by a given value.
  *
  * @param id - id of the monitor to decrement.
+ * @param amount - The amount to decrement by.
  */
-export function decrementMonitor( id: string ): void {
+export function decrementMonitor( id: string, amount = 1 ): void {
 	if ( __DEV_BUILD__ ) {
 		send( {
 			intent: 'decrement_monitor',
 			value: {
 				id,
+				value: amount,
 			},
 		} );
 	}

@@ -15,11 +15,13 @@ export type DevtoolReport = {
 	intent: 'increment_monitor',
 	value: {
 		id: string
+		value?: number
 	},
 } | {
 	intent: 'decrement_monitor',
 	value: {
 		id: string
+		value?: number
 	},
 } | {
 	intent: 'update_monitor',
