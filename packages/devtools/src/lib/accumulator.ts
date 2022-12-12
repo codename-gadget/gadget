@@ -11,12 +11,14 @@ let timeout: number | NodeJS.Timeout | null = null;
 let registerMessages: DevtoolReport[];
 // collect the latest update message per monitor to resend
 let updateMessages: Record<string, DevtoolReport>;
+let values: Record<string, number>;
 
 
 if ( __DEV_BUILD__ ) {
 	reports = [];
 	registerMessages = [];
 	updateMessages = {};
+	values = {};
 
 	const sendClientRegistration = (): void => {
 		postMessage( {
@@ -30,7 +32,13 @@ if ( __DEV_BUILD__ ) {
 					},
 				},
 				...registerMessages,
-				...Object.values( updateMessages ),
+				...Object.entries( values ).map( ([id, value]) => ( {
+					intent: 'update_monitor',
+					value: {
+						id,
+						value,
+					},
+				} ) ),
 			],
 			// eslint-disable-next-line no-restricted-globals
 			origin: location.origin + location.pathname,
@@ -78,6 +86,14 @@ export default function send( msg: DevtoolReport ): void {
 		} else if ( msg.intent === 'update_monitor' ) {
 			// store the latest update message per monitor to resend
 			updateMessages[msg.value.id] = msg;
+			values[msg.value.id] = msg.value.value;
+		} else if (
+			msg.intent === 'increment_monitor'
+            || msg.intent === 'decrement_monitor'
+		) {
+			const currentValue = values[msg.value.id] ?? 0;
+
+			values[msg.value.id] = currentValue + ( msg.value.value ?? 1 ) * ( msg.intent === 'decrement_monitor' ? -1 : 1 );
 		}
 
 		if ( timeout === null ) {
