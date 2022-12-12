@@ -1,3 +1,4 @@
+import { incrementMonitor, registerMonitor } from '@gdgt/devtools';
 import type { DiscriminatingOr } from '../utils/typeUtils';
 import type Buffer from '../buffer/Buffer';
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
@@ -10,6 +11,15 @@ import {
 	BufferUsage,
 	byteLengthPerMember,
 } from '../buffer/bufferEnums';
+
+
+if ( __DEV_BUILD__ ) {
+	registerMonitor( {
+		id: 'webgl/drawcall_count',
+		type: 'rate',
+		name: 'Drawcalls / sec',
+	} );
+}
 
 
 type SharedAttributeInfo = {
@@ -445,6 +455,10 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 		}
 
 		gl.bindVertexArray( null );
+
+		if ( __DEV_BUILD__ ) {
+			incrementMonitor( 'webgl/drawcall_count' );
+		}
 
 		return true;
 	}

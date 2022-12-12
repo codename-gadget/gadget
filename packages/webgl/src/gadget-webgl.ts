@@ -1,3 +1,4 @@
+import { registerGroup } from '@gdgt/devtools';
 import { devLog } from './lib/utils/log';
 
 
@@ -7,6 +8,11 @@ if ( __DEV_BUILD__ ) {
 		msg: `using @gdgt/webgl dev build version ${
 			__VERSION__
 		}, be sure to swap this for the production build before publishing!\n`,
+	} );
+
+	registerGroup( {
+		id: 'webgl',
+		name: 'WebGL',
 	} );
 } else {
 	// eslint-disable-next-line no-console
