@@ -1308,12 +1308,7 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gdgt/devtools@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@gdgt/devtools/-/devtools-1.0.0.tgz#99e62145e3df36c41987db9df8529666579696de"
-  integrity sha512-8OyawIzqIKtUj0VIKZxnB3X11gJ46gvYgBIsMbA2TdoZtnTVGJBTVkwdECZVYZ1zjpir6IohlqOWGqllVO1l4A==
-
-"@gdgt/devtools@^1.1.0":
+"@gdgt/devtools@^1.0.0", "@gdgt/devtools@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@gdgt/devtools/-/devtools-1.1.0.tgz#4c8fa4333387b026b6c78b4bea6ceb10f82a135f"
   integrity sha512-+BCHj+xbfnUzjULJUJee7IHIh32oSiTA4BWjigMB4nqp6jxVHfdumvgBCprZnrDNkQFO89wbLucpzHIbaN6rmg==
