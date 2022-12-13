@@ -37,16 +37,6 @@
             }
         ],
         "jsdoc/valid-types": 0,
-        "tsdoc/syntax": "warn",
-        "import/extensions": [
-            "error",
-            "ignorePackages",
-            {
-                "js": "never",
-                "jsx": "never",
-                "ts": "never",
-                "tsx": "never"
-            }
-        ]
+        "tsdoc/syntax": "warn"
     }
 }
