@@ -39,6 +39,7 @@ export default ( config: Config ): void => {
 
 		exclude: [
 			'packages/hlsl-loader/**',
+			'packages/devtools-extension/**',
 			'packages/ecs/src/env.d.ts',
 			'packages/devtools/src/env.d.ts',
 		],
@@ -55,6 +56,7 @@ export default ( config: Config ): void => {
 			],
 			exclude: [
 				'packages/hlsl-loader',
+				'packages/devtools-extension',
 				'packages/ecs/src/env.d.ts',
 				'packages/devtools/src/env.d.ts',
 			],

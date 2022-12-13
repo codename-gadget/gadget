@@ -1,0 +1,20 @@
+{
+  "extends": "semantic-release-monorepo",
+  "plugins": [
+    [
+      "semantic-release-chrome",
+      {
+        "extensionId": "mphhjgpocjadnlanaiekdlhgldmofaip",
+        "asset": "gadget-devtools.zip"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          "gadget-devtools.zip"
+        ]
+      }
+    ]
+  ]
+}
