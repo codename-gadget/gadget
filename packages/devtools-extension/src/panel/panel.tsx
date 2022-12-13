@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { Message } from '../types/message';
+import { Message } from '../types/Message';
 import Layout from '../components/Layout';
 import useGlobalStore from '../stores/global';
 

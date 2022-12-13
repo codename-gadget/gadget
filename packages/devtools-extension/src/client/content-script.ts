@@ -1,5 +1,5 @@
 import type { WrappedDevtoolMessage, WrappedDevtoolReport } from '@gdgt/devtools';
-import { Message } from '../types/message';
+import { Message } from '../types/Message';
 
 
 // inject worker proxy to forward messages from/to workers

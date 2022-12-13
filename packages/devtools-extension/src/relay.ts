@@ -1,4 +1,4 @@
-import { Message } from './types/message';
+import { Message } from './types/Message';
 
 
 const devtoolConnections = new Map<number, chrome.runtime.Port>();
