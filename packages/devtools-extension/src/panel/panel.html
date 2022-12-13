@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gadget monitor</title>
+    <script src="panel.tsx"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+        user-select: none;
+      }
+      html {
+        background-color: rgb(32, 33, 36);
+        color: rgba(255, 255, 255, 0.5);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+      main {
+        flex-grow: 10;
+        position: relative;
+      }
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+      }
+      .wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: stretch;
+      }
+      .logo {
+        margin: 0 auto 12px;
+      }
+      aside {
+        display: flex;
+        flex-direction: column;
+        width: 210px;
+        border-right: 1px solid rgb(73, 76, 80);
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      hr {
+        height: 1px;
+        width: auto;
+        margin: 0 0 20px 0;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      li {
+        list-style: none;
+        display: flex;
+        padding: 4px 0;
+      }
+      li span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .origins li span {
+        direction: rtl;
+      }
+      ol {
+        margin: 0 0 20px 0;
+        padding: 0;
+      }
+      input[type="checkbox"] {
+        margin: 0 8px 0 0;
+      }
+      .no-connection {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .no-connection span {
+        max-width: 32ch;
+        display: inline-block;
+        text-align: center;
+      }
+      .group-header {
+        display: flex;
+        padding: 0 0 8px;
+      }
+      .group ol {
+        padding-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
