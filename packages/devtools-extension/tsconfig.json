@@ -1,0 +1,14 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "declaration": false,
+        "declarationMap": false,
+        "jsx": "react",
+    },
+    "include": [
+        "src/**/*",
+        "build/**/*",
+        "src/env.d.ts",
+        "rollup.config.ts",
+    ]
+}

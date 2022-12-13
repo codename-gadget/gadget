@@ -1,26 +1,34 @@
 {
-  "entryPoints": ["."],
-  "entryPointStrategy": "packages",
-  "out": "docs/temp",
-  "excludePrivate": true,
-  "excludeInternal": true,
-  "disableSources": false,
-  "sort": ["required-first", "source-order"],
-  "name": "Gadget",
-  "includeVersion": false,
-  "customCss": "./docs/public/custom.css",
-  "cleanOutputDir": true,
-  "darkHighlightTheme": "github-dark",
-  "readme": "./docs/intro.md",
-  "includes": "./packages",
-  "intentionallyNotExported": [
-    "Introspection",
-    "TexturesFromIntrospection",
-    "UnwrappedUbo",
-    "UboIntrospection",
-    "UbosFromIntrospection",
-    "CubeOf",
-    "AttributeDeclaration",
-    "IndicesDeclaration"
-  ]
+    "entryPoints": [
+        "./packages/webgl",
+        "./packages/ecs",
+        "./packages/hlsl-loader",
+        "./packages/devtools"
+    ],
+    "entryPointStrategy": "packages",
+    "out": "docs/temp",
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "disableSources": false,
+    "sort": [
+        "required-first",
+        "source-order"
+    ],
+    "name": "Gadget",
+    "includeVersion": false,
+    "customCss": "./docs/public/custom.css",
+    "cleanOutputDir": true,
+    "darkHighlightTheme": "github-dark",
+    "readme": "./docs/intro.md",
+    "includes": "./packages",
+    "intentionallyNotExported": [
+        "Introspection",
+        "TexturesFromIntrospection",
+        "UnwrappedUbo",
+        "UboIntrospection",
+        "UbosFromIntrospection",
+        "CubeOf",
+        "AttributeDeclaration",
+        "IndicesDeclaration"
+    ]
 }
