@@ -78,6 +78,17 @@ export default class TextureSlot extends ContextConsumer {
 
 
 	/**
+	 * Returns the texture unit specified at instantiation.
+	 *
+	 * @internal
+	 * @returns Index of the texture unit specified at instantiation. May be undefined.
+	 */
+	public getUnit(): number {
+		return this.unit;
+	}
+
+
+	/**
 	 * Binds texture and sampler to the texture unit specified at instantiation.
 	 *
 	 * @internal

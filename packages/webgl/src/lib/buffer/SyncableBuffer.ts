@@ -1,6 +1,22 @@
+import { incrementMonitor, registerMonitor } from '@gdgt/devtools';
 import { devLog } from '../utils/log';
 import Buffer, { BufferProps } from './Buffer';
 
+
+if ( __DEV_BUILD__ ) {
+	registerMonitor( {
+		id: 'webgl/buffer_upload',
+		type: 'rate',
+		name: 'Buffer uploads / sec',
+	} );
+
+	registerMonitor( {
+		id: 'webgl/buffer_upload_size',
+		type: 'rate',
+		unit: 'kb / s',
+		name: 'Buffer upload rate',
+	} );
+}
 
 export interface SyncableBufferProps<T = ArrayBuffer | SharedArrayBuffer> extends Omit<BufferProps, 'size'> {
 	/**
@@ -113,6 +129,11 @@ export default class SyncableBuffer<
 				invalidStart,
 				invalidEnd - invalidStart,
 			);
+
+			if ( __DEV_BUILD__ ) {
+				incrementMonitor( 'webgl/buffer_upload' );
+				incrementMonitor( 'webgl/buffer_upload_size', ( invalidEnd - invalidStart ) / 1000 );
+			}
 		}
 
 		this.resetInvalidatedRange();
