@@ -16,6 +16,7 @@ const Canvas = (): ReactElement => {
 	const context = useRef<CanvasRenderingContext2D>();
 	const hoverX = useRef<number>( null );
 	const windowHeight = useRef<number>( null );
+	const gridShift = useRef<number>( 0 );
 	const pageXOffset = useRef( 0 );
 	const [width, setWidth] = useState( 0 );
 	const [height, setHeight] = useState( 0 );
@@ -62,7 +63,7 @@ const Canvas = (): ReactElement => {
 		const loop = (): void => {
 			Object.values( monitors ).forEach( ( m ) => {
 				m.controller.sample();
-				m.controller.cullBuffers( ( width - devicePixelRatio * 2 ) * 2 );
+				m.controller.cullBuffers( ( width - devicePixelRatio * 2 ) );
 			} );
 
 
@@ -71,14 +72,14 @@ const Canvas = (): ReactElement => {
 			ctx.lineJoin = 'round';
 			ctx.lineCap = 'round';
 
-			const gridShift = 1 - ( ( performance.now() / 1000 ) % 1 );
+			gridShift.current = ( gridShift.current + 1 ) % 30;
 
 			ctx.lineWidth = 1;
 			ctx.strokeStyle = 'rgba(255,255,255,0.025)';
 			ctx.beginPath();
 
 
-			for ( let x = 30 * gridShift; x < width; x += 30 ) {
+			for ( let x = 30 - gridShift.current; x < width; x += 30 ) {
 				ctx.moveTo( x, 0 );
 				ctx.lineTo( x, height );
 			}
