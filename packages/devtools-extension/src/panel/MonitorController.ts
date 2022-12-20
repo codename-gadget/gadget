@@ -1,8 +1,9 @@
 import type { MonitorProps } from '@gdgt/devtools';
 
 
-const graphHeight = 32 * devicePixelRatio;
-const graphPadding = 48 * devicePixelRatio;
+export const graphHeight = 32 * devicePixelRatio;
+export const graphPadding = 48 * devicePixelRatio;
+
 const groupTopOffset = 12 * devicePixelRatio;
 const textPosition = -graphHeight - 12 * devicePixelRatio;
 const textPadding = 12 * devicePixelRatio;
@@ -239,11 +240,11 @@ export default class MonitorController {
 		ctx.fillStyle = baseColor;
 		if ( !hoveredIndex ) {
 			ctx.fillText( `${this.displayValue ?? '?'} ${this.unit}`, width - textPadding, textPosition );
-		} else if ( range >= hoveredIndex * 2 ) {
+		} else if ( range >= hoveredIndex ) {
 			let sampleSum = 0;
 
 			for ( let j = 0; j < origins.length; j += 1 ) {
-				sampleSum += this.buffers[origins[j]]?.[hoveredIndex * 2] ?? 0;
+				sampleSum += this.buffers[origins[j]]?.[hoveredIndex] ?? 0;
 			}
 			ctx.fillText(
 				`${Math.round( sampleSum )} ${this.unit}`,
@@ -276,20 +277,20 @@ export default class MonitorController {
 			ctx.beginPath();
 			ctx.moveTo( width - devicePixelRatio, 0 );
 			path.forEach( ( y, x ) => {
-				ctx.lineTo( width - devicePixelRatio - ( x / 2 ), y );
+				ctx.lineTo( width - devicePixelRatio - x, y );
 			} );
 
-			ctx.lineTo( width - devicePixelRatio - ( path.length - 1 ) / 2, 0 );
+			ctx.lineTo( width - devicePixelRatio - ( path.length - 1 ), 0 );
 
 			ctx.stroke();
 			ctx.fill();
 
-			if ( hoveredIndex && path.length >= hoveredIndex * 2 ) {
+			if ( hoveredIndex && path.length >= hoveredIndex ) {
 				ctx.fillStyle = lineColor;
 				ctx.beginPath();
 				ctx.arc(
 					width - devicePixelRatio - ( hoveredIndex ),
-					path[hoveredIndex * 2],
+					path[hoveredIndex],
 					devicePixelRatio,
 					0,
 					2 * Math.PI,
