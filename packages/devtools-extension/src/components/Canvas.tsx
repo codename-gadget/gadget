@@ -3,15 +3,19 @@ import React, {
 	useEffect, useLayoutEffect, useRef, useState,
 } from 'react';
 import shallow from 'zustand/shallow';
+import { graphHeight, graphPadding } from '../panel/MonitorController';
 import useGlobalStore from '../stores/global';
 import useVisibilityStore from '../stores/visibility';
 
+
+const totalGraphHeight = ( graphHeight + graphPadding ) / devicePixelRatio;
 
 const Canvas = (): ReactElement => {
 	const canvas = useRef<HTMLCanvasElement>();
 	const wrapper = useRef<HTMLCanvasElement>();
 	const context = useRef<CanvasRenderingContext2D>();
 	const hoverX = useRef<number>( null );
+	const windowHeight = useRef<number>( null );
 	const pageXOffset = useRef( 0 );
 	const [width, setWidth] = useState( 0 );
 	const [height, setHeight] = useState( 0 );
@@ -39,8 +43,16 @@ const Canvas = (): ReactElement => {
 
 		context.current = canvas.current.getContext( '2d' );
 
+		const windowResizeCallback = (): void => {
+			windowHeight.current = window.innerHeight;
+		};
+
+		window.addEventListener( 'resize', windowResizeCallback );
+		windowResizeCallback();
+
 		return () => {
 			observer.disconnect();
+			window.removeEventListener( 'resize', windowResizeCallback );
 		};
 	}, []);
 
@@ -76,7 +88,11 @@ const Canvas = (): ReactElement => {
 				? width - Math.round( hoverX.current * devicePixelRatio )
 				: null;
 
+			const topEdge = window.scrollY;
+			const bottomEdge = topEdge + windowHeight.current;
+
 			drawableMonitors.forEach( ( id, i ) => {
+				if ( bottomEdge < totalGraphHeight * i || topEdge > totalGraphHeight * ( i + 1 ) ) return;
 				monitors[id].controller.draw( ctx, i, hoveredIndex );
 			} );
 
@@ -109,7 +125,7 @@ const Canvas = (): ReactElement => {
 				hoverX.current = e.clientX - pageXOffset.current;
 			}}
 			style={{
-				height: drawableMonitors.length * ( 32 + 48 ),
+				height: drawableMonitors.length * totalGraphHeight,
 				minHeight: '100vh',
 			}}
 		>

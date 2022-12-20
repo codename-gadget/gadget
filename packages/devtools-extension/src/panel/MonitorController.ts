@@ -1,8 +1,9 @@
 import type { MonitorProps } from '@gdgt/devtools';
 
 
-const graphHeight = 32 * devicePixelRatio;
-const graphPadding = 48 * devicePixelRatio;
+export const graphHeight = 32 * devicePixelRatio;
+export const graphPadding = 48 * devicePixelRatio;
+
 const groupTopOffset = 12 * devicePixelRatio;
 const textPosition = -graphHeight - 12 * devicePixelRatio;
 const textPadding = 12 * devicePixelRatio;
