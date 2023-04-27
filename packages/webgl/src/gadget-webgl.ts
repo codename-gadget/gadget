@@ -54,6 +54,7 @@ export {
 	TextureDataType,
 	TextureFormat,
 	TextureStorageFormat,
+	CompressedTextureStorageFormat,
 } from './lib/texture/textureEnums';
 
 
