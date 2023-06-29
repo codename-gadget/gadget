@@ -151,7 +151,8 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	private attributeInfo: InternalAttributeInfo[];
 	private indicesInfo: { buffer: Buffer, type: IndicesDeclaration['type'] };
 	private primitiveCount: number;
-	private instanceCount: number;
+	private _instanceCount: number;
+	private maxInstanceCount: number;
 	private isInstanced = false;
 	private mode: GeometryDrawMode;
 
@@ -326,9 +327,22 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 		this.primitiveCount = primitiveCount;
 
 		this.isInstanced = isInstanced;
-		this.instanceCount = instances;
+		this._instanceCount = instances;
+		this.maxInstanceCount = instances;
 	}
 
+	/**
+	 * Sets the number of instances to draw. Cannot be larger than the `instances` value the Geometry was created with.
+	 */
+	get instanceCount(): number
+	{
+		return this._instanceCount;
+	}
+
+	set instanceCount(value: number)
+	{
+		this._instanceCount = Math.min(value, this.maxInstanceCount);
+	}
 
 	/**
 	 * Calls `upload()` on all attribute buffers and the index buffer.
@@ -425,7 +439,7 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	 */
 	public draw( mode = this.mode ): boolean {
 		const {
-			gl, vao, primitiveCount, indicesInfo, isInstanced, instanceCount,
+			gl, vao, primitiveCount, indicesInfo, isInstanced, _instanceCount,
 		} = this;
 
 		if ( !vao ) {
@@ -444,12 +458,12 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 
 		if ( indicesInfo ) {
 			if ( isInstanced ) {
-				gl.drawElementsInstanced( mode, primitiveCount, indicesInfo.type, 0, instanceCount );
+				gl.drawElementsInstanced( mode, primitiveCount, indicesInfo.type, 0, _instanceCount );
 			} else {
 				gl.drawElements( mode, primitiveCount, indicesInfo.type, 0 );
 			}
 		} else if ( isInstanced ) {
-			gl.drawArraysInstanced( mode, 0, primitiveCount, instanceCount );
+			gl.drawArraysInstanced( mode, 0, primitiveCount, _instanceCount );
 		} else {
 			gl.drawArrays( mode, 0, primitiveCount );
 		}
