@@ -108,7 +108,7 @@ export default class Context {
 
 						if ( __DEV_BUILD__ ) {
 							availableFormatNames.push(
-								name,
+								prop,
 							);
 						}
 					}
