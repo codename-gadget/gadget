@@ -319,7 +319,6 @@ export enum CompressedTextureStorageFormat {
 	/** Compresses RGB8 data with no alpha channel. */
 	rgb8Etc2 = 0x9274,
 
-
 	/** Compresses sRGB8 data with no alpha channel. */
 	srgb8Etc2 = 0x9275,
 
@@ -464,9 +463,8 @@ export enum CompressedTextureStorageFormat {
 
 	// WEBGL_compressed_texture_etc1
 
-	// TODO: ETC1 is not supported for compressedTexSubImage2D, and needs special treatment.
 	/** Compresses 24-bit RGB data with no alpha channel. */
-	// rgbEtc1 = 0x8d64,
+	rgbEtc1 = 0x8d64,
 }
 
 
@@ -475,9 +473,12 @@ export enum CompressedTextureStorageFormat {
  *
  * @internal
  * @param storage - The texture storage format.
- * @returns The matching texture format.
+ * @returns The matching texture format or `undefined` if there
+ * is none (e.g. for compressed formats).
  */
-export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): TextureFormat {
+export function inferFormatFromStorageFormat(
+	storage: TextureStorageFormat | CompressedTextureStorageFormat,
+): TextureFormat {
 	switch ( storage ) {
 		case TextureStorageFormat.alpha:
 			return TextureFormat.alpha;
@@ -567,5 +568,25 @@ export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): T
 
 		default:
 			return undefined;
+	}
+}
+
+
+/**
+ * Indicates whether pre-allocation via texStorage is supported for the given format.
+ *
+ * @internal
+ * @param storage - The texture storage format to check.
+ * @returns Whether pre-allocation via texStorage is supported.
+ */
+export function checkPreallocationSupport(
+	storage: TextureStorageFormat | CompressedTextureStorageFormat,
+): boolean {
+	switch ( storage ) {
+		case CompressedTextureStorageFormat.rgbEtc1:
+			return false;
+
+		default:
+			return true;
 	}
 }

@@ -59,7 +59,9 @@ export default class Texture extends AbstractTexture2D {
 	 * Uploads an array of pixels to the GPU.
 	 *
 	 * @param pixelsPerLevel - An object containing the pixel data per level.
-	 * @param type - The format the pixel data is in.
+	 * @param type - The format the pixel data is in. Ignored for compressed formats.
+	 *
+	 * Defaults to {@linkcode BufferDataType.unsignedByte}
 	 * @example Uploading a 2x2px red/black checkerboard texture and a 1x1px dark red mipmap.
 	 * ```typescript
 	 * import { Texture, BufferDataType } from '@gdgt/webgl';
@@ -84,12 +86,20 @@ export default class Texture extends AbstractTexture2D {
 	 */
 	public async uploadPixels(
 		pixelsPerLevel: { [level: number]: ArrayBufferView },
-		type: BufferDataType | TextureDataType,
+		type: BufferDataType | TextureDataType = BufferDataType.unsignedByte,
 	): Promise<void> {
 		await this.ready;
 
 		const {
-			gl, format, width, height, clampLodToUploadedLevels, minLod, maxLod,
+			gl,
+			format,
+			width,
+			height,
+			clampLodToUploadedLevels,
+			minLod,
+			maxLod,
+			isCompressed,
+			isPreallocated,
 		} = this;
 
 		this.bindSync();
@@ -106,18 +116,46 @@ export default class Texture extends AbstractTexture2D {
 
 			// TODO: sanity checks
 
-			gl.texSubImage2D(
-				gl.TEXTURE_2D,
-				level,
-				0,
-				0,
-				levelWidth,
-				levelHeight,
-				format,
-				type,
-				srcData,
-				0,
-			);
+			if ( isCompressed && isPreallocated ) {
+				// compressed and preallocated texture
+				gl.compressedTexSubImage2D(
+					gl.TEXTURE_2D,
+					level,
+					0,
+					0,
+					levelWidth,
+					levelHeight,
+					format,
+					srcData,
+					0,
+				);
+			} else if ( isCompressed ) {
+				// compressed and non-preallocated texture
+				gl.compressedTexImage2D(
+					gl.TEXTURE_2D,
+					level,
+					format,
+					levelWidth,
+					levelHeight,
+					0,
+					srcData,
+					0,
+				);
+			} else {
+				// uncompressed and preallocated texture
+				gl.texSubImage2D(
+					gl.TEXTURE_2D,
+					level,
+					0,
+					0,
+					levelWidth,
+					levelHeight,
+					format,
+					type,
+					srcData,
+					0,
+				);
+			}
 		} );
 
 		if ( clampLodToUploadedLevels ) {

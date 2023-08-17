@@ -2,7 +2,9 @@ import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
 import { devLog } from '../utils/log';
 import { getSamplingParams, SamplingParams } from './samplingParams';
 import {
+	CompressedTextureStorageFormat,
 	inferFormatFromStorageFormat,
+	checkPreallocationSupport,
 	TextureBindingPoint,
 	TextureFormat,
 	TextureStorageFormat,
@@ -29,7 +31,7 @@ export interface Texture2DProps extends WithContext, SamplingParams {
 	 *
 	 * @defaultValue {@linkcode TextureStorageFormat.rgba8}
 	 */
-	storageFormat?: TextureStorageFormat,
+	storageFormat?: TextureStorageFormat | CompressedTextureStorageFormat,
 }
 
 
@@ -40,7 +42,18 @@ export interface Texture2DProps extends WithContext, SamplingParams {
  */
 export default abstract class AbstractTexture2D extends ContextConsumer {
 	private texture: WebGLTexture;
-	protected format: TextureFormat;
+	/**
+	 * How supplied texture data is interpreted.
+	 *
+	 * For non-compressed textures, this means included channels and channel formats.
+	 * See {@linkcode TextureFormat}.
+	 *
+	 * For compressed textures, this is the actual storage format.
+	 * See {@linkcode CompressedTextureStorageFormat}
+	 */
+	protected format: TextureFormat | CompressedTextureStorageFormat;
+	protected isCompressed = false;
+	protected isPreallocated = true;
 	protected minLod: number;
 	protected maxLod: number;
 	/** Texture width in pixels. */
@@ -72,6 +85,7 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 			compareFunc,
 		} = getSamplingParams( samplingParams );
 
+		const canPreallocate = checkPreallocationSupport( storageFormat );
 
 		super(
 			async () => {
@@ -79,7 +93,11 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 				const texture = gl.createTexture();
 
 				gl.bindTexture( bindingPoint, texture );
-				gl.texStorage2D( bindingPoint, levels, storageFormat, width, height );
+
+				if ( canPreallocate ) {
+					gl.texStorage2D( bindingPoint, levels, storageFormat, width, height );
+				}
+
 				gl.texParameteri( bindingPoint, gl.TEXTURE_MIN_FILTER, minFilter );
 				gl.texParameteri( bindingPoint, gl.TEXTURE_MAG_FILTER, magFilter );
 				gl.texParameteri( bindingPoint, gl.TEXTURE_WRAP_S, wrapS );
@@ -99,9 +117,21 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 
 		this.width = width;
 		this.height = height;
-		this.format = inferFormatFromStorageFormat( storageFormat );
 		this.minLod = minLod;
 		this.maxLod = maxLod;
+		this.isPreallocated = canPreallocate;
+
+		this.format = inferFormatFromStorageFormat( storageFormat );
+
+		if ( this.format === undefined ) {
+			// inferFormatFromStorageFormat returns undefined for any format it
+			// doesn't know, including compressed storage formats.
+			// We assume that any time we end up here, storageFormat must be a compressed format.
+			// TODO: It could also be completely invalid, which should be checked in the dev build.
+
+			this.isCompressed = true;
+			this.format = storageFormat as CompressedTextureStorageFormat;
+		}
 	}
 
 
