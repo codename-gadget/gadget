@@ -100,11 +100,14 @@ export default class Context {
 
 				if ( ext === null ) return;
 
-				Object.values( ext ).forEach( ( value ) => {
-					if ( typeof value !== 'number' ) return;
+				// eslint-disable-next-line no-restricted-syntax, guard-for-in
+				for ( const prop in ext ) {
+					const value = ext[prop];
 
-					availableFormats.push( value );
-				} );
+					if ( typeof value === 'number' ) {
+						availableFormats.push( value );
+					}
+				}
 			} );
 
 			this.compressedFormats = availableFormats;
