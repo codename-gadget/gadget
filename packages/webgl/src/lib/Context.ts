@@ -77,13 +77,12 @@ export default class Context {
 				...options,
 			} );
 
-			ctx.getExtension( 'OES_texture_float_linear' );
-
-			if ( !ctx.getExtension( 'EXT_color_buffer_half_float' ) ) {
-				ctx.getExtension( 'EXT_color_buffer_float' );
-			}
+			const hasFloatLinear = ctx.getExtension( 'OES_texture_float_linear' );
+			const hasHalfColorBuffer = ctx.getExtension( 'EXT_color_buffer_half_float' );
+			const hasFloatColorBuffer = ctx.getExtension( 'EXT_color_buffer_float' );
 
 			const availableFormats: CompressedTextureStorageFormat[] = [];
+			const availableFormatNames: string[] = [];
 
 			[
 				'WEBGL_compressed_texture_etc',
@@ -106,12 +105,45 @@ export default class Context {
 
 					if ( typeof value === 'number' ) {
 						availableFormats.push( value );
+
+						if ( __DEV_BUILD__ ) {
+							availableFormatNames.push(
+								name,
+							);
+						}
 					}
 				}
 			} );
 
 			this.compressedFormats = availableFormats;
 			this.astcProfiles = ctx.getExtension( 'WEBGL_compressed_texture_astc' )?.getSupportedProfiles() || [];
+
+			if ( __DEV_BUILD__ ) {
+				devLog( {
+					level: 'info',
+					msg: 'Renderer info:',
+					groups: {
+						'Float textures': {
+							expanded: false,
+							content: `${
+								hasHalfColorBuffer ? '✅' : '❌'
+							} f16 color buffer\n${
+								hasFloatColorBuffer ? '✅' : '❌'
+							} f32 color buffer\n${
+								hasFloatLinear ? '✅' : '❌'
+							} f32 linear interpolation`,
+						},
+						'Supported compressed texture formats': {
+							expanded: false,
+							content: availableFormatNames.length > 0 ? availableFormatNames.join( '\n' ) : '❌ none',
+						},
+						'Supported ASTC profiles': {
+							expanded: false,
+							content: this.astcProfiles.length > 0 ? this.astcProfiles.join( '\n' ) : '❌ none',
+						},
+					},
+				} );
+			}
 
 			this.resolveContext( ctx );
 			this.resolveContext = null;
