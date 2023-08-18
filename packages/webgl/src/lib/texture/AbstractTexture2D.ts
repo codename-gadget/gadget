@@ -1,4 +1,5 @@
 import ContextConsumer, { WithContext } from '../abstracts/ContextConsumer';
+import { BufferDataType } from '../buffer/bufferEnums';
 import { devLog } from '../utils/log';
 import { getSamplingParams, SamplingParams } from './samplingParams';
 import {
@@ -8,6 +9,8 @@ import {
 	TextureBindingPoint,
 	TextureFormat,
 	TextureStorageFormat,
+	TextureCubeFace,
+	TextureDataType,
 } from './textureEnums';
 
 
@@ -131,6 +134,61 @@ export default abstract class AbstractTexture2D extends ContextConsumer {
 
 			this.isCompressed = true;
 			this.format = storageFormat as CompressedTextureStorageFormat;
+		}
+	}
+
+
+	protected uploadLevelSync(
+		target: TextureBindingPoint | TextureCubeFace,
+		level: number,
+		width: number,
+		height: number,
+		type: BufferDataType | TextureDataType,
+		srcData: ArrayBufferView,
+	): void {
+		const {
+			gl, format, isCompressed, isPreallocated,
+		} = this;
+
+		if ( isCompressed && isPreallocated ) {
+			// compressed and preallocated texture
+			gl.compressedTexSubImage2D(
+				target,
+				level,
+				0,
+				0,
+				width,
+				height,
+				format,
+				srcData,
+				0,
+			);
+		} else if ( isCompressed ) {
+			// compressed and non-preallocated texture
+			gl.compressedTexImage2D(
+				target,
+				level,
+				format,
+				width,
+				height,
+				0,
+				srcData,
+				0,
+			);
+		} else {
+			// uncompressed and preallocated texture
+			gl.texSubImage2D(
+				target,
+				level,
+				0,
+				0,
+				width,
+				height,
+				format,
+				type,
+				srcData,
+				0,
+			);
 		}
 	}
 

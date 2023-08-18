@@ -92,14 +92,11 @@ export default class Texture extends AbstractTexture2D {
 
 		const {
 			gl,
-			format,
 			width,
 			height,
 			clampLodToUploadedLevels,
 			minLod,
 			maxLod,
-			isCompressed,
-			isPreallocated,
 		} = this;
 
 		this.bindSync();
@@ -116,46 +113,14 @@ export default class Texture extends AbstractTexture2D {
 
 			// TODO: sanity checks
 
-			if ( isCompressed && isPreallocated ) {
-				// compressed and preallocated texture
-				gl.compressedTexSubImage2D(
-					gl.TEXTURE_2D,
-					level,
-					0,
-					0,
-					levelWidth,
-					levelHeight,
-					format,
-					srcData,
-					0,
-				);
-			} else if ( isCompressed ) {
-				// compressed and non-preallocated texture
-				gl.compressedTexImage2D(
-					gl.TEXTURE_2D,
-					level,
-					format,
-					levelWidth,
-					levelHeight,
-					0,
-					srcData,
-					0,
-				);
-			} else {
-				// uncompressed and preallocated texture
-				gl.texSubImage2D(
-					gl.TEXTURE_2D,
-					level,
-					0,
-					0,
-					levelWidth,
-					levelHeight,
-					format,
-					type,
-					srcData,
-					0,
-				);
-			}
+			this.uploadLevelSync(
+				gl.TEXTURE_2D,
+				level,
+				levelWidth,
+				levelHeight,
+				type,
+				srcData,
+			);
 		} );
 
 		if ( clampLodToUploadedLevels ) {
