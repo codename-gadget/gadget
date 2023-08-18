@@ -29,6 +29,8 @@
         "UbosFromIntrospection",
         "CubeOf",
         "AttributeDeclaration",
-        "IndicesDeclaration"
+        "IndicesDeclaration",
+        "TextureCubeFace",
+        "TextureBindingPoint"
     ]
 }
