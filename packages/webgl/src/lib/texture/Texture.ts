@@ -59,7 +59,9 @@ export default class Texture extends AbstractTexture2D {
 	 * Uploads an array of pixels to the GPU.
 	 *
 	 * @param pixelsPerLevel - An object containing the pixel data per level.
-	 * @param type - The format the pixel data is in.
+	 * @param type - The format the pixel data is in. Ignored for compressed formats.
+	 *
+	 * Defaults to {@linkcode BufferDataType.unsignedByte}
 	 * @example Uploading a 2x2px red/black checkerboard texture and a 1x1px dark red mipmap.
 	 * ```typescript
 	 * import { Texture, BufferDataType } from '@gdgt/webgl';
@@ -84,12 +86,17 @@ export default class Texture extends AbstractTexture2D {
 	 */
 	public async uploadPixels(
 		pixelsPerLevel: { [level: number]: ArrayBufferView },
-		type: BufferDataType | TextureDataType,
+		type: BufferDataType | TextureDataType = BufferDataType.unsignedByte,
 	): Promise<void> {
 		await this.ready;
 
 		const {
-			gl, format, width, height, clampLodToUploadedLevels, minLod, maxLod,
+			gl,
+			width,
+			height,
+			clampLodToUploadedLevels,
+			minLod,
+			maxLod,
 		} = this;
 
 		this.bindSync();
@@ -106,17 +113,13 @@ export default class Texture extends AbstractTexture2D {
 
 			// TODO: sanity checks
 
-			gl.texSubImage2D(
+			this.uploadLevelSync(
 				gl.TEXTURE_2D,
 				level,
-				0,
-				0,
 				levelWidth,
 				levelHeight,
-				format,
 				type,
 				srcData,
-				0,
 			);
 		} );
 

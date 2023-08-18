@@ -1,3 +1,4 @@
+import type { CompressedTextureStorageFormat } from './texture/textureEnums';
 import { devLog, prodLog } from './utils/log';
 
 
@@ -47,6 +48,8 @@ import { devLog, prodLog } from './utils/log';
 export default class Context {
 	private glContextReady: Promise<WebGL2RenderingContext>;
 	private resolveContext: ( ctx: WebGL2RenderingContext ) => void;
+	private compressedFormats: CompressedTextureStorageFormat[];
+	private astcProfiles: string[];
 
 
 	public constructor() {
@@ -74,10 +77,72 @@ export default class Context {
 				...options,
 			} );
 
-			ctx.getExtension( 'OES_texture_float_linear' );
+			const hasFloatLinear = ctx.getExtension( 'OES_texture_float_linear' );
+			const hasHalfColorBuffer = ctx.getExtension( 'EXT_color_buffer_half_float' );
+			const hasFloatColorBuffer = ctx.getExtension( 'EXT_color_buffer_float' );
 
-			if ( !ctx.getExtension( 'EXT_color_buffer_half_float' ) ) {
-				ctx.getExtension( 'EXT_color_buffer_float' );
+			const availableFormats: CompressedTextureStorageFormat[] = [];
+			const availableFormatNames: string[] = [];
+
+			[
+				'WEBGL_compressed_texture_etc',
+				'WEBGL_compressed_texture_etc1',
+				'WEBGL_compressed_texture_s3tc',
+				'WEBGL_compressed_texture_s3tc_srgb',
+				'WEBGL_compressed_texture_pvrtc',
+				'WEBKIT_WEBGL_compressed_texture_pvrtc',
+				'EXT_texture_compression_bptc',
+				'EXT_texture_compression_rgtc',
+				'WEBGL_compressed_texture_astc',
+			].forEach( ( name ) => {
+				const ext = ctx.getExtension( name );
+
+				if ( ext === null ) return;
+
+				// eslint-disable-next-line no-restricted-syntax, guard-for-in
+				for ( const prop in ext ) {
+					const value = ext[prop];
+
+					if ( typeof value === 'number' ) {
+						availableFormats.push( value );
+
+						if ( __DEV_BUILD__ ) {
+							availableFormatNames.push(
+								prop,
+							);
+						}
+					}
+				}
+			} );
+
+			this.compressedFormats = availableFormats;
+			this.astcProfiles = ctx.getExtension( 'WEBGL_compressed_texture_astc' )?.getSupportedProfiles() || [];
+
+			if ( __DEV_BUILD__ ) {
+				devLog( {
+					level: 'info',
+					msg: 'Renderer info:',
+					groups: {
+						'Float textures': {
+							expanded: false,
+							content: `${
+								hasHalfColorBuffer ? '✅' : '❌'
+							} f16 color buffer\n${
+								hasFloatColorBuffer ? '✅' : '❌'
+							} f32 color buffer\n${
+								hasFloatLinear ? '✅' : '❌'
+							} f32 linear interpolation`,
+						},
+						'Supported compressed texture formats': {
+							expanded: false,
+							content: availableFormatNames.length > 0 ? availableFormatNames.join( '\n' ) : '❌ none',
+						},
+						'Supported ASTC profiles': {
+							expanded: false,
+							content: this.astcProfiles.length > 0 ? this.astcProfiles.join( '\n' ) : '❌ none',
+						},
+					},
+				} );
 			}
 
 			this.resolveContext( ctx );
@@ -85,7 +150,7 @@ export default class Context {
 		} else if ( __DEV_BUILD__ ) {
 			devLog( {
 				level: 'error',
-				msg: 'Trying to initialized context that has already been initialized.',
+				msg: 'Trying to initialize context that has already been initialized.',
 			} );
 		} else {
 			prodLog( 'Context' );
@@ -100,6 +165,30 @@ export default class Context {
 	 */
 	public async getGlContext(): Promise<WebGL2RenderingContext> {
 		return this.glContextReady;
+	}
+
+
+	/**
+	 * Returns an array of supported compressed texture formats once available.
+	 *
+	 * @returns An array of supported compressed texture formats.
+	 */
+	public async getCompressedFormats(): Promise<CompressedTextureStorageFormat[]> {
+		await this.glContextReady;
+
+		return this.compressedFormats;
+	}
+
+
+	/**
+	 * Returns an array of supported {@link https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_compressed_texture_astc/getSupportedProfiles | ASTC profiles} once available.
+	 *
+	 * @returns An array of supported ASTC profiles.
+	 */
+	public async getAstcProfiles(): Promise<string[]> {
+		await this.glContextReady;
+
+		return this.astcProfiles;
 	}
 }
 

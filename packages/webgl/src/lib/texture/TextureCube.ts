@@ -31,7 +31,9 @@ export default class TextureCube extends AbstractTexture2D {
 	 * Uploads an array of pixels to the GPU.
 	 *
 	 * @param pixelsPerLevel - An object containing the pixel data per level and face.
-	 * @param type - The format the pixel data is in.
+	 * @param type - The format the pixel data is in. Ignored for compressed formats.
+	 *
+	 * Defaults to {@linkcode BufferDataType.unsignedByte}
 	 * @example Uploading data for level 0 of the side facing forward (positive Z)
 	 * and level 1 of the side facing left (negative X):
 	 * ```typescript
@@ -54,12 +56,12 @@ export default class TextureCube extends AbstractTexture2D {
 	 */
 	public async uploadPixels(
 		pixelsPerLevel: { [level: number]: Partial<CubeOf<ArrayBufferView>> },
-		type: BufferDataType | TextureDataType,
+		type: BufferDataType | TextureDataType = BufferDataType.unsignedByte,
 	): Promise<void> {
 		await this.ready;
 
 		const {
-			gl, format, width,
+			gl, width,
 		} = this;
 
 		this.bindSync();
@@ -71,17 +73,13 @@ export default class TextureCube extends AbstractTexture2D {
 			Object.entries( cube ).forEach( ([face, srcData]) => {
 				// TODO: sanity checks
 
-				gl.texSubImage2D(
+				this.uploadLevelSync(
 					inferFace( face ),
 					level,
-					0,
-					0,
 					levelWidth,
 					levelWidth,
-					format,
 					type,
 					srcData,
-					0,
 				);
 			} );
 		} );
