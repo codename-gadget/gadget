@@ -463,7 +463,13 @@ export enum CompressedTextureStorageFormat {
 
 	// WEBGL_compressed_texture_etc1
 
-	/** Compresses 24-bit RGB data with no alpha channel. */
+	/**
+	 * Compressed 24-bit RGB data with no alpha channel.
+	 *
+	 * @remarks Due to limitations with ETC1, textures with mipmaps will appear
+	 * black until **ALL** mip-levels are uploaded. To work around this, before using the texture,
+	 * upload the first level and await `generateMipmaps()` on your texture immediately afterwards.
+	 */
 	rgbEtc1 = 0x8d64,
 }
 
