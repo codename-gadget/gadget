@@ -258,13 +258,233 @@ export enum TextureStorageFormat {
 
 
 /**
+ * Texture compression format.
+ *
+ * @remarks
+ * Descriptions pulled from {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants#constants_defined_in_webgl_extensions | MDN}.
+ */
+export enum CompressedTextureStorageFormat {
+
+	// WEBGL_compressed_texture_s3tc
+
+	/** A DXT1-compressed image in an RGB image format. */
+	rgbS3tcDxt1 = 0x83f0,
+
+	/** A DXT1-compressed image in an RGB image format with a simple on/off alpha value. */
+	rgbaS3tcDxt1 = 0x83f1,
+
+	/**
+	 * A DXT3-compressed image in an RGBA image format.
+	 * Compared to a 32-bit RGBA texture, it offers 4:1 compression.
+	 */
+	rgbaS3tcDxt3 = 0x83f2,
+
+	/**
+	 * A DXT5-compressed image in an RGBA image format.
+	 * It also provides a 4:1 compression, but differs to the DXT3 compression in
+	 * how the alpha compression is done.
+	 */
+	rgbaS3tcDxt5 = 0x83f3,
+
+
+	// WEBGL_compressed_texture_s3tc_srgb
+
+	/** A DXT1-compressed image in an sRGB image format. */
+	srgbS3tcDxt1 = 0x8c4c,
+
+	/** A DXT1-compressed image in an sRGB image format with a simple on/off alpha value. */
+	srgbAlphaS3tcDxt1 = 0x8c4d,
+
+	/** A DXT3-compressed image in an sRGBA image format. */
+	srgbAlphaS3tcDxt3 = 0x8c4e,
+
+	/** A DXT5-compressed image in an sRGBA image format. */
+	srgbAlphaS3tcDxt5 = 0x8c4f,
+
+
+	// WEBGL_compressed_texture_etc
+
+	/** One-channel (red) unsigned format compression. */
+	r11Eac = 0x9270,
+
+	/** One-channel (red) signed format compression. */
+	signedR11Eac = 0x9271,
+
+	/** Two-channel (red and green) unsigned format compression. */
+	rg11Eac = 0x9272,
+
+	/** Two-channel (red and green) signed format compression. */
+	signedRg11Eac = 0x9273,
+
+	/** Compresses RGB8 data with no alpha channel. */
+	rgb8Etc2 = 0x9274,
+
+	/** Compresses sRGB8 data with no alpha channel. */
+	srgb8Etc2 = 0x9275,
+
+	/**
+	 * Similar to {@linkcode CompressedTextureStorageFormat.rgb8Etc2},
+	 * but with ability to punch through the alpha channel,
+	 * which means to make it completely opaque or transparent.
+	 */
+	rgb8PunchthroughAlpha1Etc2 = 0x9276,
+
+	/**
+	 * Similar to {@linkcode CompressedTextureStorageFormat.srgb8Etc2},
+	 * but with ability to punch through the alpha channel,
+	 * which means to make it completely opaque or transparent.
+	 */
+	srgb8PunchthroughAlpha1Etc2 = 0x9277,
+
+	/**
+	 * Compresses sRGBA8 data. The RGB part is encoded the same as
+	 * {@linkcode CompressedTextureStorageFormat.rgb8Etc2},
+	 * but the alpha part is encoded separately.
+	 */
+	rgba8Etc2Eac = 0x9278,
+
+	/**
+	 * Compresses sRGBA8 data. The RGB part is encoded the same as
+	 * {@linkcode CompressedTextureStorageFormat.srgb8Etc2},
+	 * but the alpha part is encoded separately.
+	 */
+	srgb8Alpha8Etc2Eac = 0x9279,
+
+
+	// WEBGL_compressed_texture_pvrtc
+
+	/** RGB compression in 4-bit mode. One block for each 4×4 pixels. */
+	rgbPvrtc4bppv1 = 0x8c00,
+
+	/** RGB compression in 2-bit mode. One block for each 8×4 pixels. */
+	rgbPvrtc2bppv1 = 0x8c01,
+
+	/** RGBA compression in 4-bit mode. One block for each 4×4 pixels. */
+	rgbaPvrtc4bppv1 = 0x8c02,
+
+	/** RGBA compression in 2-bit mode. One block for each 8×4 pixels. */
+	rgbaPvrtc2bppv1 = 0x8c03,
+
+
+	// WEBGL_compressed_texture_astc
+	rgbaAstc4x4 = 0x93b0,
+	rgbaAstc5x4 = 0x93b1,
+	rgbaAstc5x5 = 0x93b2,
+	rgbaAstc6x5 = 0x93b3,
+	rgbaAstc6x6 = 0x93b4,
+	rgbaAstc8x5 = 0x93b5,
+	rgbaAstc8x6 = 0x93b6,
+	rgbaAstc8x8 = 0x93b7,
+	rgbaAstc10x5 = 0x93b8,
+	rgbaAstc10x6 = 0x93b9,
+	rgbaAstc10x8 = 0x93ba,
+	rgbaAstc10x10 = 0x93bb,
+	rgbaAstc12x10 = 0x93bc,
+	rgbaAstc12x12 = 0x93bd,
+	srgb8Alpha8Astc4x4 = 0x93d0,
+	srgb8Alpha8Astc5x4 = 0x93d1,
+	srgb8Alpha8Astc5x5 = 0x93d2,
+	srgb8Alpha8Astc6x5 = 0x93d3,
+	srgb8Alpha8Astc6x6 = 0x93d4,
+	srgb8Alpha8Astc8x5 = 0x93d5,
+	srgb8Alpha8Astc8x6 = 0x93d6,
+	srgb8Alpha8Astc8x8 = 0x93d7,
+	srgb8Alpha8Astc10x5 = 0x93d8,
+	srgb8Alpha8Astc10x6 = 0x93d9,
+	srgb8Alpha8Astc10x8 = 0x93da,
+	srgb8Alpha8Astc10x10 = 0x93db,
+	srgb8Alpha8Astc12x10 = 0x93dc,
+	srgb8Alpha8Astc12x12 = 0x93dd,
+
+
+	// EXT_texture_compression_bptc
+
+	/**
+	 * Compresses 8-bit fixed-point data. Each 4x4 block of texels consists of
+	 * 128 bits of RGBA or image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d11/bc7-format | BC7} format.
+	 */
+	rgbaBptcUnorm = 0x8e8c,
+
+	/**
+	 * Compresses 8-bit fixed-point data. Each 4x4 block of texels consists of
+	 * 128 bits of SRGB_ALPHA or image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d11/bc7-format | BC7} format.
+	 */
+	srgbAlphaBptcUnorm = 0x8e8d,
+
+	/**
+	 * Compresses high dynamic range signed floating point values.
+	 * Each 4x4 block of texels consists of 128 bits of RGB data.
+	 * It only contains RGB data, so the returned alpha value is 1.0.
+	 *
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d11/bc6h-format | BC6H} format.
+	 */
+	rgbBptcSignedFloat = 0x8e8e,
+
+	/**
+	 * Compresses high dynamic range unsigned floating point values.
+	 * Each 4x4 block of texels consists of 128 bits of RGB data.
+	 * It only contains RGB data, so the returned alpha value is 1.0.
+	 *
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d11/bc6h-format | BC6H} format.
+	 */
+	rgbBptcUnsignedFloat = 0x8e8f,
+
+
+	// EXT_texture_compression_rgtc
+
+	/**
+	 * Each 4x4 block of texels consists of 64 bits of unsigned red image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc4 | BC4 unsigned}.
+	 */
+	redRgtc1 = 0x8dbb,
+
+	/**
+	 * Each 4x4 block of texels consists of 64 bits of signed red image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc4 | BC4 signed}.
+	 */
+	signedRedRgtc1 = 0x8dbc,
+
+	/**
+	 * Each 4x4 block of texels consists of 64 bits of compressed unsigned red image data
+	 * followed by 64 bits of compressed unsigned green image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc5 | BC5 unsigned}.
+	 */
+	redGreenRgtc2 = 0x8dbd,
+
+	/**
+	 * Each 4x4 block of texels consists of 64 bits of compressed signed red image data
+	 * followed by 64 bits of compressed signed green image data.
+	 * See also {@link https://learn.microsoft.com/en-gb/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc5 | BC5 signed}.
+	 */
+	signedRedGreenRgtc2 = 0x8dbe,
+
+
+	// WEBGL_compressed_texture_etc1
+
+	/**
+	 * Compressed 24-bit RGB data with no alpha channel.
+	 *
+	 * @remarks Due to limitations with ETC1, textures with mipmaps will appear
+	 * black until **ALL** mip-levels are uploaded. To work around this, before using the texture,
+	 * upload the first level and await `generateMipmaps()` on your texture immediately afterwards.
+	 */
+	rgbEtc1 = 0x8d64,
+}
+
+
+/**
  * Returns the matching texture format for a given storage format.
  *
  * @internal
  * @param storage - The texture storage format.
- * @returns The matching texture format.
+ * @returns The matching texture format or `undefined` if there
+ * is none (e.g. for compressed formats).
  */
-export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): TextureFormat {
+export function inferFormatFromStorageFormat(
+	storage: TextureStorageFormat | CompressedTextureStorageFormat,
+): TextureFormat {
 	switch ( storage ) {
 		case TextureStorageFormat.alpha:
 			return TextureFormat.alpha;
@@ -354,5 +574,25 @@ export function inferFormatFromStorageFormat( storage: TextureStorageFormat ): T
 
 		default:
 			return undefined;
+	}
+}
+
+
+/**
+ * Indicates whether pre-allocation via texStorage is supported for the given format.
+ *
+ * @internal
+ * @param storage - The texture storage format to check.
+ * @returns Whether pre-allocation via texStorage is supported.
+ */
+export function checkPreallocationSupport(
+	storage: TextureStorageFormat | CompressedTextureStorageFormat,
+): boolean {
+	switch ( storage ) {
+		case CompressedTextureStorageFormat.rgbEtc1:
+			return false;
+
+		default:
+			return true;
 	}
 }

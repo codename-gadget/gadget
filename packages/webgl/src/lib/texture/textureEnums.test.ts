@@ -12,6 +12,7 @@ import {
 	TextureBindingPoint,
 	TextureCubeFace,
 	inferFace,
+	CompressedTextureStorageFormat,
 } from './textureEnums';
 
 
@@ -212,6 +213,18 @@ describe( 'Texture Enums', () => {
 					expect(
 						inferFormatFromStorageFormat( internal ),
 					).toBeDefined();
+				}
+			} );
+		} );
+
+		it( 'should return undefined for all compressed formats', () => {
+			Object.values( CompressedTextureStorageFormat ).forEach( ( internal ) => {
+				// typescript includes reverse lookups in
+				// compiled enums, filter those out
+				if ( typeof internal !== 'string' ) {
+					expect(
+						inferFormatFromStorageFormat( internal ),
+					).toBeUndefined();
 				}
 			} );
 		} );
