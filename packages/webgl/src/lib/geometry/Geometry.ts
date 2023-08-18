@@ -151,9 +151,11 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 	private attributeInfo: InternalAttributeInfo[];
 	private indicesInfo: { buffer: Buffer, type: IndicesDeclaration['type'] };
 	private primitiveCount: number;
-	private instanceCount: number;
 	private isInstanced = false;
 	private mode: GeometryDrawMode;
+
+	/** How many geometry instances will be drawn. */
+	public instanceCount: number;
 
 	/** The underlying attribute buffers. */
 	public readonly attributes: {
@@ -327,6 +329,20 @@ export default class Geometry<T extends GeometryProps = GeometryProps> extends C
 
 		this.isInstanced = isInstanced;
 		this.instanceCount = instances;
+	}
+
+
+	/**
+	 * Sets the amount of geometry instances to draw.
+	 *
+	 * Keep in mind that this shouldn't exceed the number of instances
+	 * specified in any instanced attribute.
+	 *
+	 * @param count - The amount of geometry instances to draw.
+	 */
+	public setInstanceCount( count: number ): void {
+		this.instanceCount = count;
+		this.isInstanced = true;
 	}
 
 
